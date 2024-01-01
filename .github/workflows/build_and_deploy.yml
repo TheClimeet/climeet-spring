@@ -88,4 +88,4 @@ jobs:
             sudo docker stop $(sudo docker ps -a -q)
             sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull gourderased/spring-project:latest
-            sudo docker run -d -p 8080:8080 --name climeet-dev-server gourderased/spring-project:latest
+            sudo docker run -d -p 8080:8080 --name climeet-dev-server -e SPRING_PROFILE=dev gourderased/spring-project:latest
