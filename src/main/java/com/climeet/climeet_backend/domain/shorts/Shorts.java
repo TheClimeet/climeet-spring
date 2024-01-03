@@ -48,5 +48,7 @@ public class Shorts extends BaseTimeEntity {
 
     private String description;
 
-    private Boolean isSoundEnabled = false;
+    private Boolean isSoundEnabled;
+
+    private Boolean isPublic;
 }

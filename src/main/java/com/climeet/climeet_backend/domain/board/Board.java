@@ -38,5 +38,5 @@ public class Board extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
-    private int count = 0;
+    private int likeCount = 0;
 }

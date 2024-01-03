@@ -34,6 +34,5 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int selectionCount = 0;
 
-//    @Enumerated(EnumType.STRING)
-//    private ClimbingGymService climbingGymService;
+    private int serviceBitMask = 0;
 }

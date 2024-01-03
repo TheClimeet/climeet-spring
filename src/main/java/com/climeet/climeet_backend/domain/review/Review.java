@@ -32,5 +32,8 @@ public class Review extends BaseTimeEntity {
     private Climber climber;
 
     @NotNull
+    private String content;
+
+    @NotNull
     private Float rating;
 }
