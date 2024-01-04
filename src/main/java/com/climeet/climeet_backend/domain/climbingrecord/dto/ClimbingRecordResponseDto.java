@@ -10,9 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class ClimbingRecordResponseDto {
+
     @Getter
     @NoArgsConstructor
-    public static class ClimbingRecordSimpleInfo{
+    public static class ClimbingRecordSimpleInfo {
 
         private LocalDate date;
         private String gymName;
