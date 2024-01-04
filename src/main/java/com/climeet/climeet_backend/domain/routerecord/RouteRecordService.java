@@ -27,7 +27,15 @@ public class RouteRecordService {
         ClimbingRecord climbingRecord) {
         try {
             Route route = routeRepository.findById(requestDto.getRouteId()).get();
+
             routeRecordRepository.save(RouteRecord.toEntity(requestDto, climbingRecord, route));
+
+            climbingRecord.attemptCountUp(requestDto.getAttemptCount());
+
+            if (requestDto.getIsCompleted()) {
+                climbingRecord.totalCompletedCountUp();
+            }
+
             return ApiResponse.onSuccess("루트기록 성공");
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
