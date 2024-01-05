@@ -45,5 +45,6 @@ processResources.dependsOn('copyGitSubmodule')
 tasks.register('copyGitSubmodule', Copy) {
     from './config'
     include '*.yml'
+    include '*.p12'
     into 'src/main/resources'
 }
