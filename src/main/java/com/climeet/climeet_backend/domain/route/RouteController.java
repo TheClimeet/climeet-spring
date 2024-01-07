@@ -1,8 +1,11 @@
 package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.RouteCreateRequestDto;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,5 +29,11 @@ public class RouteController {
             routeCreateRequestDto.getDifficulty(),
             routeCreateRequestDto.getRouteImageUrl());
         return ApiResponse.onSuccess("새로운 Route를 추가했습니다.");
+    }
+
+    // 암장 루트 정보 조회
+    @GetMapping("/gym/route/{routeId}")
+    public ResponseEntity<RouteGetResponseDto> findRouteByRouteId(@PathVariable Long routeId) {
+        return ResponseEntity.ok(routeService.getRoute(routeId));
     }
 }
