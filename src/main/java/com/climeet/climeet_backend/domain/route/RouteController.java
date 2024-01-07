@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.route;
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.RouteCreateRequestDto;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
 import com.climeet.climeet_backend.global.response.ApiResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,5 +36,11 @@ public class RouteController {
     @GetMapping("/gym/route/{routeId}")
     public ResponseEntity<RouteGetResponseDto> findRouteByRouteId(@PathVariable Long routeId) {
         return ResponseEntity.ok(routeService.getRoute(routeId));
+    }
+
+    // 암장 루트 리스트 정보 조회
+    @GetMapping("/gym/{gymId}/routes")
+    public ResponseEntity<List<RouteGetResponseDto>> findAllRouteByGymId(@PathVariable Long gymId) {
+        return ResponseEntity.ok(routeService.getRouteList(gymId));
     }
 }
