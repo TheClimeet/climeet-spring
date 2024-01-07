@@ -19,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ShortsService {
 
     private final ShortsRepository shortsRepository;
-    private final ClimbingGymRepository climbingGymRepository;
-    private final SectorRepository sectorRepository;
     private final RouteRepository routeRepository;
     private final S3Service s3Service;
 
