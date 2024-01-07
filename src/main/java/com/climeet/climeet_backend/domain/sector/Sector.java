@@ -27,4 +27,6 @@ public class Sector extends BaseTimeEntity {
     private ClimbingGym climbingGym;
 
     private String sectorName;
+
+    private int floor;
 }
