@@ -26,5 +26,5 @@ public class Sector extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ClimbingGym climbingGym;
 
-    private String sectionName;
+    private String sectorName;
 }
