@@ -15,22 +15,22 @@ public class ClimbingRecordResponseDto {
     @NoArgsConstructor
     public static class ClimbingRecordSimpleInfo {
 
+        private Long ClimbingRecordId;
         private LocalDate date;
-        private String gymName;
-        private String gymProfileImg;
         private LocalTime time;
         private Integer totalCompletedCount;
         private Integer totalAttemptCount;
         private Integer avgDifficulty;
+        private Long gymId;
 
         public ClimbingRecordSimpleInfo(ClimbingRecord climbingRecord) {
+            this.ClimbingRecordId = climbingRecord.getId();
             this.date = climbingRecord.getClimbingDate();
-            this.gymName = climbingRecord.getGym().getName();
             this.avgDifficulty = climbingRecord.getAvgDifficulty();
             this.time = climbingRecord.getClimbingTime();
-            this.gymProfileImg = climbingRecord.getGym().getProfileImageUrl();
             this.totalAttemptCount = climbingRecord.getTotalAttemptCount();
             this.totalCompletedCount = climbingRecord.getTotalCompletedCount();
+            this.gymId = climbingRecord.getId();
         }
     }
 }

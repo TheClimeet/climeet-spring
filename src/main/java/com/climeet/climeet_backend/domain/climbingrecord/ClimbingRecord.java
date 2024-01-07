@@ -34,15 +34,12 @@ public class ClimbingRecord extends BaseTimeEntity {
     private LocalTime climbingTime;
 
     //도전횟수
-    @ColumnDefault("0")
     private Integer totalAttemptCount;
 
     //완등횟수
-    @ColumnDefault("0")
     private Integer totalCompletedCount;
 
     //평균레벨
-    @ColumnDefault("0")
     private Integer avgDifficulty;
 
     public static ClimbingRecord toEntity(ClimbingRecordRequestDto requestDto,
@@ -51,11 +48,14 @@ public class ClimbingRecord extends BaseTimeEntity {
             .climbingDate(requestDto.getDate())
             .climbingTime(requestDto.getTime())
             .gym(climbingGym)
+            .totalAttemptCount(0)
+            .totalCompletedCount(0)
+            .avgDifficulty(0)
             .build();
     }
 
 
-    public void attemptCountUp(int count) {
+    public void attemptCountUp(Integer count) {
         this.totalAttemptCount += count;
     }
 
