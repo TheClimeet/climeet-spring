@@ -30,7 +30,7 @@ public class RouteRecord extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Route route;
 
-    private int attemptCount;
+    private Integer attemptCount;
 
     private Boolean isCompleted = false;
 
