@@ -19,16 +19,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class ShortsService {
 
     private final ShortsRepository shortsRepository;
+    private final ClimbingGymRepository climbingGymRepository;
+    private final SectorRepository sectorRepository;
     private final RouteRepository routeRepository;
     private final S3Service s3Service;
 
     public void uploadShorts(MultipartFile video, MultipartFile thumbnailImage,
         PostShortsReq postShortsReq) {
 
+        ClimbingGym climbingGym = climbingGymRepository.findById(postShortsReq.getClimbingGymId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+        Sector sector = sectorRepository.findById(postShortsReq.getSectorId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
         Route route = routeRepository.findById(postShortsReq.getRouteId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
-        Sector sector = route.getSector();
-        ClimbingGym climbingGym= sector.getClimbingGym();
 
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
