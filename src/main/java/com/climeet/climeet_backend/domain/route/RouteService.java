@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.route;
 
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class RouteService {
             .build();
 
         routeRepository.save(route);
+    }
+
+    public RouteGetResponseDto getRoute(Long routeId) {
+        Route route = routeRepository.findById(routeId).orElseThrow();
+
+        return new RouteGetResponseDto(route);
     }
 
 }
