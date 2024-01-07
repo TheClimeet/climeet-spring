@@ -5,7 +5,6 @@ import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetRes
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
