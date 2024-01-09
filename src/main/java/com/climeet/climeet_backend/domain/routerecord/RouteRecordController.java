@@ -4,6 +4,7 @@ package com.climeet.climeet_backend.domain.routerecord;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@Tag(name = "RouteRecords", description = "루트 키록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/route-record")
@@ -27,7 +29,7 @@ public class RouteRecordController {
      * @param
      * @return List<RouteRecordSimpleInfo>
      */
-    @Operation(summary = "루트 기록 전체 조회", description = "루트 간편 기록 전체 조회")
+    @Operation(summary = "루트 기록 전체 조회")
     @GetMapping
     public ResponseEntity<List<RouteRecordSimpleInfo>> getRouteRecords() {
         return new ResponseEntity<>(routeRecordService.getRouteRecords(),
@@ -39,7 +41,7 @@ public class RouteRecordController {
      * @param
      * @return RouteRecordSimpleInfo
      */
-    @Operation(summary = "루트 기록 Id 조회", description = "루트 간편 기록 id 조회")
+    @Operation(summary = "루트 기록 Id 조회")
     @GetMapping("/{id}")
         public ResponseEntity<RouteRecordSimpleInfo> getRouteRecord(@PathVariable Long id) {
         return new ResponseEntity<>(routeRecordService.getRouteRecord(id),

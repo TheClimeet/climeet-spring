@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
+@Tag(name = "ClimbingRecords", description = "클라이밍 키록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/climbing-record")
@@ -30,7 +32,7 @@ public class ClimbingRecordController {
     /**
      * @param "ClimbingRecordRequestDto requestDto"
      */
-    @Operation(summary = "클라이밍 기록 생성", description = "클라이밍 기록 생성")
+    @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
     public ResponseEntity<?> addClimbingRecord(@RequestBody ClimbingRecordRequestDto requestDto) {
         climbingRecordService.createClimbingRecord(requestDto);
@@ -43,7 +45,7 @@ public class ClimbingRecordController {
      * @param
      * @return List<ClimbingRecordSimpleInfo>
      */
-    @Operation(summary = "클라이밍 간편 기록 전체 조회", description = "클라이밍 간편 기록 전체 조회")
+    @Operation(summary = "클라이밍 간편 기록 전체 조회")
     @GetMapping
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecords() {
         return new ResponseEntity<>(climbingRecordService.getClimbingRecords(),
@@ -54,7 +56,7 @@ public class ClimbingRecordController {
      * @param "starDate", "endDate"
      * @return List<ClimbingRecordSimpleInfo>
      */
-    @Operation(summary = "클라이밍 기록 날짜 조회", description = "클라이밍 기록 날짜 조회")
+    @Operation(summary = "클라이밍 기록 날짜 조회")
     @GetMapping("/between-dates")
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -68,7 +70,7 @@ public class ClimbingRecordController {
      * @param "id"
      * @return ClimingRecordResponseDto
      */
-    @Operation(summary = "클라이밍 기록 id 조회", description = "클라이밍 기록 id 조회")
+    @Operation(summary = "클라이밍 기록 id 조회")
     @GetMapping("/{id}")
     public ResponseEntity<ClimbingRecordSimpleInfo> addClimbingRecord(@PathVariable Long id) {
         return new ResponseEntity<>(climbingRecordService.getClimbingRecord(id), HttpStatus.OK);

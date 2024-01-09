@@ -69,6 +69,7 @@ public class ClimbingRecordService {
         }
     }
 
+    // TODO: 2024/01/09 날짜로 조회할 때 시작날짜가 종료날짜보다 시점상 늦을 때 에러처리
     public List<ClimbingRecordSimpleInfo> getClimbingRecordsBetweenLocalDates(LocalDate startDate,
         LocalDate endDate) {
         try {
