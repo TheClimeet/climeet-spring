@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.route;
 
+import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.RouteCreateRequestDto;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
@@ -17,14 +18,13 @@ public class RouteService {
     private final SectorRepository sectorRepository;
 
     @Transactional
-    public void createRoute(Long gymId, Long sectorId, String name, int difficulty,
-        String routeImageUrl) {
-        Sector sector = sectorRepository.findById(sectorId).orElseThrow();
+    public void createRoute(Long gymId, RouteCreateRequestDto routeCreateRequestDto) {
+        Sector sector = sectorRepository.findById(routeCreateRequestDto.getSectorId()).orElseThrow();
         Route route = Route.builder()
             .sector(sector)
-            .name(name)
-            .difficulty(difficulty)
-            .routeImageUrl(routeImageUrl)
+            .name(routeCreateRequestDto.getName())
+            .difficulty(routeCreateRequestDto.getDifficulty())
+            .routeImageUrl(routeCreateRequestDto.getRouteImageUrl())
             .build();
 
         routeRepository.save(route);

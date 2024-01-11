@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor
@@ -30,5 +31,6 @@ public class Sector extends BaseTimeEntity {
     @NotNull
     private String sectorName;
 
-    private int floor = 0;
+    @ColumnDefault("0")
+    private int floor;
 }

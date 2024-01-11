@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Builder
@@ -37,5 +38,6 @@ public class Route extends BaseTimeEntity {
 
     private String routeImageUrl;
 
-    private int selectionCount = 0;
+    @ColumnDefault("0")
+    private int selectionCount;
 }
