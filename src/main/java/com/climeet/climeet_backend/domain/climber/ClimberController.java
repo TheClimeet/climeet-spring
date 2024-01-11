@@ -26,7 +26,7 @@ public class ClimberController {
      * OAuth2.0 로그인 API
      */
     @Operation(summary = "로그인", description = "클라이머 소셜로그인")
-    @GetMapping("/login/oauth/{provider}/{accessToken}")
+    @GetMapping("/login/{provider}/{accessToken}")
     public ResponseEntity<ClimberResponseDto> login(@PathVariable String provider, @PathVariable String accessToken){
         ClimberResponseDto climberResponseDto = climberService.login(provider, accessToken);
          return ResponseEntity.ok(climberResponseDto);
@@ -35,7 +35,7 @@ public class ClimberController {
     /**
      * OAuth2.0 회원가입 API
      */
-    @PostMapping("/signup/oauth/{provider}/{accessToken}")
+    @PostMapping("/signup/{provider}/{accessToken}")
     @Operation(summary = "회원가입", description = "클라이머 OAuth 회원가입")
     public ResponseEntity<ClimberResponseDto> signUp(@PathVariable String provider, @PathVariable String accessToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
           ClimberResponseDto climberResponseDto = climberService.signUp(provider, accessToken, climberSignUpRequestDto);
