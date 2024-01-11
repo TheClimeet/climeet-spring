@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
+    _GYM_ID_MISMATCH(HttpStatus.CONFLICT, "SECTOR_002", "벽면과 암장 정보가 일치하지 않습니다."),
 
     //루트 관련
     _EMPTY_ROUTE(HttpStatus.CONFLICT, "ROUTE_001", "존재하지 않는 루트입니다."),

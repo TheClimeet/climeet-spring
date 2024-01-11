@@ -4,6 +4,9 @@ import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.RouteCreateR
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
+import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,11 @@ public class RouteService {
 
     @Transactional
     public void createRoute(Long gymId, RouteCreateRequestDto routeCreateRequestDto) {
-        Sector sector = sectorRepository.findById(routeCreateRequestDto.getSectorId()).orElseThrow();
+        Sector sector = sectorRepository.findById(routeCreateRequestDto.getSectorId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
+        if (!sector.getClimbingGym().getId().equals(gymId)) {
+            throw new GeneralException(ErrorStatus._GYM_ID_MISMATCH);
+        }
         Route route = Route.builder()
             .sector(sector)
             .name(routeCreateRequestDto.getName())
