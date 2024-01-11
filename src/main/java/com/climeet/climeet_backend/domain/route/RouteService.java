@@ -38,14 +38,17 @@ public class RouteService {
     }
 
     public RouteGetResponseDto getRoute(Long routeId) {
-        Route route = routeRepository.findById(routeId).orElseThrow();
+        Route route = routeRepository.findById(routeId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
         return new RouteGetResponseDto(route);
     }
 
     public List<RouteGetResponseDto> getRouteList(Long gymId) {
         List<Route> routeList = routeRepository.findBySectorClimbingGymId(gymId);
-
+        if(routeList.isEmpty()){
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        }
         return routeList.stream()
             .map(RouteGetResponseDto::new)
             .collect(Collectors.toList());
