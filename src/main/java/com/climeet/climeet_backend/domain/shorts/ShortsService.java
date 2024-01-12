@@ -7,10 +7,17 @@ import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.PostShortsReq;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
+import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +31,7 @@ public class ShortsService {
     private final RouteRepository routeRepository;
     private final S3Service s3Service;
 
+    @Transactional
     public void uploadShorts(MultipartFile video, MultipartFile thumbnailImage,
         PostShortsReq postShortsReq) {
 
@@ -49,5 +57,20 @@ public class ShortsService {
             .build();
 
         shortsRepository.save(shorts);
+    }
+
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        List<ShortsSimpleInfo> shortsInfoList =  shortsSlice.stream()
+            .map(shorts -> ShortsSimpleInfo.builder()
+                .thumbnailImageUrl(shorts.getThumbnailImageUrl())
+                .gymName(shorts.getClimbingGym().getName())
+                .difficulty(shorts.getRoute().getDifficulty())
+                .build())
+            .toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(), shortsInfoList);
     }
 }
