@@ -40,7 +40,7 @@ public class Climber extends User {
     @Column(name = "nick_name")
     private String nickName;
 
-    @Column(name = "profile_img_url")
+    @Column(name = "profile_image_url")
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
