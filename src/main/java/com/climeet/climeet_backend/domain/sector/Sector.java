@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,8 @@ public class Sector extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ClimbingGym climbingGym;
 
-    private String sectionName;
+    @NotNull
+    private String sectorName;
+
+    private int floor = 0;
 }
