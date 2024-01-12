@@ -4,6 +4,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.climber.enums.ClimbingLevel;
 import com.climeet.climeet_backend.domain.climber.enums.DiscoveryChannel;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,26 +25,34 @@ import lombok.Setter;
 public class Climber extends User {
 
     @NotNull
+    @Column(name = "social_id")
     private Long socialId;
 
     @NotNull
+    @Column(name = "access_token")
     private String accessToken;
 
     @NotNull
+    @Column(name = "refresh_token")
     private String refreshToken;
 
     @NotNull
+    @Column(name = "nick_name")
     private String nickName;
 
+    @Column(name = "profile_img_url")
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "climbing_level")
     private ClimbingLevel climbingLevel;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "social_type")
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "discovery_channel")
     private DiscoveryChannel discoveryChannel;
 
     private boolean status = true;

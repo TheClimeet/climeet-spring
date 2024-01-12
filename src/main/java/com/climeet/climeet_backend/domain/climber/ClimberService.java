@@ -7,8 +7,10 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,19 +25,37 @@ public class ClimberService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ClimberResponseDto login(String socialType, String userToken){
-        Climber climber = getClimberProfileByToken(socialType, userToken);
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getSocialId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
-        climber.setSocialType(SocialType.valueOf(socialType));
-        climber.setToken(accessToken, refreshToken);
-        if (climber == null) {
+    public ClimberResponseDto login(String socialType, String userToken) {
+        try {
+            Climber climber = getClimberProfileByToken(socialType, userToken);
+            String refreshToken = climber.getRefreshToken();
+            Long socialId = climber.getSocialId();
+            System.out.println(socialId);
+
+            Climber resultClimber = climberRepository.findBySocialId(socialId);
+            if(resultClimber == null) {
+                // 해당 소셜 ID를 가진 Climber가 DB에 없으면 에러 처리
+                throw new GeneralException(ErrorStatus._EMPTY_MEMBER);
+            } else {
+                //서버 accessToken이 유효한지 확인
+                if(jwtTokenProvider.validateToken(refreshToken)){
+                    // DB에 존재하는 Climber를 반환합니다.
+                    return new ClimberResponseDto(resultClimber);
+                } else{
+                    throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+                }
+
+            }
+
+        } catch (GeneralException e) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
-        return new ClimberResponseDto(climber);
     }
 
 
+
+
+    @Transactional
     public ClimberResponseDto signUp(String socialType, String userToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
         Climber climber = getClimberProfileByToken(socialType, userToken);
         assert climber != null;
@@ -51,6 +71,8 @@ public class ClimberService {
 
         return new ClimberResponseDto(savedClimber);
     }
+
+
     private Map<String, Object> getClimberAttributesByToken(String accessToken){
         return WebClient.create()
             .get()
@@ -72,22 +94,15 @@ public class ClimberService {
             KaKaoUserInfo kaKaoUserInfo = new KaKaoUserInfo(userAttributesByToken);
             Long social_id = kaKaoUserInfo.getID();
             String profile_img = kaKaoUserInfo.getProfileImg();
-            System.out.println(social_id + " " + profile_img);
+            //System.out.println(social_id + " " + profile_img);
             //로그인 case
             if (climberRepository.findById(social_id).isPresent()) {
-                return climberRepository.findBySocialId(social_id).get();
+                return climberRepository.findBySocialId(social_id);
             }else{  //회원가입 case
                 return Climber.builder()
                     .socialId(social_id)
                     .profileImageUrl(profile_img).build();
             }
-
-//            Climber savedClimber = climberRepository.save(climber);
-
-           // updateClimberInfo(savedClimber.getId(), requestDto);
-//
-//            return climberRepository.findById(savedClimber.getId())
-//                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
         } else if (providerName.equals("NAVER")) {
             //네이버 로직 구현 후 추가 예정
             return null;

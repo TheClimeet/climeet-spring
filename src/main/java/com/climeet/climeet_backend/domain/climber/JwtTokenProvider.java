@@ -43,6 +43,7 @@ public class JwtTokenProvider {
     private String SECRET_KEY;
 
     private SecretKey cachedSecretKey;
+    private ClimberRepository climberRepository;
 
     private SecretKey _getSecretKey() {
         String keyBase64Encoded = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
@@ -93,15 +94,44 @@ public class JwtTokenProvider {
       }
     }
     public boolean validateToken(String token){
-      try{
-          Jws<Claims> claimsJws = Jwts.parser()
-              .setSigningKey(SECRET_KEY)
-              .parseClaimsJws(token);
-          return !claimsJws.getBody().getExpiration().before(new Date());
-      }catch (JwtException | IllegalArgumentException exception){
-          return false;
-      }
+        try{
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            if (claimsJws.getBody().getExpiration().before(new Date())) {
+                throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+            }
+            return true;
+        }catch (JwtException | IllegalArgumentException exception){
+            throw new GeneralException(ErrorStatus._INVALID_JWT);
+        }
     }
+//    @Autowired
+//    public String refreshAccessToken(String refreshToken) {
+//        // refreshToken의 유효성 검사
+//        if (!validateToken(refreshToken)) {
+//            throw new GeneralException(ErrorStatus._INVALID_JWT);
+//        }
+//
+//        // refreshToken의 만료 여부 검사
+//        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(refreshToken);
+//        Date expirationDate = claims.getBody().getExpiration();
+//        if (expirationDate.before(new Date())) {
+//            throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+//        }
+//
+//        // payload에서 사용자 정보 추출
+//        String payload = getPayload(refreshToken);
+
+        // 사용자의 유효성 검사
+//        Climber climber = climberRepository.findByUsername(payload).orElseThrow(() -> new UsernameNotFoundException("User not found: " + payload));
+//        if (!user.isEnabled()) {
+//            throw new GeneralException(ErrorStatus._INVALID_USER);
+//        }
+//
+//        // 새로운 accessToken 생성 및 반환
+//        return createAccessToken(payload);
+ //   }
+
+
 
 
 }
