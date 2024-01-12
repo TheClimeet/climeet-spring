@@ -32,9 +32,15 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH_001", "JWT가 존재하지 않습니다."),
     _INVALID_JWT(HttpStatus.UNAUTHORIZED, "AUTH_002", "유효하지 않은 JWT입니다."),
 
+    _EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "AUTH_003", "JWT가 만료되었습니다."),
+
+    //회원가입 중복 관련
+    _DUPLICATE_SIGN_IN(HttpStatus.CONFLICT, "AUTH_004", "이미 가입 된 유저입니다."),
+
+
     //파일 업로드 관련
-    _FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다.")
-    ;
+    _FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
