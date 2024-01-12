@@ -28,22 +28,24 @@ public class ClimberService {
     public ClimberResponseDto login(String socialType, String userToken) {
         try {
             Climber climber = getClimberProfileByToken(socialType, userToken);
-            String refreshToken = climber.getRefreshToken();
             Long socialId = climber.getSocialId();
-            System.out.println(socialId);
 
             Climber resultClimber = climberRepository.findBySocialId(socialId);
-            if(resultClimber == null) {
-                // 해당 소셜 ID를 가진 Climber가 DB에 없으면 에러 처리
+
+            if(resultClimber==null) {
                 throw new GeneralException(ErrorStatus._EMPTY_MEMBER);
             } else {
+                String accessToken = resultClimber.getAccessToken();
+                return new ClimberResponseDto(resultClimber);
                 //서버 accessToken이 유효한지 확인
-                if(jwtTokenProvider.validateToken(refreshToken)){
-                    // DB에 존재하는 Climber를 반환합니다.
-                    return new ClimberResponseDto(resultClimber);
-                } else{
-                    throw new GeneralException(ErrorStatus._EXPIRED_JWT);
-                }
+//                if(jwtTokenProvider.validateToken(accessToken)){
+//                    // DB에 존재하는 Climber를 반환합니다.
+//                    System.out.println("여기인가?2");
+//                    return new ClimberResponseDto(resultClimber);
+//                } else{
+//                    System.out.println("여기인가?3");
+//                    throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+//                }
 
             }
 
@@ -59,6 +61,12 @@ public class ClimberService {
     public ClimberResponseDto signUp(String socialType, String userToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
         Climber climber = getClimberProfileByToken(socialType, userToken);
         assert climber != null;
+        Long socialId = climber.getSocialId();
+        System.out.println(socialId);
+        Climber resultClimber = climberRepository.findBySocialId(socialId);
+        if(resultClimber!=null) {
+            throw new GeneralException(ErrorStatus._DUPLICATE_SIGN_IN);
+        }
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getSocialId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
         climber.setToken(accessToken, refreshToken);

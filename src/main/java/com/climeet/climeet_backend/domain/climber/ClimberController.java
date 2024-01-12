@@ -45,7 +45,7 @@ public class ClimberController {
     /**
      * 만료된 refresh TOKEN 재발급 API
      */
-//    @Operation(summary = "로", description = "클라이머 소셜로그인")
+//    @Operation(summary = "", description = "클라이머 소셜로그인")
 //    @GetMapping("/login/{provider}/{accessToken}")
 //    public ResponseEntity<ClimberResponseDto> login(@PathVariable String provider, @PathVariable String accessToken){
 //        ClimberResponseDto climberResponseDto = climberService.login(provider, accessToken);

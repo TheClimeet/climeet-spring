@@ -61,12 +61,13 @@ public class JwtTokenProvider {
       return createToken(payload, accessTokenValidityInMilliseconds);
   }
 
-  public String createRefreshToken(){
-      byte[] array = new byte[7];
-      new Random().nextBytes(array);
-      String generatedString = new String(array, StandardCharsets.UTF_8);
-      return createToken(generatedString, refreshTokenValidityInMillseconds);
-  }
+public String createRefreshToken() {
+    byte[] array = new byte[7];
+    new Random().nextBytes(array);
+    String generatedString = Base64.getUrlEncoder().withoutPadding().encodeToString(array);
+    return createToken(generatedString, refreshTokenValidityInMillseconds);
+}
+
 
     public String createToken(String payload, long expireLength){
         Claims claims = Jwts.claims().setSubject(payload);
@@ -93,45 +94,42 @@ public class JwtTokenProvider {
           throw new RuntimeException("유효하지 않은 토큰입니다.");
       }
     }
-    public boolean validateToken(String token){
-        try{
+    public boolean validateToken(String token) {
+        try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
             if (claimsJws.getBody().getExpiration().before(new Date())) {
+                System.out.println("토큰 1");
                 throw new GeneralException(ErrorStatus._EXPIRED_JWT);
             }
             return true;
-        }catch (JwtException | IllegalArgumentException exception){
+        } catch (ExpiredJwtException e) {
+            System.out.println("토큰 1");
+            throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+        } catch (JwtException | IllegalArgumentException exception) {
+            System.out.println("토큰 2");
             throw new GeneralException(ErrorStatus._INVALID_JWT);
         }
     }
-//    @Autowired
+
 //    public String refreshAccessToken(String refreshToken) {
-//        // refreshToken의 유효성 검사
-//        if (!validateToken(refreshToken)) {
+//        if (validateToken(refreshToken)) {
+//            String payload = getPayload(refreshToken);
+//            // Optional<Climber> climber = climberRepository.findByPayload(payload);
+//
+//            // if (climber.isPresent()) {
+//            //     return createAccessToken(climber.get().getPayload());
+//            // } else {
+//            //     throw new GeneralException(ErrorStatus._INVALID_JWT);
+//            // }
+//
+//            // 위의 주석 처리된 코드는 실제로 Climber 엔티티와 연동할 때 사용하면 됩니다.
+//            // 현재는 페이로드를 그대로 사용하여 액세스 토큰을 재발급하는 코드를 작성할게요.
+//
+//            return createAccessToken(payload);
+//        } else {
 //            throw new GeneralException(ErrorStatus._INVALID_JWT);
 //        }
-//
-//        // refreshToken의 만료 여부 검사
-//        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(refreshToken);
-//        Date expirationDate = claims.getBody().getExpiration();
-//        if (expirationDate.before(new Date())) {
-//            throw new GeneralException(ErrorStatus._EXPIRED_JWT);
-//        }
-//
-//        // payload에서 사용자 정보 추출
-//        String payload = getPayload(refreshToken);
-
-        // 사용자의 유효성 검사
-//        Climber climber = climberRepository.findByUsername(payload).orElseThrow(() -> new UsernameNotFoundException("User not found: " + payload));
-//        if (!user.isEnabled()) {
-//            throw new GeneralException(ErrorStatus._INVALID_USER);
-//        }
-//
-//        // 새로운 accessToken 생성 및 반환
-//        return createAccessToken(payload);
- //   }
-
-
+//    }
 
 
 }
