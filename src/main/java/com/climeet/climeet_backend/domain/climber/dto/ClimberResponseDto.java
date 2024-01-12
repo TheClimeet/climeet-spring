@@ -8,12 +8,14 @@ import lombok.Data;
 public class ClimberResponseDto {
 
     private SocialType socialType;
-    private Long socialID;
+    private String accessToken;
+    private String refreshToken;
 
 
     public ClimberResponseDto(Climber climber){
         this.socialType = climber.getSocialType();
-        this.socialID = climber.getSocialId();
+        this.accessToken = climber.getAccessToken();
+        this.refreshToken = climber.getRefreshToken();
     }
 
 

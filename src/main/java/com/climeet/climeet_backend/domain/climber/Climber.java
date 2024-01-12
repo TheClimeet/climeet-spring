@@ -50,9 +50,10 @@ public class Climber extends User {
 
 
     @Builder
-    public Climber(Long socialId, String accessToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
+    public Climber(Long socialId, String accessToken, String refreshToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
         this.socialId = socialId;
         this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.nickName = nickName;
         this.profileImageUrl = profileImageUrl;
         this.climbingLevel = climbingLevel;

@@ -23,9 +23,12 @@ public class ClimberService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ClimberResponseDto login(String socialType, String accessToken){
-        Climber climber = getClimberProfileByToken(socialType, accessToken);
+    public ClimberResponseDto login(String socialType, String userToken){
+        Climber climber = getClimberProfileByToken(socialType, userToken);
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getSocialId()));
+        String refreshToken = jwtTokenProvider.createRefreshToken();
         climber.setSocialType(SocialType.valueOf(socialType));
+        climber.setToken(accessToken, refreshToken);
         if (climber == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
@@ -33,9 +36,12 @@ public class ClimberService {
     }
 
 
-    public ClimberResponseDto signUp(String socialType, String accessToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
-        Climber climber = getClimberProfileByToken(socialType, accessToken);
+    public ClimberResponseDto signUp(String socialType, String userToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
+        Climber climber = getClimberProfileByToken(socialType, userToken);
         assert climber != null;
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getSocialId()));
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        climber.setToken(accessToken, refreshToken);
         climber.setNickName(climberSignUpRequestDto.getNickName());
         climber.setClimbingLevel(climberSignUpRequestDto.getClimbingLevel());
         climber.setDiscoveryChannel(climberSignUpRequestDto.getDiscoveryChannel());
