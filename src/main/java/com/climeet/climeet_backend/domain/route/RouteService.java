@@ -7,11 +7,13 @@ import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -19,19 +21,21 @@ public class RouteService {
 
     private final RouteRepository routeRepository;
     private final SectorRepository sectorRepository;
+    private final S3Service s3Service;
 
     @Transactional
-    public void createRoute(Long gymId, RouteCreateRequestDto routeCreateRequestDto) {
+    public void createRoute(Long gymId, RouteCreateRequestDto routeCreateRequestDto, MultipartFile routeImage) {
         Sector sector = sectorRepository.findById(routeCreateRequestDto.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
         if (!sector.getClimbingGym().getId().equals(gymId)) {
             throw new GeneralException(ErrorStatus._GYM_ID_MISMATCH);
         }
+        String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
         Route route = Route.builder()
             .sector(sector)
             .name(routeCreateRequestDto.getName())
             .difficulty(routeCreateRequestDto.getDifficulty())
-            .routeImageUrl(routeCreateRequestDto.getRouteImageUrl())
+            .routeImageUrl(routeImageUrl)
             .build();
 
         routeRepository.save(route);

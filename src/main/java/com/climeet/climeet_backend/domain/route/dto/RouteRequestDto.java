@@ -11,7 +11,6 @@ public class RouteRequestDto {
 
         private Long sectorId;
         private String name;
-        private int difficulty;
-        private String routeImageUrl;
+        private Integer difficulty;
     }
 }
