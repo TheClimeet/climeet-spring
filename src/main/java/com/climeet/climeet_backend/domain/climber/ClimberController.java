@@ -36,7 +36,7 @@ public class ClimberController {
      * OAuth2.0 회원가입 API
      */
     @PostMapping("/signup/{provider}/{accessToken}")
-    @Operation(summary = "회원가입", description = "클라이머 OAuth 회원가입")
+    @Operation(summary = "회원가입", description = "클라이머 OAuth 회원가입\n\n**Enum 설명**\n\n**ClimbingLevel** : BEGINNER, NOVICE, INTERMEDIATE, ADVANCED, EXPERT\n\n**DiscoveryChannel** : INSTAGRAM_FACEBOOK, YOUTUBE, FRIEND_RECOMMENDATION, BLOG_CAFE_COMMUNITY, OTHER\n\n**SocialType**: KAKAO, NAVER")
     public ResponseEntity<ClimberResponseDto> signUp(@PathVariable String provider, @PathVariable String accessToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
           ClimberResponseDto climberResponseDto = climberService.signUp(provider, accessToken, climberSignUpRequestDto);
         return ResponseEntity.ok(climberResponseDto);
