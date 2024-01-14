@@ -7,6 +7,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -62,7 +63,7 @@ public class ClimberService {
         Climber climber = getClimberProfileByToken(socialType, userToken);
         assert climber != null;
         Long socialId = climber.getSocialId();
-        System.out.println(socialId);
+        //System.out.println(socialId);
         Climber resultClimber = climberRepository.findBySocialId(socialId);
         if(resultClimber!=null) {
             throw new GeneralException(ErrorStatus._DUPLICATE_SIGN_IN);
@@ -74,6 +75,10 @@ public class ClimberService {
         climber.setClimbingLevel(climberSignUpRequestDto.getClimbingLevel());
         climber.setDiscoveryChannel(climberSignUpRequestDto.getDiscoveryChannel());
         climber.setSocialType(SocialType.valueOf(socialType));
+        if(!Objects.equals(climberSignUpRequestDto.getProfileImgUrl(), "")){
+            climber.setProfileImageUrl(climberSignUpRequestDto.getProfileImgUrl());
+        }
+
 
         Climber savedClimber = climberRepository.save(climber);
 
