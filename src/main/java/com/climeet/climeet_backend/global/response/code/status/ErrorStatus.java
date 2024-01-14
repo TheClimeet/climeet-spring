@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
+    _DUPLICATE_SECTOR_NAME(HttpStatus.CONFLICT, "SECTOR_002", "섹터 이름이 중복됩니다."),
 
     //루트 관련
     _EMPTY_ROUTE(HttpStatus.CONFLICT, "ROUTE_001", "존재하지 않는 루트입니다."),
