@@ -4,7 +4,6 @@ import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.RouteCreateR
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
-import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
@@ -24,12 +23,19 @@ public class RouteService {
     private final S3Service s3Service;
 
     @Transactional
-    public void createRoute(Long gymId, RouteCreateRequestDto routeCreateRequestDto, MultipartFile routeImage) {
+    public void createRoute(RouteCreateRequestDto routeCreateRequestDto, MultipartFile routeImage) {
+
+        // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
+        List<Route> routes = routeRepository.findBySectorId(routeCreateRequestDto.getSectorId());
+        for (Route route : routes) {
+            if (route.getName().equals(routeCreateRequestDto.getName())) {
+                throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_NAME);
+            }
+        }
+
         Sector sector = sectorRepository.findById(routeCreateRequestDto.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
-        if (!sector.getClimbingGym().getId().equals(gymId)) {
-            throw new GeneralException(ErrorStatus._GYM_ID_MISMATCH);
-        }
+
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
         Route route = Route.builder()
             .sector(sector)
@@ -50,7 +56,7 @@ public class RouteService {
 
     public List<RouteGetResponseDto> getRouteList(Long gymId) {
         List<Route> routeList = routeRepository.findBySectorClimbingGymId(gymId);
-        if(routeList.isEmpty()){
+        if (routeList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
         return routeList.stream()

@@ -25,13 +25,12 @@ public class RouteController {
     private final RouteService routeService;
 
     @Operation(summary = "클라이밍 루트 생성")
-    @PostMapping("/{gymId}/route")
+    @PostMapping("/route")
     public ApiResponse<String> createRoute(
-        @PathVariable Long gymId,
         @RequestPart(value = "image") MultipartFile routeImage,
         @RequestPart(value = "routeCreatePostReq") RouteCreateRequestDto routeCreateRequestDto
     ) {
-        routeService.createRoute(gymId, routeCreateRequestDto, routeImage);
+        routeService.createRoute(routeCreateRequestDto, routeImage);
         return ApiResponse.onSuccess("루트를 추가했습니다.");
     }
 

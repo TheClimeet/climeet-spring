@@ -31,6 +31,5 @@ public class Sector extends BaseTimeEntity {
     @NotNull
     private String sectorName;
 
-    @ColumnDefault("0")
-    private int floor;
+    private int floor = 0;
 }
