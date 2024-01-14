@@ -18,4 +18,5 @@ public class ClimberSignUpRequestDto {
     private Boolean isAllowCommentNotification;
     private Boolean isAllowAdNotification;
 
+
 }
