@@ -1,17 +1,14 @@
 package com.climeet.climeet_backend.domain.climber;
 
-import com.climeet.climeet_backend.domain.climber.dto.ClimberSignUpRequestDto;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -59,7 +56,7 @@ public class ClimberService {
 
 
     @Transactional
-    public ClimberResponseDto signUp(String socialType, String userToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
+    public ClimberResponseDto signUp(String socialType, String userToken, @RequestBody ClimberRequestDto climberRequestDto){
         Climber climber = getClimberProfileByToken(socialType, userToken);
         assert climber != null;
         Long socialId = climber.getSocialId();
@@ -71,12 +68,12 @@ public class ClimberService {
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getSocialId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
         climber.setToken(accessToken, refreshToken);
-        climber.setNickName(climberSignUpRequestDto.getNickName());
-        climber.setClimbingLevel(climberSignUpRequestDto.getClimbingLevel());
-        climber.setDiscoveryChannel(climberSignUpRequestDto.getDiscoveryChannel());
+        climber.setNickName(climberRequestDto.getNickName());
+        climber.setClimbingLevel(climberRequestDto.getClimbingLevel());
+        climber.setDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
         climber.setSocialType(SocialType.valueOf(socialType));
-        if(!Objects.equals(climberSignUpRequestDto.getProfileImgUrl(), "")){
-            climber.setProfileImageUrl(climberSignUpRequestDto.getProfileImgUrl());
+        if(!Objects.equals(climberRequestDto.getProfileImgUrl(), "")){
+            climber.setProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
 
 
@@ -85,11 +82,21 @@ public class ClimberService {
         return new ClimberResponseDto(savedClimber);
     }
 
-
-    private Map<String, Object> getClimberAttributesByToken(String accessToken){
+    private Map<String, Object> getClimberKaKaoAttributesByToken(String accessToken){
         return WebClient.create()
             .get()
             .uri("https://kapi.kakao.com/v2/user/me")
+            .headers(httpHeaders -> httpHeaders.setBearerAuth(String.valueOf(accessToken)))
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block();
+    }
+
+    private Map<String, Object> getClimberNaverAttributesByToken(String accessToken){
+        return WebClient.create()
+            .get()
+            .uri("https://openapi.naver.com/v1/nid/me")
             .headers(httpHeaders -> httpHeaders.setBearerAuth(String.valueOf(accessToken)))
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
@@ -102,29 +109,31 @@ public class ClimberService {
         if (!providerName.equals("KAKAO") && !providerName.equals("NAVER")) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
-        Map<String, Object> userAttributesByToken = getClimberAttributesByToken(userToken);
+        Long social_id = 0L;
+        String profile_img = null;
         if (providerName.equals("KAKAO")) {
+            Map<String, Object> userAttributesByToken = getClimberKaKaoAttributesByToken(userToken);
             KaKaoUserInfo kaKaoUserInfo = new KaKaoUserInfo(userAttributesByToken);
-            Long social_id = kaKaoUserInfo.getID();
-            String profile_img = kaKaoUserInfo.getProfileImg();
-            //System.out.println(social_id + " " + profile_img);
-            //로그인 case
-            if (climberRepository.findById(social_id).isPresent()) {
-                return climberRepository.findBySocialId(social_id);
-            }else{  //회원가입 case
-                return Climber.builder()
-                    .socialId(social_id)
-                    .profileImageUrl(profile_img).build();
-            }
+            social_id = kaKaoUserInfo.getID();
+            profile_img = kaKaoUserInfo.getProfileImg();
+
         } else if (providerName.equals("NAVER")) {
-            //네이버 로직 구현 후 추가 예정
-            return null;
-        } else{
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+            Map<String, Object> userAttributesByToken = getClimberNaverAttributesByToken(userToken);
+            NaverUserInfo naverUserInfo = new NaverUserInfo(userAttributesByToken);
+            social_id = naverUserInfo.getID();
+            profile_img = naverUserInfo.getProfileImg();
+        }
+        //로그인 case
+        if (climberRepository.findById(social_id).isPresent()) {
+            return climberRepository.findBySocialId(social_id);
+        }else{  //회원가입 case
+            return Climber.builder()
+                .socialId(social_id)
+                .profileImageUrl(profile_img).build();
         }
     }
     @Transactional
-    public void updateClimberInfo(Long id, ClimberSignUpRequestDto requestDto){
+    public void updateClimberInfo(Long id, ClimberRequestDto requestDto){
         Climber climber = climberRepository.findById(id)
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MEMBER));
         climber.update(requestDto.getNickName(), requestDto.getClimbingLevel(), requestDto.getDiscoveryChannel());

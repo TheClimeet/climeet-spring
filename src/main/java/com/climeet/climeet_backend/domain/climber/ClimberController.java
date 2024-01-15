@@ -1,6 +1,6 @@
 package com.climeet.climeet_backend.domain.climber;
 
-import com.climeet.climeet_backend.domain.climber.dto.ClimberSignUpRequestDto;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,8 +37,9 @@ public class ClimberController {
      */
     @PostMapping("/signup/{provider}/{accessToken}")
     @Operation(summary = "회원가입", description = "클라이머 OAuth 회원가입\n\n**Enum 설명**\n\n**ClimbingLevel** : BEGINNER, NOVICE, INTERMEDIATE, ADVANCED, EXPERT\n\n**DiscoveryChannel** : INSTAGRAM_FACEBOOK, YOUTUBE, FRIEND_RECOMMENDATION, BLOG_CAFE_COMMUNITY, OTHER\n\n**SocialType**: KAKAO, NAVER")
-    public ResponseEntity<ClimberResponseDto> signUp(@PathVariable String provider, @PathVariable String accessToken, @RequestBody ClimberSignUpRequestDto climberSignUpRequestDto){
-          ClimberResponseDto climberResponseDto = climberService.signUp(provider, accessToken, climberSignUpRequestDto);
+    public ResponseEntity<ClimberResponseDto> signUp(@PathVariable String provider, @PathVariable String accessToken, @RequestBody ClimberRequestDto climberRequestDto){
+          ClimberResponseDto climberResponseDto = climberService.signUp(provider, accessToken,
+              climberRequestDto);
         return ResponseEntity.ok(climberResponseDto);
     }
 
