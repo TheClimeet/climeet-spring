@@ -38,4 +38,6 @@ public class Route extends BaseTimeEntity {
     private String routeImageUrl;
 
     private int selectionCount = 0;
+
+    private int thisWeekShortsTagCount = 0;
 }

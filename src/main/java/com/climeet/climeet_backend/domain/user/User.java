@@ -34,4 +34,11 @@ public class User extends BaseTimeEntity {
     private Long followerCount = 0L;
 
     private Long followingCount = 0L;
+
+    private int thisWeekCompleteCount = 0;
+
+    private Long thisWeekTotalClimbingTime = 0L;
+
+    private int thisWeekHighDifficulty = 0;
+
 }
