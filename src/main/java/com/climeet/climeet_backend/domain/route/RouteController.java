@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.route;
 
-import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.RouteCreateRequestDto;
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
+import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,21 +28,21 @@ public class RouteController {
     @PostMapping("/route")
     public ApiResponse<String> createRoute(
         @RequestPart(value = "image") MultipartFile routeImage,
-        @RequestPart(value = "routeCreatePostReq") RouteCreateRequestDto routeCreateRequestDto
+        @RequestPart CreateRouteRequest createRouteRequest
     ) {
-        routeService.createRoute(routeCreateRequestDto, routeImage);
+        routeService.createRoute(createRouteRequest, routeImage);
         return ApiResponse.onSuccess("루트를 추가했습니다.");
     }
 
     @Operation(summary = "클라이밍 루트 조회")
     @GetMapping("/route/{routeId}")
-    public ApiResponse<RouteGetResponseDto> findRouteByRouteId(@PathVariable Long routeId) {
+    public ApiResponse<RouteSimpleResponse> getRoute(@PathVariable Long routeId) {
         return ApiResponse.onSuccess(routeService.getRoute(routeId));
     }
 
     @Operation(summary = "클라이밍 암장 루트 목록 조회")
     @GetMapping("/{gymId}/routes")
-    public ApiResponse<List<RouteGetResponseDto>> findAllRouteByGymId(@PathVariable Long gymId) {
+    public ApiResponse<List<RouteSimpleResponse>> getRouteList(@PathVariable Long gymId) {
         return ApiResponse.onSuccess(routeService.getRouteList(gymId));
     }
 }
