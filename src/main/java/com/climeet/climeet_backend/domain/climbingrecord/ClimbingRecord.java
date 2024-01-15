@@ -1,10 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PatchClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PostClimbingRecordDto;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PatchRouteRecordDto;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -65,6 +62,10 @@ public class ClimbingRecord extends BaseTimeEntity {
 
     public void setAttemptCount(int count) {
         this.totalAttemptCount += count;
+    }
+
+    public void setAvgDifficulty(int avgDifficulty){
+        this.avgDifficulty = avgDifficulty;
     }
 
     public void totalCompletedCountUp() {

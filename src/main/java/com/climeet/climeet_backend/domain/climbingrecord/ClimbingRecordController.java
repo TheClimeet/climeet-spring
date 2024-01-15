@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PatchClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PostClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import java.io.IOException;
-
-@Tag(name = "ClimbingRecords", description = "클라이밍 키록 API")
+@Tag(name = "ClimbingRecords", description = "클라이밍 운동기록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/climbing-record")
@@ -29,22 +29,13 @@ public class ClimbingRecordController {
 
     private final ClimbingRecordService climbingRecordService;
 
-    /**
-     * @param "ClimbingRecordRequestDto requestDto"
-     */
     @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
-    public ResponseEntity<?> addClimbingRecord(@RequestBody ClimbingRecordRequestDto requestDto) {
+    public ResponseEntity<?> addClimbingRecord(@RequestBody PostClimbingRecordDto requestDto) {
         climbingRecordService.createClimbingRecord(requestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    /**
-     * 간편기록 총 조회
-     *
-     * @param
-     * @return List<ClimbingRecordSimpleInfo>
-     */
     @Operation(summary = "클라이밍 간편 기록 전체 조회")
     @GetMapping
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecords() {
@@ -52,10 +43,7 @@ public class ClimbingRecordController {
             HttpStatus.OK);
     }
 
-    /**
-     * @param "starDate", "endDate"
-     * @return List<ClimbingRecordSimpleInfo>
-     */
+
     @Operation(summary = "클라이밍 기록 날짜 조회")
     @GetMapping("/between-dates")
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
@@ -66,10 +54,6 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecords);
     }
 
-    /**
-     * @param "id"
-     * @return ClimingRecordResponseDto
-     */
     @Operation(summary = "클라이밍 기록 id 조회")
     @GetMapping("/{id}")
     public ResponseEntity<ClimbingRecordSimpleInfo> addClimbingRecord(@PathVariable Long id) {
@@ -77,4 +61,18 @@ public class ClimbingRecordController {
     }
 
 
+    @Operation(summary = "ClimbingRecord 수정")
+    @PatchMapping("/{id}")
+    public ResponseEntity<ClimbingRecordSimpleInfo> updateClimbingRecord(
+        @PathVariable Long id,
+        @RequestBody PatchClimbingRecordDto patchClimbingRecordDto) {
+        return new ResponseEntity<>(
+            climbingRecordService.updateClimbingRecord(id, patchClimbingRecordDto), HttpStatus.OK);
+    }
+
+    @Operation(summary = "ClimbingRecord 삭제")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteClimbingRecord(@PathVariable Long id){
+        return new ResponseEntity<>(climbingRecordService.deleteClimbingRecord(id), HttpStatus.OK);
+    }
 }
