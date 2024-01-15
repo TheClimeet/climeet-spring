@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.sector;
 
-import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.SectorCreateRequestDto;
-import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorGetResponseDto;
+import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
+import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,17 +25,17 @@ public class SectorController {
     @Operation(summary = "클라이밍 섹터 생성")
     @PostMapping("/sector")
     public ApiResponse<String> createSector(
-        @RequestBody SectorCreateRequestDto sectorCreateRequestDto) {
-        sectorService.createSector(sectorCreateRequestDto);
+        @RequestBody CreateSectorRequest createSectorRequest) {
+        sectorService.createSector(createSectorRequest);
         return ApiResponse.onSuccess("새로운 Sector를 추가했습니다.");
     }
 
     @Operation(summary = "특정 암장 전체 섹터 조회")
     @GetMapping("/{gymId}/sector")
-    public ApiResponse<List<SectorGetResponseDto>> getAllRoutesBySectorId(
+    public ApiResponse<List<SectorDetailResponse>> getSectorList(
         @PathVariable Long gymId
     ) {
-        List<SectorGetResponseDto> sectorList = sectorService.getAllSectorByGymId(gymId);
+        List<SectorDetailResponse> sectorList = sectorService.getSectorList(gymId);
         return ApiResponse.onSuccess(sectorList);
     }
 }

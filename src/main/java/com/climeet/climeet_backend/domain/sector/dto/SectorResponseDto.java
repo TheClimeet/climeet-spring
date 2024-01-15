@@ -12,12 +12,12 @@ public class SectorResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SectorGetResponseDto {
+    public static class SectorDetailResponse {
 
         private String name;
         private int floor;
 
-        public SectorGetResponseDto(Sector sector) {
+        public SectorDetailResponse(Sector sector) {
             this.name = sector.getSectorName();
             this.floor = sector.getFloor();
         }
