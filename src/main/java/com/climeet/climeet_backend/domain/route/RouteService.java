@@ -37,14 +37,8 @@ public class RouteService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
 
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
-        Route route = Route.builder()
-            .sector(sector)
-            .name(createRouteRequest.getName())
-            .difficulty(createRouteRequest.getDifficulty())
-            .routeImageUrl(routeImageUrl)
-            .build();
 
-        routeRepository.save(route);
+        routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
     }
 
     public RouteSimpleResponse getRoute(Long routeId) {

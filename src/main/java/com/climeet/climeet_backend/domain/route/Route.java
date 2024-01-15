@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.route;
 
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
@@ -40,4 +42,14 @@ public class Route extends BaseTimeEntity {
 
     @ColumnDefault("0")
     private int selectionCount;
+
+    public static Route toEntity(CreateRouteRequest requestDto, Sector sector,
+        String routeImageUrl) {
+        return Route.builder()
+            .sector(sector)
+            .name(requestDto.getName())
+            .difficulty(requestDto.getDifficulty())
+            .routeImageUrl(routeImageUrl)
+            .build();
+    }
 }
