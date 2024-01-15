@@ -36,4 +36,11 @@ public class ShortsController {
         @RequestParam int size) {
         return ApiResponse.onSuccess(shortsService.findShortsLatest(page, size));
     }
+
+    @GetMapping("/shorts/popular")
+    @Operation(summary = "숏츠 인기순 조회")
+    public ApiResponse<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(@RequestParam int page,
+        @RequestParam int size) {
+        return ApiResponse.onSuccess(shortsService.findShortsPopular(page, size));
+    }
 }

@@ -63,7 +63,7 @@ public class ShortsService {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        List<ShortsSimpleInfo> shortsInfoList =  shortsSlice.stream()
+        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             .map(shorts -> ShortsSimpleInfo.builder()
                 .thumbnailImageUrl(shorts.getThumbnailImageUrl())
                 .gymName(shorts.getClimbingGym().getName())
@@ -71,6 +71,23 @@ public class ShortsService {
                 .build())
             .toList();
 
-        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(), shortsInfoList);
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsInfoList);
+    }
+
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByRankingNotZeroOrderByRankingAscCreatedAtDesc(pageable);
+
+        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
+            .map(shorts -> ShortsSimpleInfo.builder()
+                .thumbnailImageUrl(shorts.getThumbnailImageUrl())
+                .gymName(shorts.getClimbingGym().getName())
+                .difficulty(shorts.getRoute().getDifficulty())
+                .build())
+            .toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsInfoList);
     }
 }

@@ -44,6 +44,8 @@ public class Shorts extends BaseTimeEntity {
 
     private String thumbnailImageUrl;
 
+    private int viewCount = 0;
+
     private int likeCount = 0;
 
     private int commentCount = 0;
@@ -51,6 +53,8 @@ public class Shorts extends BaseTimeEntity {
     private int bookmarkCount = 0;
 
     private int shareCount = 0;
+
+    private int ranking;
 
     private String description;
 
