@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.sector;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,4 +34,12 @@ public class Sector extends BaseTimeEntity {
     private String sectorName;
 
     private int floor = 0;
+
+    public static Sector toEntity(CreateSectorRequest requestDto, ClimbingGym climbingGym){
+        return Sector.builder()
+            .climbingGym(climbingGym)
+            .sectorName(requestDto.getName())
+            .floor(requestDto.getFloor())
+            .build();
+    }
 }

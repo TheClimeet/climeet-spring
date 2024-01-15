@@ -32,13 +32,8 @@ public class SectorService {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(createSectorRequest.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        Sector sector = Sector.builder()
-            .climbingGym(climbingGym)
-            .sectorName(createSectorRequest.getName())
-            .floor(createSectorRequest.getFloor())
-            .build();
 
-        sectorRepository.save(sector);
+        sectorRepository.save(Sector.toEntity(createSectorRequest, climbingGym));
     }
 
     public List<SectorDetailResponse> getSectorList(Long gymId) {
