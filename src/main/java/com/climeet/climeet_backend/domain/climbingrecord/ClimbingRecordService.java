@@ -109,6 +109,6 @@ public class ClimbingRecordService {
         climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
         climbingRecordRepository.deleteById(id);
-        return ApiResponse.onSuccess("클라이밍 기록생성 성공");
+        return ApiResponse.onSuccess("클라이밍이 삭제되었습니다.");
     }
 }
