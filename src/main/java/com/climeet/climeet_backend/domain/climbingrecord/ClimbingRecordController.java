@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PatchClimbingRecordDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PostClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +31,7 @@ public class ClimbingRecordController {
 
     @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
-    public ResponseEntity<?> addClimbingRecord(@RequestBody PostClimbingRecordDto requestDto) {
+    public ResponseEntity<?> addClimbingRecord(@RequestBody CreateClimbingRecordDto requestDto) {
         climbingRecordService.createClimbingRecord(requestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -65,9 +65,9 @@ public class ClimbingRecordController {
     @PatchMapping("/{id}")
     public ResponseEntity<ClimbingRecordSimpleInfo> updateClimbingRecord(
         @PathVariable Long id,
-        @RequestBody PatchClimbingRecordDto patchClimbingRecordDto) {
+        @RequestBody UpdateClimbingRecordDto updateClimbingRecordDto) {
         return new ResponseEntity<>(
-            climbingRecordService.updateClimbingRecord(id, patchClimbingRecordDto), HttpStatus.OK);
+            climbingRecordService.updateClimbingRecord(id, updateClimbingRecordDto), HttpStatus.OK);
     }
 
     @Operation(summary = "ClimbingRecord 삭제")

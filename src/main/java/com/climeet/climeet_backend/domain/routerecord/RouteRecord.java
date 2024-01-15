@@ -2,8 +2,7 @@ package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
 import com.climeet.climeet_backend.domain.route.Route;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PatchRouteRecordDto;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PostRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,13 +36,13 @@ public class RouteRecord extends BaseTimeEntity {
 
     private Boolean isCompleted = false;
 
-    public static RouteRecord toEntity(PostRouteRecordDto postRouteRecordReq,
+    public static RouteRecord toEntity(CreateRouteRecordDto createRouteRecordReq,
         ClimbingRecord climbingRecord, Route route) {
         return RouteRecord.builder()
             .climbingRecord(climbingRecord)
             .route(route)
-            .attemptCount(postRouteRecordReq.getAttemptCount())
-            .isCompleted(postRouteRecordReq.getIsCompleted())
+            .attemptCount(createRouteRecordReq.getAttemptCount())
+            .isCompleted(createRouteRecordReq.getIsCompleted())
             .build();
     }
 

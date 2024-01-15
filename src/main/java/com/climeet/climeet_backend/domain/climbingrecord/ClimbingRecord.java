@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PostClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,7 +41,7 @@ public class ClimbingRecord extends BaseTimeEntity {
     //평균레벨
     private int avgDifficulty;
 
-    public static ClimbingRecord toEntity(PostClimbingRecordDto requestDto,
+    public static ClimbingRecord toEntity(CreateClimbingRecordDto requestDto,
         ClimbingGym climbingGym) {
         return ClimbingRecord.builder()
             .climbingDate(requestDto.getDate())

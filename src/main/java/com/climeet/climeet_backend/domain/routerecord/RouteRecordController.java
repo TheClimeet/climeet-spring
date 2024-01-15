@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
 
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PatchRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "RouteRecords", description = "루트 키록 API")
+@Tag(name = "RouteRecords", description = "루트 운동기록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/route-record")
@@ -46,8 +46,8 @@ public class RouteRecordController {
     @PatchMapping("/{id}")
     public ResponseEntity<RouteRecordSimpleInfo> updateRouteRecord(
         @PathVariable Long id,
-        @RequestBody PatchRouteRecordDto patchRouteRecordDto) {
-        return new ResponseEntity<>(routeRecordService.updateRouteRecord(id, patchRouteRecordDto),
+        @RequestBody UpdateRouteRecordDto updateRouteRecordDto) {
+        return new ResponseEntity<>(routeRecordService.updateRouteRecord(id, updateRouteRecordDto),
             HttpStatus.OK);
     }
 

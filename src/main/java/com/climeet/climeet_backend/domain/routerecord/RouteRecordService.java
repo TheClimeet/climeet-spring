@@ -3,8 +3,8 @@ package com.climeet.climeet_backend.domain.routerecord;
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PatchRouteRecordDto;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PostRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.global.response.ApiResponse;
@@ -25,7 +25,7 @@ public class RouteRecordService {
     private final RouteRepository routeRepository;
 
     @Transactional
-    public ApiResponse<String> addRouteRecord(PostRouteRecordDto requestDto,
+    public ApiResponse<String> addRouteRecord(CreateRouteRecordDto requestDto,
         ClimbingRecord climbingRecord) {
 
         Route route = routeRepository.findById(requestDto.getRouteId())
@@ -62,7 +62,7 @@ public class RouteRecordService {
 
     @Transactional
     public RouteRecordSimpleInfo updateRouteRecord(Long id,
-        PatchRouteRecordDto patchRouteRecordDto) {
+        UpdateRouteRecordDto updateRouteRecordDto) {
 
         RouteRecord routeRecord = routeRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD));
@@ -74,9 +74,9 @@ public class RouteRecordService {
         Boolean oldIsCompleted = routeRecord.getIsCompleted();
 
         //각 필드의 새값들
-        Long newRouteId = patchRouteRecordDto.getRouteId();
-        Integer newAttemptTime = patchRouteRecordDto.getAttemptCount();
-        Boolean newIsComplete = patchRouteRecordDto.getIsComplete();
+        Long newRouteId = updateRouteRecordDto.getRouteId();
+        Integer newAttemptTime = updateRouteRecordDto.getAttemptCount();
+        Boolean newIsComplete = updateRouteRecordDto.getIsComplete();
 
         if (newRouteId != null) {
             oldRouteId = newRouteId;
@@ -134,7 +134,7 @@ public class RouteRecordService {
         return ApiResponse.onSuccess("루트기록이 삭제되었습니다.");
     }
 
-    public int newAvgDifficulty(int routeDifficulty, int oldAvgDifficulty, int oldCount,
+    private int newAvgDifficulty(int routeDifficulty, int oldAvgDifficulty, int oldCount,
         boolean isPlus) {
         if (isPlus) {
             return (int) (((oldCount * oldAvgDifficulty) + routeDifficulty) / (oldCount + 1));

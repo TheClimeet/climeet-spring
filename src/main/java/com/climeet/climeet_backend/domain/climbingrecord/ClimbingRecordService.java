@@ -2,11 +2,11 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PatchClimbingRecordDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.PostClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.PostRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -28,14 +28,14 @@ public class ClimbingRecordService {
 
 
     @Transactional
-    public ApiResponse<String> createClimbingRecord(PostClimbingRecordDto requestDto) {
+    public ApiResponse<String> createClimbingRecord(CreateClimbingRecordDto requestDto) {
         ClimbingGym climbingGym = gymRepository.findById(requestDto.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         ClimbingRecord savedClimbingRecord = climbingRecordRepository
             .save(ClimbingRecord.toEntity(requestDto, climbingGym));
 
-        List<PostRouteRecordDto> routeRecords = requestDto.getRouteRecordRequestDtoList();
+        List<CreateRouteRecordDto> routeRecords = requestDto.getRouteRecordRequestDtoList();
         // 루트기록 리퀘스트 돌면서 루트 리퀘스트 저장
 
         routeRecords.forEach(
@@ -78,7 +78,7 @@ public class ClimbingRecordService {
 
     @Transactional
     public ClimbingRecordSimpleInfo updateClimbingRecord(Long id,
-        PatchClimbingRecordDto requestDto) {
+        UpdateClimbingRecordDto requestDto) {
 
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
@@ -89,12 +89,12 @@ public class ClimbingRecordService {
         LocalDate newDate = climbingRecord.getClimbingDate();
         LocalTime newTime = climbingRecord.getClimbingTime();
 
-        // patchClimbingRecordDto의 date가 null이 아니면 업데이트 수행
+        // updateClimbingRecordDto의 date가 null이 아니면 업데이트 수행
         if (newDate != null) {
             oldDate = newDate;
         }
 
-        // patchClimbingRecordDto의 time이 null이 아니면 업데이트 수행
+        // updateClimbingRecordDto의 time이 null이 아니면 업데이트 수행
         if (newTime != null) {
             oldTime = newTime;
         }
