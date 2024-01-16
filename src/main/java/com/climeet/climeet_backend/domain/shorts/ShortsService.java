@@ -6,7 +6,7 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
-import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.PostShortsReq;
+정import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -33,28 +33,20 @@ public class ShortsService {
 
     @Transactional
     public void uploadShorts(MultipartFile video, MultipartFile thumbnailImage,
-        PostShortsReq postShortsReq) {
+        CreateShortsRequest createShortsRequest) {
 
-        ClimbingGym climbingGym = climbingGymRepository.findById(postShortsReq.getClimbingGymId())
+        ClimbingGym climbingGym = climbingGymRepository.findById(createShortsRequest.getClimbingGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        Sector sector = sectorRepository.findById(postShortsReq.getSectorId())
+        Sector sector = sectorRepository.findById(createShortsRequest.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
-        Route route = routeRepository.findById(postShortsReq.getRouteId())
+        Route route = routeRepository.findById(createShortsRequest.getRouteId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
 
-        Shorts shorts = Shorts.builder()
-            .climbingGym(climbingGym)
-            .route(route)
-            .sector(sector)
-            .videoUrl(videoUrl)
-            .thumbnailImageUrl(thumbnailImageUrl)
-            .description(postShortsReq.getDescription())
-            .isPublic(postShortsReq.isPublic())
-            .isSoundEnabled(postShortsReq.isSoundEnabled())
-            .build();
+        Shorts shorts = Shorts.toEntity(climbingGym, sector, route, videoUrl, thumbnailImageUrl,
+            createShortsRequest);
 
         shortsRepository.save(shorts);
     }

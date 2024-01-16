@@ -1,6 +1,6 @@
 package com.climeet.climeet_backend.domain.shorts;
 
-import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.PostShortsReq;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.ApiResponse;
@@ -25,8 +25,8 @@ public class ShortsController {
     @PostMapping("/shorts")
     @Operation(summary = "숏츠 업로드")
     public ApiResponse<String> uploadShorts(@RequestPart(value = "video") MultipartFile video,
-        @RequestPart MultipartFile thumbnailImage, @RequestPart PostShortsReq postShortsReq) {
-        shortsService.uploadShorts(video, thumbnailImage, postShortsReq);
+        @RequestPart MultipartFile thumbnailImage, @RequestPart CreateShortsRequest createShortsRequest) {
+        shortsService.uploadShorts(video, thumbnailImage, createShortsRequest);
         return ApiResponse.onSuccess("업로드 성공");
     }
 

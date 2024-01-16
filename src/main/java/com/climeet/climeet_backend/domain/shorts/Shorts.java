@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.shorts;
 
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.route.Route;
@@ -61,4 +62,18 @@ public class Shorts extends BaseTimeEntity {
     private Boolean isSoundEnabled;
 
     private Boolean isPublic;
+
+    public static Shorts toEntity(ClimbingGym climbingGym, Sector sector, Route route,
+        String videoUrl, String thumbnailImageUrl, CreateShortsRequest createShortsRequest) {
+        return Shorts.builder()
+            .climbingGym(climbingGym)
+            .sector(sector)
+            .route(route)
+            .thumbnailImageUrl(thumbnailImageUrl)
+            .videoUrl(videoUrl)
+            .isSoundEnabled(createShortsRequest.isSoundEnabled())
+            .isPublic(createShortsRequest.isPublic())
+            .description(createShortsRequest.getDescription())
+            .build();
+    }
 }
