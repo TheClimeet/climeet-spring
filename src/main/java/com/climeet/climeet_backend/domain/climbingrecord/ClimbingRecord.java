@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor
@@ -34,15 +33,15 @@ public class ClimbingRecord extends BaseTimeEntity {
     private LocalTime climbingTime;
 
     //도전횟수
-    private Integer totalAttemptCount;
+    private int totalAttemptCount;
 
     //완등횟수
-    private Integer totalCompletedCount;
+    private int totalCompletedCount;
 
     //평균레벨
-    private Integer avgDifficulty;
+    private int avgDifficulty;
 
-    public static ClimbingRecord toEntity(ClimbingRecordRequestDto requestDto,
+    public static ClimbingRecord toEntity(CreateClimbingRecordDto requestDto,
         ClimbingGym climbingGym) {
         return ClimbingRecord.builder()
             .climbingDate(requestDto.getDate())
@@ -50,16 +49,30 @@ public class ClimbingRecord extends BaseTimeEntity {
             .gym(climbingGym)
             .totalAttemptCount(0)
             .totalCompletedCount(0)
-            .avgDifficulty(0)
+            .avgDifficulty(requestDto.getAvgDifficulty())
             .build();
     }
 
 
-    public void attemptCountUp(Integer count) {
+    public void update(LocalDate climbingDate, LocalTime climbingTime){
+        this.climbingDate = climbingDate;
+        this.climbingTime = climbingTime;
+    }
+
+
+    public void setAttemptCount(int count) {
         this.totalAttemptCount += count;
+    }
+
+    public void setAvgDifficulty(int avgDifficulty){
+        this.avgDifficulty = avgDifficulty;
     }
 
     public void totalCompletedCountUp() {
         this.totalCompletedCount++;
+    }
+
+    public void totalCompletedCountDown() {
+        this.totalCompletedCount--;
     }
 }

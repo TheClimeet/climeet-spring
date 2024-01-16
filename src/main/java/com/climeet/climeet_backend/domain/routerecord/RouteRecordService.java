@@ -1,21 +1,21 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
+
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -25,23 +25,23 @@ public class RouteRecordService {
     private final RouteRepository routeRepository;
 
     @Transactional
-    public ApiResponse<String> addRouteRecord(RouteRecordRequestDto requestDto,
+    public ApiResponse<String> addRouteRecord(CreateRouteRecordDto requestDto,
         ClimbingRecord climbingRecord) {
-        try {
-            Route route = routeRepository.findById(requestDto.getRouteId()).orElseThrow();
-            routeRecordRepository.save(RouteRecord.toEntity(requestDto, climbingRecord, route));
-            Integer count = requestDto.getAttemptCount();
 
-            climbingRecord.attemptCountUp(count);
+        Route route = routeRepository.findById(requestDto.getRouteId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-            if (requestDto.getIsCompleted()) {
-                climbingRecord.totalCompletedCountUp();
-            }
+        routeRecordRepository.save(RouteRecord.toEntity(requestDto, climbingRecord, route));
 
-            return ApiResponse.onSuccess("루트기록 성공");
-        } catch (Exception e) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        int count = requestDto.getAttemptCount();
+
+        climbingRecord.setAttemptCount(count);
+
+        if (requestDto.getIsCompleted()) {
+            climbingRecord.totalCompletedCountUp();
         }
+        return ApiResponse.onSuccess("루트 기록 성공");
+
     }
 
     public List<RouteRecordSimpleInfo> getRouteRecords() {
@@ -51,15 +51,96 @@ public class RouteRecordService {
                 .map(RouteRecordSimpleInfo::new)
                 .toList();
         } catch (Exception e) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
         }
     }
 
     public RouteRecordSimpleInfo getRouteRecord(Long id) {
-        try {
-            return new RouteRecordSimpleInfo(routeRecordRepository.findById(id).orElseThrow());
-        } catch (Exception e){
-            throw new RuntimeException();
+        return new RouteRecordSimpleInfo(routeRecordRepository.findById(id)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD)));
+    }
+
+    @Transactional
+    public RouteRecordSimpleInfo updateRouteRecord(Long id,
+        UpdateRouteRecordDto updateRouteRecordDto) {
+
+        RouteRecord routeRecord = routeRecordRepository.findById(id)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD));
+        ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
+
+        //각 필드의 기존값들
+        Long oldRouteId = routeRecord.getRoute().getId();
+        int oldAttemptTime = routeRecord.getAttemptCount();
+        Boolean oldIsCompleted = routeRecord.getIsCompleted();
+
+        //각 필드의 새값들
+        Long newRouteId = updateRouteRecordDto.getRouteId();
+        Integer newAttemptTime = updateRouteRecordDto.getAttemptCount();
+        Boolean newIsComplete = updateRouteRecordDto.getIsComplete();
+
+        if (newRouteId != null) {
+            oldRouteId = newRouteId;
+        }
+
+        if (newAttemptTime != null) {
+            climbingRecord.setAttemptCount(newAttemptTime - oldAttemptTime);
+            oldAttemptTime = newAttemptTime;
+        }
+
+        if (newIsComplete != null && newIsComplete != oldIsCompleted) {
+            int difficulty = routeRecord.getRoute().getDifficulty();
+            int oldAvgDifficulty = climbingRecord.getAvgDifficulty();
+            int oldCount = climbingRecord.getTotalCompletedCount();
+
+            if (newIsComplete) {
+                climbingRecord.setAvgDifficulty(
+                    newAvgDifficulty(difficulty, oldAvgDifficulty, oldCount, true));
+                climbingRecord.totalCompletedCountDown();
+            } else {
+                climbingRecord.setAvgDifficulty(
+                    newAvgDifficulty(difficulty, oldAvgDifficulty, oldCount, false));
+                climbingRecord.totalCompletedCountUp();
+            }
+            oldIsCompleted = newIsComplete;
+        }
+        Route route = routeRepository.findById(oldRouteId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
+
+        routeRecord.update(oldAttemptTime, oldIsCompleted, route);
+
+        return new RouteRecordSimpleInfo(routeRecord);
+    }
+
+    @Transactional
+    public ApiResponse<String> deleteRouteRecord(Long id) {
+        RouteRecord routeRecord = routeRecordRepository.findById(id)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD));
+        ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
+
+        int difficulty = routeRecord.getRoute().getDifficulty();
+
+        //climbingRecord의 평균 업데이트
+        climbingRecord.setAvgDifficulty(
+            newAvgDifficulty(difficulty, climbingRecord.getAvgDifficulty(),
+                climbingRecord.getTotalCompletedCount(), false));
+
+        //climbingRecord의 총 완등 횟수 업데이트
+        climbingRecord.totalCompletedCountDown();
+
+        //climbingRecord의 시도 횟수 업데이트
+        climbingRecord.setAttemptCount(-routeRecord.getAttemptCount());
+
+        routeRecordRepository.delete(routeRecord);
+        return ApiResponse.onSuccess("루트기록이 삭제되었습니다.");
+    }
+
+    private int newAvgDifficulty(int routeDifficulty, int oldAvgDifficulty, int oldCount,
+        boolean isPlus) {
+        if (isPlus) {
+            return (int) (((oldCount * oldAvgDifficulty) + routeDifficulty) / (oldCount + 1));
+        } else {
+            if(oldCount <= 1) return 0;
+            else return (int) (((oldCount * oldAvgDifficulty) - routeDifficulty) / (oldCount - 1));
         }
     }
 }
