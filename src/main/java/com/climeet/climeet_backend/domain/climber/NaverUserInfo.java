@@ -12,21 +12,34 @@ public class NaverUserInfo extends Oauth2UserInfo{
         super(attributes);
     }
 
-    @Override
-    public Long getID() {
-        return Long.parseLong(String.valueOf(attributes.get("id")));
-    }
 
-    public String getProvider() {
-        return "NAVER";
+    public String getID() {
+        String id = (String) getResponse().get("id");
+        if (id != null && !id.isEmpty()) {
+            return id;
+        } else {
+            throw new RuntimeException("ID가 없거나 비어있습니다.");
+        }
     }
-
     public Map<String, Object> getResponse() {
-        return (Map<String, Object>) attributes.get("response");
+        Object response = attributes.get("response");
+        if (response instanceof Map) {
+            return (Map<String, Object>) response;
+        } else {
+            throw new RuntimeException("'response'가 Map 형식이 아닙니다.");
+        }
     }
+
 
     public String getProfileImg() {
-        return (String) getResponse().get("profile_image");
+        Map<String, Object> response = getResponse();
+        Object profileImage = response.get("profile_image");
+        System.out.println(profileImage);
+        if (profileImage instanceof String) {
+            return (String) profileImage;
+        } else {
+            throw new RuntimeException("'profile_image'가 String 형식이 아닙니다.");
+        }
     }
 }
 

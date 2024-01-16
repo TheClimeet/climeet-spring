@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,9 +36,14 @@ public class ClimberController {
     /**
      * OAuth2.0 회원가입 API
      */
-    @PostMapping("/signup/{provider}/{accessToken}")
+    @PostMapping("/signup/{provider}")
     @Operation(summary = "회원가입", description = "클라이머 OAuth 회원가입\n\n**Enum 설명**\n\n**ClimbingLevel** : BEGINNER, NOVICE, INTERMEDIATE, ADVANCED, EXPERT\n\n**DiscoveryChannel** : INSTAGRAM_FACEBOOK, YOUTUBE, FRIEND_RECOMMENDATION, BLOG_CAFE_COMMUNITY, OTHER\n\n**SocialType**: KAKAO, NAVER")
-    public ResponseEntity<ClimberResponseDto> signUp(@PathVariable String provider, @PathVariable String accessToken, @RequestBody ClimberRequestDto climberRequestDto){
+    public ResponseEntity<ClimberResponseDto> signUp(@PathVariable String provider, @RequestHeader("Authorization") String accessToken, @RequestBody ClimberRequestDto climberRequestDto){
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring("Bearer ".length());
+        } else {
+            throw new IllegalArgumentException("잘못된 토큰 형식입니다.");
+        }
           ClimberResponseDto climberResponseDto = climberService.signUp(provider, accessToken,
               climberRequestDto);
         return ResponseEntity.ok(climberResponseDto);

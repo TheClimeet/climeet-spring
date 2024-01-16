@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClimberRepository  extends JpaRepository<Climber, Long> {
 
-    Climber findBySocialId(Long socialId);
+    Climber findBySocialId(String socialId);
 }

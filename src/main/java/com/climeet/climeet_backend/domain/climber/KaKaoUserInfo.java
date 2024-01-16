@@ -6,7 +6,6 @@ public class KaKaoUserInfo extends Oauth2UserInfo{
     public KaKaoUserInfo(Map<String, Object> attributes){
         super(attributes);
     }
-    @Override
     public Long getID() {
         return Long.parseLong(String.valueOf(attributes.get("id")));
     }

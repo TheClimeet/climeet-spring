@@ -26,7 +26,7 @@ public class ClimberService {
     public ClimberResponseDto login(String socialType, String userToken) {
         try {
             Climber climber = getClimberProfileByToken(socialType, userToken);
-            Long socialId = climber.getSocialId();
+            String socialId = climber.getSocialId();
 
             Climber resultClimber = climberRepository.findBySocialId(socialId);
 
@@ -59,7 +59,7 @@ public class ClimberService {
     public ClimberResponseDto signUp(String socialType, String userToken, @RequestBody ClimberRequestDto climberRequestDto){
         Climber climber = getClimberProfileByToken(socialType, userToken);
         assert climber != null;
-        Long socialId = climber.getSocialId();
+        String socialId = climber.getSocialId();
         //System.out.println(socialId);
         Climber resultClimber = climberRepository.findBySocialId(socialId);
         if(resultClimber!=null) {
@@ -94,6 +94,9 @@ public class ClimberService {
     }
 
     private Map<String, Object> getClimberNaverAttributesByToken(String accessToken){
+        if (accessToken == null || accessToken.trim().isEmpty()) {
+            throw new IllegalArgumentException("인증 토큰이 없거나 비어있습니다.");
+        }
         return WebClient.create()
             .get()
             .uri("https://openapi.naver.com/v1/nid/me")
@@ -109,12 +112,12 @@ public class ClimberService {
         if (!providerName.equals("KAKAO") && !providerName.equals("NAVER")) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
-        Long social_id = 0L;
+        String social_id = null;
         String profile_img = null;
         if (providerName.equals("KAKAO")) {
             Map<String, Object> userAttributesByToken = getClimberKaKaoAttributesByToken(userToken);
             KaKaoUserInfo kaKaoUserInfo = new KaKaoUserInfo(userAttributesByToken);
-            social_id = kaKaoUserInfo.getID();
+            social_id = Long.toString(kaKaoUserInfo.getID());
             profile_img = kaKaoUserInfo.getProfileImg();
 
         } else if (providerName.equals("NAVER")) {
@@ -124,7 +127,7 @@ public class ClimberService {
             profile_img = naverUserInfo.getProfileImg();
         }
         //로그인 case
-        if (climberRepository.findById(social_id).isPresent()) {
+        if (climberRepository.findBySocialId(social_id)!=null) {
             return climberRepository.findBySocialId(social_id);
         }else{  //회원가입 case
             return Climber.builder()

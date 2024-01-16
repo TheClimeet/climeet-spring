@@ -26,7 +26,7 @@ public class Climber extends User {
 
     @NotNull
     @Column(name = "social_id")
-    private Long socialId;
+    private String socialId;
 
     @NotNull
     @Column(name = "access_token")
@@ -59,7 +59,7 @@ public class Climber extends User {
 
 
     @Builder
-    public Climber(Long socialId, String accessToken, String refreshToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
+    public Climber(String socialId, String accessToken, String refreshToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
         this.socialId = socialId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
