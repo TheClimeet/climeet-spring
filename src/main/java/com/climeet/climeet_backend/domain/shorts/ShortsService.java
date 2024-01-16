@@ -6,7 +6,7 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
-정import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -53,14 +53,11 @@ public class ShortsService {
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> ShortsSimpleInfo.builder()
-                .thumbnailImageUrl(shorts.getThumbnailImageUrl())
-                .gymName(shorts.getClimbingGym().getName())
-                .difficulty(shorts.getRoute().getDifficulty())
-                .build())
+            .map(shorts -> ShortsSimpleInfo.toDTO(shorts.getThumbnailImageUrl(),
+                    shorts.getClimbingGym().getName(), shorts.getRoute().getDifficulty()))
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
@@ -69,14 +66,11 @@ public class ShortsService {
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByRankingNotZeroOrderByRankingAscCreatedAtDesc(pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> ShortsSimpleInfo.builder()
-                .thumbnailImageUrl(shorts.getThumbnailImageUrl())
-                .gymName(shorts.getClimbingGym().getName())
-                .difficulty(shorts.getRoute().getDifficulty())
-                .build())
+            .map(shorts -> ShortsSimpleInfo.toDTO(shorts.getThumbnailImageUrl(),
+                shorts.getClimbingGym().getName(), shorts.getRoute().getDifficulty()))
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),

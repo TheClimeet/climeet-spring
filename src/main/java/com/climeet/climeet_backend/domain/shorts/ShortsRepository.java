@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ShortsRepository extends JpaRepository<Shorts, Long> {
 
-    Slice<Shorts> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Slice<Shorts> findAllByIsPublicTrueOrderByCreatedAtDesc(Pageable pageable);
 
-    @Query("SELECT s FROM Shorts s WHERE s.ranking <> 0 ORDER BY s.ranking ASC, s.createdAt DESC")
-    Slice<Shorts> findAllByRankingNotZeroOrderByRankingAscCreatedAtDesc(Pageable pageable);
+    @Query("SELECT s FROM Shorts s WHERE s.ranking <> 0 AND s.isPublic = true ORDER BY s.ranking ASC, s.createdAt DESC")
+    Slice<Shorts> findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(Pageable pageable);
+
 }

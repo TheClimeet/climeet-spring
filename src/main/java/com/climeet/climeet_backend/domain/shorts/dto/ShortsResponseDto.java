@@ -17,5 +17,13 @@ public class ShortsResponseDto {
         private String gymName;
         private int difficulty;
 
+        public static ShortsSimpleInfo toDTO(String thumbnailImageUrl, String gymName,
+            int difficulty) {
+            return ShortsSimpleInfo.builder()
+                .thumbnailImageUrl(thumbnailImageUrl)
+                .gymName(gymName)
+                .difficulty(difficulty)
+                .build();
+        }
     }
 }
