@@ -9,7 +9,7 @@ public class RouteResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RouteGetResponseDto {
+    public static class RouteSimpleResponse {
 
         private Long sectorId;
         private String sectorName;
@@ -18,7 +18,7 @@ public class RouteResponseDto {
         private int difficulty;
         private String routeImageUrl;
 
-        public RouteGetResponseDto(Route route) {
+        public RouteSimpleResponse(Route route) {
             this.sectorId = route.getSector().getId();
             this.sectorName = route.getSector().getSectorName();
             this.routeId = route.getId();

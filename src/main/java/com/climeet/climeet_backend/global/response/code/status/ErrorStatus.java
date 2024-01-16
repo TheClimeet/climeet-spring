@@ -27,6 +27,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //루트 관련
     _EMPTY_ROUTE(HttpStatus.CONFLICT, "ROUTE_001", "존재하지 않는 루트입니다."),
+    _EMPTY_ROUTE_LIST(HttpStatus.CONFLICT, "ROUTE_002", "암장의 루트 정보를 찾을 수 없습니다."),
+    _DUPLICATE_ROUTE_NAME(HttpStatus.CONFLICT, "ROUTE_004", "루트 이름이 중복됩니다."),
 
     //인증 관련
     _EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH_001", "JWT가 존재하지 않습니다."),
@@ -49,10 +51,10 @@ public enum ErrorStatus implements BaseErrorCode {
     @Override
     public ErrorReasonDto getReasonHttpStatus() {
         return ErrorReasonDto.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .httpStatus(httpStatus)
-                .build();
+            .message(message)
+            .code(code)
+            .isSuccess(false)
+            .httpStatus(httpStatus)
+            .build();
     }
 }
