@@ -40,16 +40,16 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
   // @Valid 어노테이션을 통한 검증 실패 시 발생하는 예외를 처리
   @Override
   public ResponseEntity<Object> handleMethodArgumentNotValid(
-          MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
     Map<String, String> errors = new LinkedHashMap<>();
 
     e.getBindingResult().getFieldErrors().stream()
-            .forEach(fieldError -> {
-              String fieldName = fieldError.getField();
-              String errorMessage = Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
-              errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
-            });
+        .forEach(fieldError -> {
+          String fieldName = fieldError.getField();
+          String errorMessage = Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
+          errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
+        });
 
     return handleExceptionInternalArgs(e,HttpHeaders.EMPTY,ErrorStatus.valueOf("_BAD_REQUEST"),request,errors);
   }
@@ -70,55 +70,56 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
   }
 
   private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDto reason,
-                                                         HttpHeaders headers, HttpServletRequest request) {
+      HttpHeaders headers, HttpServletRequest request) {
 
     ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(),reason.getMessage(),null);
     WebRequest webRequest = new ServletWebRequest(request);
     return super.handleExceptionInternal(
-            e,
-            body,
-            headers,
-            reason.getHttpStatus(),
-            webRequest
+        e,
+        body,
+        headers,
+        reason.getHttpStatus(),
+        webRequest
     );
   }
 
+
   // 공통 예외 처리 메소드
   private ResponseEntity<Object> handleExceptionInternalFalse(Exception e, ErrorStatus errorCommonStatus,
-                                                              HttpHeaders headers, HttpStatus status, WebRequest request, String errorPoint) {
+      HttpHeaders headers, HttpStatus status, WebRequest request, String errorPoint) {
     ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getCode(),errorCommonStatus.getMessage(),errorPoint);
     return super.handleExceptionInternal(
-            e,
-            body,
-            headers,
-            status,
-            request
+        e,
+        body,
+        headers,
+        status,
+        request
     );
   }
 
   // 서버 에러 처리 메소드
   private ResponseEntity<Object> handleExceptionInternalArgs(Exception e, HttpHeaders headers, ErrorStatus errorCommonStatus,
-                                                             WebRequest request, Map<String, String> errorArgs) {
+      WebRequest request, Map<String, String> errorArgs) {
     ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getCode(),errorCommonStatus.getMessage(),errorArgs);
     return super.handleExceptionInternal(
-            e,
-            body,
-            headers,
-            errorCommonStatus.getHttpStatus(),
-            request
+        e,
+        body,
+        headers,
+        errorCommonStatus.getHttpStatus(),
+        request
     );
   }
 
   // 검증 실패에 대한 처리 메소드
   private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorCommonStatus,
-                                                                   HttpHeaders headers, WebRequest request) {
+      HttpHeaders headers, WebRequest request) {
     ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getCode(), errorCommonStatus.getMessage(), null);
     return super.handleExceptionInternal(
-            e,
-            body,
-            headers,
-            errorCommonStatus.getHttpStatus(),
-            request
+        e,
+        body,
+        headers,
+        errorCommonStatus.getHttpStatus(),
+        request
     );
   }
 }

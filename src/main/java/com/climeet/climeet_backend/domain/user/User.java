@@ -11,12 +11,14 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Setter
 public class User extends BaseTimeEntity {
 
     @Id
@@ -40,5 +42,6 @@ public class User extends BaseTimeEntity {
     private Long thisWeekTotalClimbingTime = 0L;
 
     private int thisWeekHighDifficulty = 0;
+
 
 }
