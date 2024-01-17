@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "BestFollowGym", description = "[팔로우순] 금주 베스트 운동 기록 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/bestgym")
+@RequestMapping("/rank/week/gym")
 public class BestFollowGymController {
 
     private final BestFollowGymService bestFollowGymService;
 
     @Operation(summary = "[팔로우 순] 이번주 짐 랭킹 조회")
     @GetMapping("/follow")
-    public ApiResponse<List<BestFollowGymSimpleDto>> findLatestShorts() {
-        return ApiResponse.onSuccess(bestFollowGymService.findBestFollowGymRanking());
+    public ApiResponse<List<BestFollowGymSimpleDto>> findGymRankingOrderFollowCount() {
+        return ApiResponse.onSuccess(bestFollowGymService.findGymRankingOrderFollowCount());
     }
 }
