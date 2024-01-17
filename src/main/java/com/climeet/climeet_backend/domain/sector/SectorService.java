@@ -21,6 +21,9 @@ public class SectorService {
 
     @Transactional
     public void createSector(CreateSectorRequest createSectorRequest) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(createSectorRequest.getGymId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
         // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
         List<Sector> sectorList = sectorRepository.findSectorByClimbingGymId(
             createSectorRequest.getGymId());
@@ -29,9 +32,6 @@ public class SectorService {
                 throw new GeneralException(ErrorStatus._DUPLICATE_SECTOR_NAME);
             }
         }
-
-        ClimbingGym climbingGym = climbingGymRepository.findById(createSectorRequest.getGymId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         sectorRepository.save(Sector.toEntity(createSectorRequest, climbingGym));
     }
