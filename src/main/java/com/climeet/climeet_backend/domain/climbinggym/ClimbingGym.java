@@ -36,7 +36,7 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int serviceBitMask = 0;
 
-    private int thisWeekFollowerCount = 0;
+    private int thisWeekFollowCount = 0;
 
     private int thisWeekSelectionCount = 0;
 }
