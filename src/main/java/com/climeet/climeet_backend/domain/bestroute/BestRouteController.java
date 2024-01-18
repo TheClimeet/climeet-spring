@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rank/week/routes")
 public class BestRouteController {
+
     private final BestRouteService bestRouteService;
 
     @GetMapping
-    public ApiResponse<List<BestRouteSimpleDto>> findRouteRankingOrderSelectionCount(){
+    public ApiResponse<List<BestRouteSimpleDto>> findRouteRankingOrderSelectionCount() {
         return ApiResponse.onSuccess(bestRouteService.findBestRouteList());
     }
 }

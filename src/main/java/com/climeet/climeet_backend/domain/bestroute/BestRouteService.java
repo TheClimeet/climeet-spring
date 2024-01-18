@@ -9,9 +9,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class BestRouteService {
+
     private final BestRouteRepository bestRouteRepository;
 
-    public List<BestRouteSimpleDto> findBestRouteList(){
+    public List<BestRouteSimpleDto> findBestRouteList() {
         List<BestRoute> routeList = bestRouteRepository.findAllByOrderByRankingAsc();
         return routeList.stream()
             .map(BestRouteSimpleDto::new)

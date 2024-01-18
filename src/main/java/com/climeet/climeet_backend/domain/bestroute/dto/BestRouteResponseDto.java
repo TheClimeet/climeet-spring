@@ -1,11 +1,11 @@
 package com.climeet.climeet_backend.domain.bestroute.dto;
 
-import com.climeet.climeet_backend.domain.bestrecordgym.BestRecordGym;
 import com.climeet.climeet_backend.domain.bestroute.BestRoute;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class BestRouteResponseDto {
+
     @Getter
     @NoArgsConstructor
     public static class BestRouteSimpleDto {
