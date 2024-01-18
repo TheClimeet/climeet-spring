@@ -18,6 +18,9 @@ public class BestFollowGymController {
 
     private final BestFollowGymService bestFollowGymService;
 
+    /**
+     * [GET] [팔로우 순] 이번주 짐 랭킹 조회
+     */
     @Operation(summary = "[팔로우 순] 이번주 짐 랭킹 조회")
     @GetMapping("/follow")
     public ApiResponse<List<BestFollowGymSimpleDto>> findGymRankingOrderFollowCount() {

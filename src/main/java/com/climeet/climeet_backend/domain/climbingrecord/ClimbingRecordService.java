@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
+import com.climeet.climeet_backend.domain.bestrecordgym.BestRecordGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
@@ -34,6 +35,9 @@ public class ClimbingRecordService {
 
         ClimbingRecord savedClimbingRecord = climbingRecordRepository
             .save(ClimbingRecord.toEntity(requestDto, climbingGym));
+
+        //선택받았으니 하나 추가
+        climbingGym.thisWeekSelectionCountUp();
 
         List<CreateRouteRecordDto> routeRecords = requestDto.getRouteRecordRequestDtoList();
         // 루트기록 리퀘스트 돌면서 루트 리퀘스트 저장
@@ -106,9 +110,13 @@ public class ClimbingRecordService {
 
     @Transactional
     public ApiResponse<String> deleteClimbingRecord(Long id) {
-        climbingRecordRepository.findById(id)
+        ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
+
         climbingRecordRepository.deleteById(id);
+
+        climbingRecord.getGym().thisWeekSelectionCountDown();
+
         return ApiResponse.onSuccess("클라이밍기록이 삭제되었습니다.");
     }
 }
