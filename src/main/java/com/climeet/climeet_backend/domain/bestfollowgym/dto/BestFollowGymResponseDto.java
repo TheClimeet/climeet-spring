@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.bestfollowgym.dto;
 
 import com.climeet.climeet_backend.domain.bestfollowgym.BestFollowGym;
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,19 +12,17 @@ public class BestFollowGymResponseDto {
         private int ranking;
         private String profileImageUrl;
         private String gymName;
-        private Long gymId;
         private int thisWeekFollowerCount;
         private Float rating;
         private int reviewCount;
 
-        public BestFollowGymSimpleDto(BestFollowGym bestFollowGym, ClimbingGym climbingGym) {
+        public BestFollowGymSimpleDto(BestFollowGym bestFollowGym) {
             this.ranking = bestFollowGym.getRanking();
-            this.profileImageUrl = climbingGym.getProfileImageUrl();
-            this.gymName = climbingGym.getName();
-            this.gymId = climbingGym.getId();
             this.thisWeekFollowerCount = bestFollowGym.getThisWeekFollowCount();
-            this.rating = climbingGym.getAverageRating();
-            this.reviewCount = climbingGym.getReviewCount();
+            this.profileImageUrl = bestFollowGym.getProfileImageUrl();
+            this.gymName = bestFollowGym.getGymName();
+            this.rating = bestFollowGym.getRating();
+            this.reviewCount = bestFollowGym.getReviewCount();
         }
     }
 }

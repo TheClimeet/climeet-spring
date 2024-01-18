@@ -15,8 +15,7 @@ public class BestFollowGymService {
     public List<BestFollowGymSimpleDto> findGymRankingOrderFollowCount() {
         List<BestFollowGym> ranking = bestFollowGymRepository.findAllByOrderByRankingAsc();
         return ranking.stream()
-            .map(bestFollowGym -> new BestFollowGymSimpleDto(bestFollowGym,
-                bestFollowGym.getClimbingGym()))
+            .map(bestFollowGym -> new BestFollowGymSimpleDto(bestFollowGym))
             .collect(Collectors.toList());
     }
 

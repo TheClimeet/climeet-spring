@@ -27,4 +27,12 @@ public class BestFollowGym {
     private int ranking = 0;
 
     private int thisWeekFollowCount = 0;
+
+    private String profileImageUrl;
+
+    private String gymName;
+
+    private Float rating;
+
+    private int reviewCount=0;
 }
