@@ -1,9 +1,5 @@
 package com.climeet.climeet_backend.domain.climber;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Map;
 
 public class NaverUserInfo extends Oauth2UserInfo{
@@ -13,7 +9,7 @@ public class NaverUserInfo extends Oauth2UserInfo{
     }
 
 
-    public String getID() {
+    public String getId() {
         String id = (String) getResponse().get("id");
         if (id != null && !id.isEmpty()) {
             return id;
@@ -34,7 +30,6 @@ public class NaverUserInfo extends Oauth2UserInfo{
     public String getProfileImg() {
         Map<String, Object> response = getResponse();
         Object profileImage = response.get("profile_image");
-        System.out.println(profileImage);
         if (profileImage instanceof String) {
             return (String) profileImage;
         } else {
