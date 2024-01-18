@@ -7,7 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +23,22 @@ public class BestRoute extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Route route;
+
+    private int ranking;
+
+    private String routeImageUrl;
+
+    private int thisWeekSelectionCount;
+
+    private String gymName;
+
+    private String sectorName;
+
+    private int level;
+
+    private String levelColor;
+
+
 }
