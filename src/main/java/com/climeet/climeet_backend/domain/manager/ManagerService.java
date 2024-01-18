@@ -24,11 +24,10 @@ public class ManagerService {
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
 
     @Transactional
-    public boolean isManagerRegistered(String gymName){
-        ClimbingGym gym = climbingGymRepository.findByName(gymName);
-        if(gym==null){
-            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
-        }
+    public boolean checkManagerRegistration(String gymName){
+        ClimbingGym gym = climbingGymRepository.findByName(gymName)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
         return managerRepository.existsByClimbingGym(gym);
     }
 
@@ -61,15 +60,13 @@ public class ManagerService {
     }
     
     @Transactional
-    public boolean isLoginDuplicated(String loginId){
+    public boolean checkLoginDuplication(String loginId){
         return managerRepository.findByLoginId(loginId).isPresent();
     }
 
     public Manager toEntity(CreateManagerRequest createManagerRequest){
-        ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName());
-        if (gym == null) {
-            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
-        }
+        ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         return Manager.builder()
             .loginId(createManagerRequest.getLoginId())

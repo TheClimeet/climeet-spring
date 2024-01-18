@@ -75,13 +75,37 @@ public class Climber extends User {
         this.climbingLevel = climbingLevel;
         this.discoveryChannel = discoveryChannel;
     }
-    public void updateNickName(String nickName){
-        this.nickName = nickName;
-    }
-    public void setToken(String accessToken, String refreshToken){
+
+    public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void updateClimbingLevel(ClimbingLevel climbingLevel) {
+        this.climbingLevel = climbingLevel;
+    }
+
+    public void updateDiscoveryChannel(DiscoveryChannel discoveryChannel) {
+        this.discoveryChannel = discoveryChannel;
+    }
+
+    public void updateSocialType(SocialType socialType) {
+        this.socialType = socialType;
+    }
+
+    public void updateProfileImageUrl(String profileImgUrl) {
+        this.profileImageUrl = profileImgUrl;
+    }
+
+
+
+
+
+
 
 
 
