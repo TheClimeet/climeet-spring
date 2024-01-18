@@ -54,6 +54,7 @@ public class ManagerController {
     public ApiResponse<Boolean> checkLoginId(@PathVariable String loginId){
         boolean isDuplicated = !managerService.checkLoginDuplication(loginId);
         return ApiResponse.onSuccess(isDuplicated);
+
     }
 
 

@@ -58,7 +58,7 @@ public class ManagerService {
         gym.setManager(manager);
         climbingGymRepository.save(gym);
     }
-    
+
     @Transactional
     public boolean checkLoginDuplication(String loginId){
         return managerRepository.findByLoginId(loginId).isPresent();
@@ -78,6 +78,7 @@ public class ManagerService {
             .climbingGym(gym)
             .build();
     }
+
 
 
 }
