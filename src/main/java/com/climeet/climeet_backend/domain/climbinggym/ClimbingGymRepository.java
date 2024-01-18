@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface ClimbingGymRepository extends JpaRepository<ClimbingGym, Long> {
 
     Optional<ClimbingGym> findById(Long gymId);
-
-    ClimbingGym findByName(String gymName);
+    Optional<ClimbingGym> findByName(String gymName);
 }
