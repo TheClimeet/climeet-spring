@@ -8,6 +8,8 @@ import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserService;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
@@ -32,6 +34,7 @@ public class ClimberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ManagerRepository managerRepository;
     private final FollowRelationshipService followRelationshipService;
+    private final UserService userService;
 
     @Transactional
     public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
@@ -97,6 +100,8 @@ public class ClimberService {
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
             climber.setProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
+        User user = climber;
+        userService.updateNotification(user, climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
         updateClimber(climber, accessToken, refreshToken, climberRequestDto);
 
 

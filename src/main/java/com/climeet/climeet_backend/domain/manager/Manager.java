@@ -47,4 +47,8 @@ public class Manager extends User {
     private Boolean isRegistered = false;
 
 
+    public void setClimbingGym(ClimbingGym climbingGym){
+        this.climbingGym = climbingGym;
+    }
+
 }

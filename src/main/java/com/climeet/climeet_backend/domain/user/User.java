@@ -18,7 +18,6 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Setter
 public class User extends BaseTimeEntity {
 
     @Id

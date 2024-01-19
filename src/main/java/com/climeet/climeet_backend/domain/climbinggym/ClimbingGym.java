@@ -50,17 +50,17 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int serviceBitMask = 0;
 
-//    public void setManager(Manager manager) {
-//        // 기존 Manager와의 관계를 해제
-//        if (this.manager != null) {
-//            this.manager.setClimbingGym(null);
-//        }
-//        this.manager = manager;
-//        // 새로운 Manager와의 양방향 관계를 설정
-//        if (manager != null) {
-//            manager.setClimbingGym(this);
-//        }
-  //  }
+    public void setManager(Manager manager) {
+        // 기존 Manager와의 관계를 해제
+        if (this.manager != null) {
+            this.manager.setClimbingGym(null);
+        }
+        this.manager = manager;
+        // 새로운 Manager와의 양방향 관계를 설정
+        if (manager != null) {
+            manager.setClimbingGym(this);
+        }
+    }
 
     private int thisWeekFollowCount = 0;
 
