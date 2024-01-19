@@ -58,24 +58,6 @@ public class Climber extends User {
     private boolean status = true;
 
 
-    @Builder
-    public Climber(String socialId, String accessToken, String refreshToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
-        this.socialId = socialId;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.nickName = nickName;
-        this.profileImageUrl = profileImageUrl;
-        this.climbingLevel = climbingLevel;
-        this.socialType = socialType;
-        this.discoveryChannel = discoveryChannel;
-    }
-
-    public void update(String nickname, ClimbingLevel climbingLevel, DiscoveryChannel discoveryChannel){
-        this.nickName = nickname;
-        this.climbingLevel = climbingLevel;
-        this.discoveryChannel = discoveryChannel;
-    }
-
     public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -91,10 +73,6 @@ public class Climber extends User {
 
     public void updateDiscoveryChannel(DiscoveryChannel discoveryChannel) {
         this.discoveryChannel = discoveryChannel;
-    }
-
-    public void updateSocialType(SocialType socialType) {
-        this.socialType = socialType;
     }
 
     public void updateProfileImageUrl(String profileImgUrl) {
