@@ -67,7 +67,7 @@ public class ClimberService {
         }
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getSocialId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
-        climber.setToken(accessToken, refreshToken);
+        climber.updateToken(accessToken, refreshToken);
         climber.setNickName(climberRequestDto.getNickName());
         climber.setClimbingLevel(climberRequestDto.getClimbingLevel());
         climber.setDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
