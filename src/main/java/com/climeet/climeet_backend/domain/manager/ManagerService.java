@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
@@ -34,13 +35,18 @@ public class ManagerService {
 
     @Transactional
     public Manager signUp(@RequestBody CreateManagerRequest createManagerRequest){
-        Manager manager = toEntity(createManagerRequest);
+       ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
+           .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Manager manager = Manager.toEntity(createManagerRequest, gym);
         managerRepository.save(manager);
 
         //배경사진 추가
         saveClimbingGymBackgroundImage(createManagerRequest, manager.getClimbingGym());
         //관리자 등록
-        setManagerToClimbingGym(manager);
+        manager.updateClimbingGym(gym);
+        User user = manager;
+        user.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
 
         return manager;
     }
@@ -53,31 +59,12 @@ public class ManagerService {
         climbingGymBackgroundImageRepository.save(climbingGymBackgroundImage);
     }
 
-    private void setManagerToClimbingGym(Manager manager){
-        ClimbingGym gym = manager.getClimbingGym();
-        gym.setManager(manager);
-        climbingGymRepository.save(gym);
-    }
-
     @Transactional
     public boolean checkLoginDuplication(String loginId){
         return managerRepository.findByLoginId(loginId).isPresent();
     }
 
-    public Manager toEntity(CreateManagerRequest createManagerRequest){
-        ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        return Manager.builder()
-            .loginId(createManagerRequest.getLoginId())
-            .password(createManagerRequest.getPassword())
-            .name(createManagerRequest.getName())
-            .phoneNumber(createManagerRequest.getPhoneNumber())
-            .email(createManagerRequest.getEmail())
-            .isRegistered(true)
-            .climbingGym(gym)
-            .build();
-    }
 
 
 
