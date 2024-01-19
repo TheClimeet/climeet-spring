@@ -31,4 +31,5 @@ public class FollowRelationship extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private User following;
+
 }

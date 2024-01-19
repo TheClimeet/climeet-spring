@@ -37,6 +37,12 @@ public class User extends BaseTimeEntity {
 
     private Long followingCount = 0L;
 
+    private int thisWeekCompleteCount = 0;
+
+    private Long thisWeekTotalClimbingTime = 0L;
+
+    private int thisWeekHighDifficulty = 0;
+
     public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
         this.isAllowFollowNotification = isAllowFollowNotification;
         this.isAllowLikeNotification = isAllowLikeNotification;

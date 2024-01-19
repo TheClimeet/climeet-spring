@@ -4,13 +4,10 @@ package com.climeet.climeet_backend.domain.climber;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,25 +25,26 @@ public class ClimberService {
 
     private final ClimberRepository climberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ClimbingGymRepository climbingGymRepository;
 
     @Transactional
-    public ClimberResponseDto handleSocialLogin(String socialType, String accessToken, @RequestBody CreateClimberRequest climberRequestDto){
+    public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
+        @RequestBody CreateClimberRequest climberRequestDto) {
         HashMap<String, String> userInfo;
         userInfo = getClimberProfileByToken(socialType, accessToken);
         String socialId = userInfo.get("socialId");
         String profileImg = userInfo.get("profileImg");
-        Optional<Climber> optionalClimber = climberRepository.findBySocialIdAndSocialType(socialId, SocialType.valueOf(socialType));
+        Optional<Climber> optionalClimber = climberRepository.findBySocialIdAndSocialType(socialId,
+            SocialType.valueOf(socialType));
         Climber resultClimber = null;
         //signUp
-        if(optionalClimber.isEmpty()){
+        if (optionalClimber.isEmpty()) {
             resultClimber = signUp(socialType, climberRequestDto, socialId, profileImg);
         }
         //login
-        if(optionalClimber.isPresent()){
+        if (optionalClimber.isPresent()) {
             resultClimber = login(optionalClimber.get());
         }
-        if(resultClimber==null){
+        if (resultClimber == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
         return new ClimberResponseDto(resultClimber);
@@ -57,7 +55,8 @@ public class ClimberService {
     @Transactional
     public Climber login(Climber climber) {
         try {
-            String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getId()));
+            String accessToken = jwtTokenProvider.createAccessToken(
+                String.valueOf(climber.getId()));
             String refreshToken = jwtTokenProvider.createRefreshToken();
 
             climber.updateToken(accessToken, refreshToken);
@@ -70,9 +69,10 @@ public class ClimberService {
 
 
     @Transactional
-    public Climber signUp(String socialType, @RequestBody CreateClimberRequest climberRequestDto, String socialId, String profileImg){
+    public Climber signUp(String socialType, @RequestBody CreateClimberRequest climberRequestDto,
+        String socialId, String profileImg) {
 
-        if(climberRequestDto==null){
+        if (climberRequestDto == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
 
@@ -82,38 +82,32 @@ public class ClimberService {
             .profileImageUrl(profileImg).build();
         climberRepository.save(climber);
 
-
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
-        if(!Objects.equals(climberRequestDto.getProfileImgUrl(), "")){
+        if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
             climber.setProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
         updateClimber(climber, accessToken, refreshToken, climberRequestDto);
 
         Climber savedClimber = climberRepository.save(climber);
 
-        savedClimber.updateNotification(climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
-
-        //todo : gymFollow 로직 추가하기
-        List<String> gymFollowList = climberRequestDto.getGymFollowList();
-
-
-
         return savedClimber;
     }
-    public void updateClimber(Climber climber, String accessToken, String refreshToken, CreateClimberRequest climberRequestDto) {
+
+    public void updateClimber(Climber climber, String accessToken, String refreshToken,
+        CreateClimberRequest climberRequestDto) {
         climber.updateToken(accessToken, refreshToken);
         climber.updateNickName(climberRequestDto.getNickName());
         climber.updateClimbingLevel(climberRequestDto.getClimbingLevel());
         climber.updateDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
-        if(!Objects.equals(climberRequestDto.getProfileImgUrl(), "")){
+        if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
             climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
     }
 
 
-    private Map<String, Object> getClimberKaKaoAttributesByToken(String accessToken){
+    private Map<String, Object> getClimberKaKaoAttributesByToken(String accessToken) {
         return WebClient.create()
             .get()
             .uri("https://kapi.kakao.com/v2/user/me")
@@ -124,7 +118,7 @@ public class ClimberService {
             .block();
     }
 
-    private Map<String, Object> getClimberNaverAttributesByToken(String accessToken){
+    private Map<String, Object> getClimberNaverAttributesByToken(String accessToken) {
         if (accessToken == null || accessToken.trim().isEmpty()) {
             throw new GeneralException(ErrorStatus._INVALID_JWT);
         }
@@ -137,6 +131,7 @@ public class ClimberService {
             })
             .block();
     }
+
     HashMap<String, String> getClimberProfileByToken(String providerName, String userToken)
         throws RuntimeException {
         if (!providerName.equals("KAKAO") && !providerName.equals("NAVER")) {
@@ -161,58 +156,6 @@ public class ClimberService {
         userInfo.put("socialId", socialId);
         userInfo.put("profileImg", profileImg);
         return userInfo;
+
     }
-        //Optional<Climber> optionalClimber = climberRepository.findBySocialIdAndSocialType(socialId, SocialType.valueOf(providerName));
-//        if(optionalClimber.isEmpty()){
-//            return null;
-//        }
-        //return optionalClimber.get();
-        //로그인 case
-//        if (optionalClimber.isPresent()) {
-//            return optionalClimber.get();
-//        }else{  //회원가입 case
-//            return Climber.builder()
-//                .socialId(socialId)
-//                .socialType(SocialType.valueOf(providerName))
-//                .profileImageUrl(profileImg).build();
-//        }
-
-
-//    Climber getClimberProfileByToken(String providerName, String userToken)
-//        throws RuntimeException {
-//        if (!providerName.equals("KAKAO") && !providerName.equals("NAVER")) {
-//            throw new GeneralException(ErrorStatus._BAD_REQUEST);
-//        }
-//        String socialId = null;
-//        String profileImg = null;
-//        if (providerName.equals("KAKAO")) {
-//            Map<String, Object> userAttributesByToken = getClimberKaKaoAttributesByToken(userToken);
-//            KaKaoUserInfo kaKaoUserInfo = new KaKaoUserInfo(userAttributesByToken);
-//            socialId = Long.toString(kaKaoUserInfo.getID());
-//            profileImg = kaKaoUserInfo.getProfileImg();
-//
-//        }
-//        if (providerName.equals("NAVER")) {
-//            Map<String, Object> userAttributesByToken = getClimberNaverAttributesByToken(userToken);
-//            NaverUserInfo naverUserInfo = new NaverUserInfo(userAttributesByToken);
-//            socialId = naverUserInfo.getId();
-//            profileImg = naverUserInfo.getProfileImg();
-//        }
-//        Optional<Climber> optionalClimber = climberRepository.findBySocialIdAndSocialType(socialId, SocialType.valueOf(providerName));
-////        if(optionalClimber.isEmpty()){
-////            return null;
-////        }
-//        //return optionalClimber.get();
-//        //로그인 case
-////        if (optionalClimber.isPresent()) {
-////            return optionalClimber.get();
-////        }else{  //회원가입 case
-////            return Climber.builder()
-////                .socialId(socialId)
-////                .socialType(SocialType.valueOf(providerName))
-////                .profileImageUrl(profileImg).build();
-////        }
-//    }
-
-
 }

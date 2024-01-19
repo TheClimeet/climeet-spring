@@ -1,13 +1,18 @@
 package com.climeet.climeet_backend.domain.route;
 
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteGetResponseDto;
+import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -15,32 +20,41 @@ public class RouteService {
 
     private final RouteRepository routeRepository;
     private final SectorRepository sectorRepository;
+    private final S3Service s3Service;
 
     @Transactional
-    public void createRoute(Long gymId, Long sectorId, String name, int difficulty,
-        String routeImageUrl) {
-        Sector sector = sectorRepository.findById(sectorId).orElseThrow();
-        Route route = Route.builder()
-            .sector(sector)
-            .name(name)
-            .difficulty(difficulty)
-            .routeImageUrl(routeImageUrl)
-            .build();
+    public void createRoute(CreateRouteRequest createRouteRequest, MultipartFile routeImage) {
 
-        routeRepository.save(route);
+        // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
+        List<Route> routes = routeRepository.findBySectorId(createRouteRequest.getSectorId());
+        for (Route route : routes) {
+            if (route.getName().equals(createRouteRequest.getName())) {
+                throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_NAME);
+            }
+        }
+
+        Sector sector = sectorRepository.findById(createRouteRequest.getSectorId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
+
+        String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
+
+        routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
     }
 
-    public RouteGetResponseDto getRoute(Long routeId) {
-        Route route = routeRepository.findById(routeId).orElseThrow();
+    public RouteSimpleResponse getRoute(Long routeId) {
+        Route route = routeRepository.findById(routeId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-        return new RouteGetResponseDto(route);
+        return new RouteSimpleResponse(route);
     }
 
-    public List<RouteGetResponseDto> getRouteList(Long gymId) {
+    public List<RouteSimpleResponse> getRouteList(Long gymId) {
         List<Route> routeList = routeRepository.findBySectorClimbingGymId(gymId);
-
+        if (routeList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        }
         return routeList.stream()
-            .map(RouteGetResponseDto::new)
+            .map(RouteSimpleResponse::new)
             .collect(Collectors.toList());
     }
 }
