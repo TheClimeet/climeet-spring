@@ -50,9 +50,12 @@ public enum ErrorStatus implements BaseErrorCode {
         "시점상 시작 날짜는 종료 날짜보다 같거나 앞서야 합니다."),
 
     //루트 기록 관련
-    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다.");
+    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다."),
 
+    //숏츠 관련
+    _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다.")
 
+    ;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

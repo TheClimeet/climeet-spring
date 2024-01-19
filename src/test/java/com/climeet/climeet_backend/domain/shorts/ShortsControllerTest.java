@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.hibernate.Hibernate;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -100,13 +99,6 @@ class ShortsControllerTest {
             .build();
     }
 
-    @AfterEach
-    public void AfterEach() {
-        Pageable pageable = PageRequest.of(0, 5);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByCreatedAtDesc(pageable);
-        shortsRepository.deleteAll(shortsSlice.getContent());
-    }
-
     @DisplayName("숏츠 최신순 조회에 성공한다")
     @Test
     public void findLatestShorts() throws Exception {
@@ -122,7 +114,6 @@ class ShortsControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.result.page").value(2))
             .andExpect(jsonPath("$.result.hasNext").value(true));
-
     }
 
     @DisplayName("숏츠 인기순 조회에 성공한다")
@@ -131,8 +122,10 @@ class ShortsControllerTest {
         //given
         final String url = "/shorts/popular?page=0&size=2";
         Pageable pageable = PageRequest.of(0, 5);
-        Shorts shorts = shortsRepository.findAllByRankingNotZeroOrderByRankingAscCreatedAtDesc(pageable).getContent().get(0);
-        ClimbingGym climbingGym = climbingGymRepository.findById(shorts.getClimbingGym().getId()).get();
+        Shorts shorts = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
+            pageable).getContent().get(0);
+        ClimbingGym climbingGym = climbingGymRepository.findById(shorts.getClimbingGym().getId())
+            .get();
         Hibernate.initialize(climbingGym);
         String expectedHighestRankingShortsGymName = climbingGym.getName();
 
@@ -143,6 +136,7 @@ class ShortsControllerTest {
         //then
         resultActions
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.result.result[0].gymName").value(expectedHighestRankingShortsGymName));
+            .andExpect(
+                jsonPath("$.result.result[0].gymName").value(expectedHighestRankingShortsGymName));
     }
 }
