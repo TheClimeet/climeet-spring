@@ -1,11 +1,9 @@
 package com.climeet.climeet_backend.domain.manager;
 
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
-import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,10 +26,10 @@ public class ManagerController {
      */
     @PostMapping("/signup")
     @Operation(summary = "관리자 회원가입", description = "관리자 회원가입 API")
-    public ApiResponse<String> signUp(@RequestBody
+    public ResponseEntity<String> signUp(@RequestBody
         CreateManagerRequest createManagerRequest){
         managerService.signUp(createManagerRequest);
-       return ApiResponse.onSuccess("관리자 회원가입이 성공적으로 완료되었습니다. ");
+       return ResponseEntity.ok("관리자 회원가입이 성공적으로 완료되었습니다. ");
     }
 
 
@@ -40,9 +38,9 @@ public class ManagerController {
      */
     @Operation(summary = "암장 등록 중복 확인", description = "이미 관리자가 등록된 암장인지 확인하는 API \n\n **이미 관리자 등록 되어있음** : false \n\n **관리자 등록 안되어 있음** : true")
     @GetMapping("/isRegistered/{gymName}")
-    public ApiResponse<Boolean> isRegistered(@PathVariable String gymName){
+    public ResponseEntity<Boolean> isRegistered(@PathVariable String gymName){
         boolean isRegistered = !managerService.checkManagerRegistration(gymName);
-        return ApiResponse.onSuccess(isRegistered);
+        return ResponseEntity.ok(isRegistered);
     }
 
 
@@ -51,9 +49,9 @@ public class ManagerController {
      */
     @GetMapping("/check-id/{loginId}")
     @Operation(summary = "관리자 ID 중복 확인", description = "**이미 존재하는 ID** : false \n\n **사용 가능한 ID** : true")
-    public ApiResponse<Boolean> checkLoginId(@PathVariable String loginId){
+    public ResponseEntity<Boolean> checkLoginId(@PathVariable String loginId){
         boolean isDuplicated = !managerService.checkLoginDuplication(loginId);
-        return ApiResponse.onSuccess(isDuplicated);
+        return ResponseEntity.ok(isDuplicated);
 
     }
 

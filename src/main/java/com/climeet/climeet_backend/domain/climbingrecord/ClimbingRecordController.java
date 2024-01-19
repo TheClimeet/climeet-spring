@@ -3,13 +3,13 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
-import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,48 +31,48 @@ public class ClimbingRecordController {
 
     @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
-    public ApiResponse<String> addClimbingRecord(@RequestBody CreateClimbingRecordDto requestDto) {
+    public ResponseEntity<String> addClimbingRecord(@RequestBody CreateClimbingRecordDto requestDto) {
         climbingRecordService.createClimbingRecord(requestDto);
-        return ApiResponse.onSuccess("클라이밍 기록을 생성하였습니다.");
+        return ResponseEntity.ok("클라이밍 기록을 생성하였습니다.");
     }
 
     @Operation(summary = "클라이밍 간편 기록 전체 조회")
     @GetMapping
-    public ApiResponse<List<ClimbingRecordSimpleInfo>> getClimbingRecords() {
-        return ApiResponse.onSuccess(climbingRecordService.getClimbingRecords());
+    public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecords() {
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecords());
     }
 
 
     @Operation(summary = "클라이밍 기록 날짜 조회")
     @GetMapping("/between-dates")
-    public ApiResponse<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
+    public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         List<ClimbingRecordSimpleInfo> climbingRecords = climbingRecordService.getClimbingRecordsBetweenLocalDates(
             startDate, endDate);
-        return ApiResponse.onSuccess(climbingRecords);
+        return ResponseEntity.ok(climbingRecords);
     }
 
     @Operation(summary = "클라이밍 기록 id 조회")
     @GetMapping("/{id}")
-    public ApiResponse<ClimbingRecordSimpleInfo> addClimbingRecord(@PathVariable Long id) {
-        return ApiResponse.onSuccess(climbingRecordService.getClimbingRecord(id));
+    public ResponseEntity<ClimbingRecordSimpleInfo> addClimbingRecord(@PathVariable Long id) {
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecord(id));
     }
 
 
     @Operation(summary = "ClimbingRecord 수정")
     @PatchMapping("/{id}")
-    public ApiResponse<ClimbingRecordSimpleInfo> updateClimbingRecord(
+    public ResponseEntity<ClimbingRecordSimpleInfo> updateClimbingRecord(
         @PathVariable Long id,
         @RequestBody UpdateClimbingRecordDto updateClimbingRecordDto) {
-        return ApiResponse.onSuccess(
+        return ResponseEntity.ok(
             climbingRecordService.updateClimbingRecord(id, updateClimbingRecordDto));
     }
 
     @Operation(summary = "ClimbingRecord 삭제")
     @DeleteMapping("/{id}")
-    public ApiResponse<String> deleteClimbingRecord(@PathVariable Long id) {
+    public ResponseEntity<String> deleteClimbingRecord(@PathVariable Long id) {
         climbingRecordService.deleteClimbingRecord(id);
-        return ApiResponse.onSuccess("클라이밍 기록을 삭제하였습니다.");
+        return ResponseEntity.ok("클라이밍 기록을 삭제하였습니다.");
     }
 }
