@@ -98,15 +98,12 @@ public String createRefreshToken() {
         try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
             if (claimsJws.getBody().getExpiration().before(new Date())) {
-                System.out.println("토큰 1");
                 throw new GeneralException(ErrorStatus._EXPIRED_JWT);
             }
             return true;
         } catch (ExpiredJwtException e) {
-            System.out.println("토큰 1");
             throw new GeneralException(ErrorStatus._EXPIRED_JWT);
         } catch (JwtException | IllegalArgumentException exception) {
-            System.out.println("토큰 2");
             throw new GeneralException(ErrorStatus._INVALID_JWT);
         }
     }

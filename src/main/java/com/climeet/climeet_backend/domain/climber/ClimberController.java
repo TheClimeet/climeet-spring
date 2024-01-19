@@ -28,49 +28,33 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class ClimberController {
     private final ClimberService climberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * OAuth2.0 로그인 API
      */
-    @GetMapping("/login")
-    @Operation(summary = "로그인", description = "클라이머 소셜로그인")
-    public ApiResponse<ClimberResponseDto> login(@RequestParam String provider, @RequestHeader("Authorization") String accessToken){
+    @PostMapping("/login")
+    @Operation(summary = "OAuth 2.0 소셜 로그인", description = "**Enum 설명**\n\n**ClimbingLevel** : BEGINNER, NOVICE, INTERMEDIATE, ADVANCED, EXPERT\n\n**DiscoveryChannel** : INSTAGRAM_FACEBOOK, YOUTUBE, FRIEND_RECOMMENDATION, BLOG_CAFE_COMMUNITY, OTHER\n\n**SocialType(provider에 입력)**: KAKAO, NAVER \n\n **로그인 시 climberRequestDto 빈 값으로 보내기, 회원가입 시에만 채워서 보내기!**")
+    public ApiResponse<ClimberResponseDto> login(@RequestParam String provider, @RequestHeader("Authorization") String accessToken, @RequestBody(required = false)
+    CreateClimberRequest climberRequestDto){
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring("Bearer ".length());
-        } else {
-            throw new GeneralException(ErrorStatus._INVALID_JWT);
         }
-        Climber climber = climberService.getClimberProfileByToken(provider, accessToken);
-         ClimberResponseDto climberResponseDto = climberService.login(provider, accessToken);
-         return ApiResponse.onSuccess(climberResponseDto);
+        ClimberResponseDto climberResponseDto = climberService.handleSocialLogin(provider, accessToken, climberRequestDto);
 
-    }
-
-    /**2
-     * OAuth2.0 회원가입 API
-     */
-    @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "클라이머 OAuth 회원가입\n\n**Enum 설명**\n\n**ClimbingLevel** : BEGINNER, NOVICE, INTERMEDIATE, ADVANCED, EXPERT\n\n**DiscoveryChannel** : INSTAGRAM_FACEBOOK, YOUTUBE, FRIEND_RECOMMENDATION, BLOG_CAFE_COMMUNITY, OTHER\n\n**SocialType(provider에 입력)**: KAKAO, NAVER")
-    public ApiResponse<ClimberResponseDto> signUp(@RequestParam String provider, @RequestHeader("Authorization") String accessToken, @RequestBody
-        CreateClimberRequest climberRequestDto){
-        if (accessToken != null && accessToken.startsWith("Bearer ")) {
-            accessToken = accessToken.substring("Bearer ".length());
-        } else {
-            throw new IllegalArgumentException("잘못된 토큰 형식입니다.");
-        }
-          ClimberResponseDto climberResponseDto = climberService.signUp(provider, accessToken,
-              climberRequestDto);
         return ApiResponse.onSuccess(climberResponseDto);
+
     }
 
-    /**
-     * 만료된 refresh TOKEN 재발급 API
-     */
-//    @Operation(summary = "", description = "클라이머 소셜로그인")
-//    @GetMapping("/login/{provider}/{accessToken}")
-//    public ResponseEntity<ClimberResponseDto> login(@PathVariable String provider, @PathVariable String accessToken){
-//        ClimberResponseDto climberResponseDto = climberService.login(provider, accessToken);
-//        return ResponseEntity.ok(climberResponseDto);
+//    /**
+//     * 만료된 refresh TOKEN 재발급 API
+//     */
+//    @PostMapping("/refresh-token")
+//    public ApiResponse<ClimberResponseDto> refreshToken(@RequestHeader("Authorization") String accessToken, @RequestBody String refreshToken){
+//
 //    }
+
+
+
 
 }
