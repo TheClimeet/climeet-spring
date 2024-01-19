@@ -4,10 +4,15 @@ package com.climeet.climeet_backend.domain.climber;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
+import com.climeet.climeet_backend.domain.manager.Manager;
+import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,6 +30,8 @@ public class ClimberService {
 
     private final ClimberRepository climberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ManagerRepository managerRepository;
+    private final FollowRelationshipService followRelationshipService;
 
     @Transactional
     public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
@@ -72,6 +79,7 @@ public class ClimberService {
     public Climber signUp(String socialType, @RequestBody CreateClimberRequest climberRequestDto,
         String socialId, String profileImg) {
 
+
         if (climberRequestDto == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
@@ -85,10 +93,29 @@ public class ClimberService {
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
+        //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
             climber.setProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
         updateClimber(climber, accessToken, refreshToken, climberRequestDto);
+
+
+        //가입 시 암장 팔로우
+//        List<String> gymFollowList = climberRequestDto.getGymFollowList();
+//        for(String gymName : gymFollowList){
+//            Optional<Manager> optionalManager = managerRepository.findByName(gymName);
+//            System.out.println("Found manager: " + optionalManager.isPresent());
+//            if(optionalManager.isEmpty()){
+//                throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
+//            }
+//
+//            //Optional<Manager> optionalManager = managerRepository.findByName(gymName);
+////            if(optionalManager.isEmpty()){
+////                throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
+////            }
+//            followRelationshipService.createFollowRelationship(optionalManager.get(), climber);
+//
+//        }
 
         Climber savedClimber = climberRepository.save(climber);
 

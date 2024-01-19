@@ -45,15 +45,6 @@ public class ClimberController {
 
     }
 
-//    /**
-//     * 만료된 refresh TOKEN 재발급 API
-//     */
-//    @PostMapping("/refresh-token")
-//    public ApiResponse<ClimberResponseDto> refreshToken(@RequestHeader("Authorization") String accessToken, @RequestBody String refreshToken){
-//
-//    }
-
-
 
 
 }
