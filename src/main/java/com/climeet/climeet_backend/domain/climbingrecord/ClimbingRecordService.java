@@ -11,6 +11,7 @@ import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -124,6 +125,37 @@ public class ClimbingRecordService {
     public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(int year, int month) {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
-        return climbingRecordRepository.getStatisticsInfoBetween(startDate, endDate);
+        Tuple tuple = climbingRecordRepository.getStatisticsInfoBetween(startDate, endDate);
+
+        Double totalTime = (Double) tuple.get("totalTime");
+        
+        LocalTime time = convertDoubleToTime(totalTime);
+
+        Long totalCompletedCount = (Long) tuple.get("totalCompletedCount");
+        
+        Long attemptRouteCount = (Long) tuple.get("attemptRouteCount");
+        
+        Long avgDifficulty = (Long) tuple.get("avgDifficulty");
+
+        // TODO: 2024/01/20 평균 완등 레벨은 리스트로 받아야 하지 않니..?
+        
+
+        return new ClimbingRecordStatisticsInfo(
+            time,
+            totalCompletedCount,
+            attemptRouteCount,
+            avgDifficulty
+        );
     }
+
+    public static LocalTime convertDoubleToTime(double totalSeconds) {
+        int seconds = (int) totalSeconds;
+
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        int remainingSeconds = seconds % 60;
+
+        return LocalTime.of(hours, minutes, remainingSeconds);
+    }
+
 }

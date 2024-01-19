@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+import jakarta.persistence.Tuple;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -14,17 +15,14 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
 
     Optional<ClimbingRecord> findById(Long id);
 
-    @Query(value = "SELECT " +
-        "NEW com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo("
-        +
-        "   SUM(HOUR(cr.climbingTime) * 3600 + MINUTE(cr.climbingTime) * 60 + SECOND(cr.climbingTime)), " +
-        "   SUM(cr.totalCompletedCount), " +
-        "   SUM(cr.attemptRouteCount), " +
-        "   SUM(cr.avgDifficulty) " +
-        ") " +
+    @Query("SELECT " +
+        "   SUM(HOUR(cr.climbingTime) * 3600 + MINUTE(cr.climbingTime) * 60 + SECOND(cr.climbingTime)) as totalTime, " +
+        "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
+        "   SUM(cr.attemptRouteCount) as attemptRouteCount, " +
+        "   SUM(cr.avgDifficulty) as avgDifficulty " +
         "FROM ClimbingRecord cr " +
         "WHERE cr.climbingDate BETWEEN :startDate AND :endDate")
-    ClimbingRecordStatisticsInfo getStatisticsInfoBetween(@Param("startDate") LocalDate startDate,
+    Tuple getStatisticsInfoBetween(@Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
 
 }

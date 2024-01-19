@@ -42,15 +42,9 @@ public class ClimbingRecordResponseDto {
     public static class ClimbingRecordStatisticsInfo {
 
         private LocalTime time;
-        private Integer totalCompletedCount;
-        private Integer attemptRouteCount;
-        private Integer avgDifficulty;
+        private Long totalCompletedCount;
+        private Long attemptRouteCount;
+        private Long avgDifficulty;
 
-//        public ClimbingRecordStatisticsInfo(Long time, Integer totalCompletedCount, Integer attemptRouteCount, Integer avgDifficulty) {
-//            this.time = time;
-//            this.totalCompletedCount = totalCompletedCount;
-//            this.attemptRouteCount = attemptRouteCount;
-//            this.avgDifficulty = avgDifficulty;
-//        }
     }
 }
