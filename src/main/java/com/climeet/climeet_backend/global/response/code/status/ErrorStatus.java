@@ -21,6 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
+    _EMPTY_MANAGER_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 존재하지 않는 암장입니다"),
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
@@ -54,6 +55,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //숏츠 관련
     _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다.")
+
+
 
     ;
     private final HttpStatus httpStatus;
