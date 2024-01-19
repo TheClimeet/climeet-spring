@@ -37,5 +37,11 @@ public class User extends BaseTimeEntity {
 
     private Long followingCount = 0L;
 
+    public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
+        this.isAllowFollowNotification = isAllowFollowNotification;
+        this.isAllowLikeNotification = isAllowLikeNotification;
+        this.isAllowCommentNotification = isAllowCommentNotification;
+        this.isAllowAdNotification = isAllowAdNotification;
+    }
 
 }

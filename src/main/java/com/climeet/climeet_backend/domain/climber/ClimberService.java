@@ -4,10 +4,13 @@ package com.climeet.climeet_backend.domain.climber;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,6 +28,7 @@ public class ClimberService {
 
     private final ClimberRepository climberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ClimbingGymRepository climbingGymRepository;
 
     @Transactional
     public ClimberResponseDto handleSocialLogin(String socialType, String accessToken, @RequestBody CreateClimberRequest climberRequestDto){
@@ -89,6 +93,13 @@ public class ClimberService {
 
         Climber savedClimber = climberRepository.save(climber);
 
+        savedClimber.updateNotification(climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
+
+        //todo : gymFollow 로직 추가하기
+        List<String> gymFollowList = climberRequestDto.getGymFollowList();
+
+
+
         return savedClimber;
     }
     public void updateClimber(Climber climber, String accessToken, String refreshToken, CreateClimberRequest climberRequestDto) {
@@ -150,6 +161,7 @@ public class ClimberService {
         userInfo.put("socialId", socialId);
         userInfo.put("profileImg", profileImg);
         return userInfo;
+    }
         //Optional<Climber> optionalClimber = climberRepository.findBySocialIdAndSocialType(socialId, SocialType.valueOf(providerName));
 //        if(optionalClimber.isEmpty()){
 //            return null;
@@ -164,7 +176,7 @@ public class ClimberService {
 //                .socialType(SocialType.valueOf(providerName))
 //                .profileImageUrl(profileImg).build();
 //        }
-    }
+
 
 //    Climber getClimberProfileByToken(String providerName, String userToken)
 //        throws RuntimeException {
