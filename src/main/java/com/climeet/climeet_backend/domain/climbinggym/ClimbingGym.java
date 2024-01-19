@@ -59,6 +59,7 @@ public class ClimbingGym extends BaseTimeEntity {
         if (manager != null) {
             manager.setClimbingGym(this);
         }
+    }
 
     private int thisWeekFollowCount = 0;
 
