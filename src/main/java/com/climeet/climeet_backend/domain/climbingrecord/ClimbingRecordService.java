@@ -1,6 +1,5 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.bestrecordgym.BestRecordGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
@@ -8,7 +7,6 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordReque
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
-import com.climeet.climeet_backend.global.response.ApiResponse;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
@@ -17,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class ClimbingRecordService {
 
 
     @Transactional
-    public ApiResponse<String> createClimbingRecord(CreateClimbingRecordDto requestDto) {
+    public ResponseEntity<String> createClimbingRecord(CreateClimbingRecordDto requestDto) {
         ClimbingGym climbingGym = gymRepository.findById(requestDto.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -45,7 +44,7 @@ public class ClimbingRecordService {
         routeRecords.forEach(
             routeRecord -> routeRecordService.addRouteRecord(routeRecord, savedClimbingRecord));
 
-        return ApiResponse.onSuccess("클라이밍 기록생성 성공");
+        return ResponseEntity.ok("클라이밍 기록생성 성공");
     }
 
     public List<ClimbingRecordSimpleInfo> getClimbingRecords() {
@@ -109,7 +108,7 @@ public class ClimbingRecordService {
     }
 
     @Transactional
-    public ApiResponse<String> deleteClimbingRecord(Long id) {
+    public ResponseEntity<String> deleteClimbingRecord(Long id) {
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
 
@@ -117,6 +116,6 @@ public class ClimbingRecordService {
 
         climbingRecord.getGym().thisWeekSelectionCountDown();
 
-        return ApiResponse.onSuccess("클라이밍기록이 삭제되었습니다.");
+        return ResponseEntity.ok("클라이밍기록이 삭제되었습니다.");
     }
 }

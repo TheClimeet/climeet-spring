@@ -3,11 +3,11 @@ package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
-import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,28 +29,28 @@ public class RouteRecordController {
 
     @Operation(summary = "루트 기록 전체 조회")
     @GetMapping
-    public ApiResponse<List<RouteRecordSimpleInfo>> getRouteRecords() {
-        return ApiResponse.onSuccess(routeRecordService.getRouteRecords());
+    public ResponseEntity<List<RouteRecordSimpleInfo>> getRouteRecords() {
+        return ResponseEntity.ok(routeRecordService.getRouteRecords());
     }
 
     @Operation(summary = "루트 기록 Id 조회")
     @GetMapping("/{id}")
-    public ApiResponse<RouteRecordSimpleInfo> getRouteRecord(@PathVariable Long id) {
-        return ApiResponse.onSuccess(routeRecordService.getRouteRecord(id));
+    public ResponseEntity<RouteRecordSimpleInfo> getRouteRecord(@PathVariable Long id) {
+        return ResponseEntity.ok(routeRecordService.getRouteRecord(id));
     }
 
     @Operation(summary = "RouteRecord 수정")
     @PatchMapping("/{id}")
-    public ApiResponse<RouteRecordSimpleInfo> updateRouteRecord(
+    public ResponseEntity<RouteRecordSimpleInfo> updateRouteRecord(
         @PathVariable Long id,
         @RequestBody UpdateRouteRecordDto updateRouteRecordDto) {
-        return ApiResponse.onSuccess(routeRecordService.updateRouteRecord(id, updateRouteRecordDto));
+        return ResponseEntity.ok(routeRecordService.updateRouteRecord(id, updateRouteRecordDto));
     }
 
     @Operation(summary = "RouteRecord 삭제")
     @DeleteMapping("/{id}")
-    public ApiResponse<String> deleteRouteRecord(@PathVariable Long id){
+    public ResponseEntity<String> deleteRouteRecord(@PathVariable Long id){
         routeRecordService.deleteRouteRecord(id);
-        return ApiResponse.onSuccess("루트기록이 삭제되었습니다.");
+        return ResponseEntity.ok("루트기록이 삭제되었습니다.");
     }
 }
