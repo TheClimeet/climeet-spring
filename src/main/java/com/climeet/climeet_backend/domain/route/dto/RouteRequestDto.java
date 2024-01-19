@@ -7,11 +7,10 @@ public class RouteRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class RouteCreateRequestDto {
+    public static class CreateRouteRequest {
 
         private Long sectorId;
         private String name;
         private int difficulty;
-        private String routeImageUrl;
     }
 }

@@ -11,3 +11,4 @@ public interface ClimberRepository  extends JpaRepository<Climber, Long> {
     Optional<Climber> findBySocialIdAndSocialType(String socialId, SocialType socialType);
     Optional<Climber> findByAccessTokenAndSocialType(String accessToken, SocialType socialType);
 }
+
