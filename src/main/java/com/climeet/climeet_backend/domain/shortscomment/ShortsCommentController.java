@@ -5,7 +5,6 @@ import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +20,7 @@ public class ShortsCommentController {
     private final ShortsCommentService shortsCommentService;
 
     /**
-     * [POST] 숏츠 댓글 작성 (commentId가 null일 경우 대댓글 작성)
+     * [POST] 숏츠 댓글 작성 (commentId가 null일 경우 대댓글 아닌 일반 댓글 작성)
      */
     @Operation(summary = "숏츠 댓글 작성")
     @PostMapping("/shorts/{shortsId}/shortsComments")
