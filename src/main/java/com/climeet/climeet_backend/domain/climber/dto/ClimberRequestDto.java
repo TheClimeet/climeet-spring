@@ -4,10 +4,9 @@ import com.climeet.climeet_backend.domain.climber.enums.ClimbingLevel;
 import com.climeet.climeet_backend.domain.climber.enums.DiscoveryChannel;
 import java.util.List;
 import lombok.Data;
-import lombok.Getter;
 
 @Data
-public class ClimberSignUpRequestDto {
+public class ClimberRequestDto {
     private String nickName;
     private ClimbingLevel climbingLevel;
     private DiscoveryChannel discoveryChannel;

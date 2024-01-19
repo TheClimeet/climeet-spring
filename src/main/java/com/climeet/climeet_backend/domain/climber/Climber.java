@@ -26,7 +26,7 @@ public class Climber extends User {
 
     @NotNull
     @Column(name = "social_id")
-    private Long socialId;
+    private String socialId;
 
     @NotNull
     @Column(name = "access_token")
@@ -59,7 +59,7 @@ public class Climber extends User {
 
 
     @Builder
-    public Climber(Long socialId, String accessToken, String refreshToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
+    public Climber(String socialId, String accessToken, String refreshToken, String nickName, String profileImageUrl, ClimbingLevel climbingLevel, SocialType socialType, DiscoveryChannel discoveryChannel){
         this.socialId = socialId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -75,13 +75,37 @@ public class Climber extends User {
         this.climbingLevel = climbingLevel;
         this.discoveryChannel = discoveryChannel;
     }
-    public void updateNickName(String nickName){
-        this.nickName = nickName;
-    }
-    public void setToken(String accessToken, String refreshToken){
+
+    public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void updateClimbingLevel(ClimbingLevel climbingLevel) {
+        this.climbingLevel = climbingLevel;
+    }
+
+    public void updateDiscoveryChannel(DiscoveryChannel discoveryChannel) {
+        this.discoveryChannel = discoveryChannel;
+    }
+
+    public void updateSocialType(SocialType socialType) {
+        this.socialType = socialType;
+    }
+
+    public void updateProfileImageUrl(String profileImgUrl) {
+        this.profileImageUrl = profileImgUrl;
+    }
+
+
+
+
+
+
 
 
 
