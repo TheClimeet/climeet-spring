@@ -1,11 +1,11 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.bestrecordgym.BestRecordGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 import com.climeet.climeet_backend.global.response.ApiResponse;
@@ -14,6 +14,7 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -118,5 +119,11 @@ public class ClimbingRecordService {
         climbingRecord.getGym().thisWeekSelectionCountDown();
 
         return ApiResponse.onSuccess("클라이밍기록이 삭제되었습니다.");
+    }
+
+    public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(int year, int month) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
+        return climbingRecordRepository.getStatisticsInfoBetween(startDate, endDate);
     }
 }

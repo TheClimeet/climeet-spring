@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class ClimbingRecordResponseDto {
 
@@ -32,5 +33,24 @@ public class ClimbingRecordResponseDto {
             this.totalCompletedCount = climbingRecord.getTotalCompletedCount();
             this.gymId = climbingRecord.getId();
         }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @Setter
+    @AllArgsConstructor
+    public static class ClimbingRecordStatisticsInfo {
+
+        private LocalTime time;
+        private Integer totalCompletedCount;
+        private Integer attemptRouteCount;
+        private Integer avgDifficulty;
+
+//        public ClimbingRecordStatisticsInfo(Long time, Integer totalCompletedCount, Integer attemptRouteCount, Integer avgDifficulty) {
+//            this.time = time;
+//            this.totalCompletedCount = totalCompletedCount;
+//            this.attemptRouteCount = attemptRouteCount;
+//            this.avgDifficulty = avgDifficulty;
+//        }
     }
 }

@@ -3,11 +3,13 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -74,5 +76,13 @@ public class ClimbingRecordController {
     public ApiResponse<String> deleteClimbingRecord(@PathVariable Long id) {
         climbingRecordService.deleteClimbingRecord(id);
         return ApiResponse.onSuccess("클라이밍 기록을 삭제하였습니다.");
+    }
+
+    @Operation(summary = "월별 운동기록 통계")
+    @GetMapping("/statistics")
+    public ApiResponse<ClimbingRecordStatisticsInfo> findClimbingStatistics(
+        @RequestParam int year,
+        @RequestParam int month) {
+        return ApiResponse.onSuccess(climbingRecordService.getClimbingRecordStatistics(year,month));
     }
 }
