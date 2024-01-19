@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.climber;
 
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import java.util.Map;
 
 public class NaverUserInfo extends Oauth2UserInfo{
@@ -11,30 +13,28 @@ public class NaverUserInfo extends Oauth2UserInfo{
 
     public String getId() {
         String id = (String) getResponse().get("id");
-        if (id != null && !id.isEmpty()) {
-            return id;
-        } else {
-            throw new RuntimeException("ID가 없거나 비어있습니다.");
+        if (id == null || id.isEmpty()) {
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
+        return id;
     }
     public Map<String, Object> getResponse() {
         Object response = attributes.get("response");
-        if (response instanceof Map) {
-            return (Map<String, Object>) response;
-        } else {
-            throw new RuntimeException("'response'가 Map 형식이 아닙니다.");
+        if (!(response instanceof Map)) {
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
+        return (Map<String, Object>) response;
     }
-
 
     public String getProfileImg() {
         Map<String, Object> response = getResponse();
         Object profileImage = response.get("profile_image");
-        if (profileImage instanceof String) {
-            return (String) profileImage;
-        } else {
-            throw new RuntimeException("'profile_image'가 String 형식이 아닙니다.");
+        if (!(profileImage instanceof String)) {
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
+        return (String) profileImage;
     }
+
+
 }
 

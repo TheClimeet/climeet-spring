@@ -18,7 +18,6 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Setter
 public class User extends BaseTimeEntity {
 
     @Id
@@ -43,5 +42,11 @@ public class User extends BaseTimeEntity {
 
     private int thisWeekHighDifficulty = 0;
 
+    public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
+        this.isAllowFollowNotification = isAllowFollowNotification;
+        this.isAllowLikeNotification = isAllowLikeNotification;
+        this.isAllowCommentNotification = isAllowCommentNotification;
+        this.isAllowAdNotification = isAllowAdNotification;
+    }
 
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class FollowRelationship extends BaseTimeEntity {
 
     @Id
@@ -31,4 +33,12 @@ public class FollowRelationship extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private User following;
+
+    public static FollowRelationship toEntity(User follower, User following){
+        return FollowRelationship.builder()
+            .follower(follower)
+            .following(following)
+            .build();
+    }
+
 }

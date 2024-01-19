@@ -7,5 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClimbingGymRepository extends JpaRepository<ClimbingGym, Long> {
 
+    Optional<ClimbingGym> findById(Long gymId);
+
     Optional<ClimbingGym> findByName(String gymName);
 }

@@ -24,9 +24,7 @@ import lombok.Setter;
 @Builder
 public class Manager extends User {
 
-    @Setter
-    @OneToOne
-    @JoinColumn(name="id")
+    @OneToOne(mappedBy = "manager")
     private ClimbingGym climbingGym;
 
     @NotNull
@@ -48,5 +46,9 @@ public class Manager extends User {
 
     private Boolean isRegistered = false;
 
+
+    public void setClimbingGym(ClimbingGym climbingGym){
+        this.climbingGym = climbingGym;
+    }
 
 }
