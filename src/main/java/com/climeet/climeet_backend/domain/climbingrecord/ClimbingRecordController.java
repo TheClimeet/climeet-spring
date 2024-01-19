@@ -28,6 +28,7 @@ public class ClimbingRecordController {
 
     private final ClimbingRecordService climbingRecordService;
 
+
     @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
     public ApiResponse<String> addClimbingRecord(@RequestBody CreateClimbingRecordDto requestDto) {

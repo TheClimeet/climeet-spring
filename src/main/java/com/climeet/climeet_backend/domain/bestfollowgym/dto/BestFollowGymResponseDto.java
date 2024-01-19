@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class BestFollowGymResponseDto {
+
     @Getter
     @NoArgsConstructor
     public static class BestFollowGymSimpleDto {

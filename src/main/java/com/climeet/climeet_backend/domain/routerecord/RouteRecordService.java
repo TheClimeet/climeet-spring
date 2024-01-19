@@ -37,6 +37,8 @@ public class RouteRecordService {
 
         climbingRecord.setAttemptCount(count);
 
+        route.thisWeekSelectionCountDown();
+
         if (requestDto.getIsCompleted()) {
             climbingRecord.totalCompletedCountUp();
         }
@@ -129,6 +131,8 @@ public class RouteRecordService {
 
         //climbingRecord의 시도 횟수 업데이트
         climbingRecord.setAttemptCount(-routeRecord.getAttemptCount());
+
+        routeRecord.getRoute().thisWeekSelectionCountDown();
 
         routeRecordRepository.delete(routeRecord);
         return ApiResponse.onSuccess("루트기록이 삭제되었습니다.");

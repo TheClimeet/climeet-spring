@@ -57,4 +57,12 @@ public class Route extends BaseTimeEntity {
             .routeImageUrl(routeImageUrl)
             .build();
     }
+
+    public void thisWeekSelectionCountUp(){
+        this.thisWeekSelectionCount++;
+    }
+
+    public void thisWeekSelectionCountDown(){
+        this.thisWeekSelectionCount--;
+    }
 }

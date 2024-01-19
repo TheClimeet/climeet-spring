@@ -1,7 +1,6 @@
-package com.climeet.climeet_backend.domain.bestroute;
+package com.climeet.climeet_backend.domain.bestrecordgym;
 
-import com.climeet.climeet_backend.domain.route.Route;
-import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,28 +16,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class BestRoute extends BaseTimeEntity {
-
+public class BestRecordGym {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private Route route;
+    private ClimbingGym climbingGym;
 
-    private int ranking;
+    private int ranking = 0;
 
-    private String routeImageUrl;
+    private int thisWeekSelectionCount = 0;
 
-    private int thisWeekSelectionCount;
+    private String profileImageUrl;
 
     private String gymName;
 
-    private String sectorName;
+    private Float rating;
 
-    private int level;
-
-    private String levelColor;
-
-
+    private int reviewCount=0;
 }

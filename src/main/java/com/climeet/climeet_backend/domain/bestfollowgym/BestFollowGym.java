@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class BestFollowGym {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,5 +35,5 @@ public class BestFollowGym {
 
     private Float rating;
 
-    private int reviewCount=0;
+    private int reviewCount = 0;
 }
