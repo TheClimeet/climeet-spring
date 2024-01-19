@@ -7,7 +7,7 @@ public class ShortsRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class PostShortsReq {
+    public static class CreateShortsRequest {
 
         private Long climbingGymId;
         private Long routeId;
