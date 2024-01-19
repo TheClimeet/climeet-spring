@@ -123,7 +123,7 @@ public class ClimberService {
         } else if (providerName.equals("NAVER")) {
             Map<String, Object> userAttributesByToken = getClimberNaverAttributesByToken(userToken);
             NaverUserInfo naverUserInfo = new NaverUserInfo(userAttributesByToken);
-            social_id = naverUserInfo.getID();
+            social_id = naverUserInfo.getId();
             profile_img = naverUserInfo.getProfileImg();
         }
         //로그인 case
