@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,17 @@ public class ClimbingGymService {
         List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContaining(word);
 
         return climbingGymList.stream()
-            .map(ClimbingGymSimpleResponse::new)
-            .collect(Collectors.toList());
+            .map(climbingGym -> ClimbingGymSimpleResponse.toDTO(climbingGym))
+            .toList();
 
     }
 
     public List<ClimbingGymSimpleResponse> searchAcceptedClimbingGym(String word) {
-        List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContainingAndManagerIsNotNull(word);
+        List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
+            word);
 
         return climbingGymList.stream()
-            .map(ClimbingGymSimpleResponse::new)
-            .collect(Collectors.toList());
-
+            .map(climbingGym -> ClimbingGymSimpleResponse.toDTO(climbingGym))
+            .toList();
     }
 }
