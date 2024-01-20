@@ -53,7 +53,12 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다."),
 
     //숏츠 관련
-    _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다.")
+    _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다."),
+
+    //암장 리뷰 관련
+    _CONTENT_TOO_LARGE(HttpStatus.CONFLICT, "REVIEW_001", "리뷰 최대 입력 길이를 초과했습니다."),
+    _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_002", "rating의 범위가 올바르지 않습니다."),
+    _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_003", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다.")
 
     ;
     private final HttpStatus httpStatus;
