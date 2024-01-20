@@ -101,7 +101,7 @@ public class ClimberService {
 
         //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
-            climber.setProfileImageUrl(climberRequestDto.getProfileImgUrl());
+            climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
         User user = climber;
         userService.updateNotification(user, climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
@@ -128,7 +128,7 @@ public class ClimberService {
     public void updateClimber(Climber climber, String accessToken, String refreshToken,
         CreateClimberRequest climberRequestDto) {
         climber.updateToken(accessToken, refreshToken);
-        climber.updateNickName(climberRequestDto.getNickName());
+        climber.updateProfileName(climberRequestDto.getNickName());
         climber.updateClimbingLevel(climberRequestDto.getClimbingLevel());
         climber.updateDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {

@@ -47,7 +47,6 @@ public class ManagerService {
         manager.updateClimbingGym(gym);
         User user = manager;
         user.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
-
         return manager;
     }
     private void saveClimbingGymBackgroundImage(CreateManagerRequest createManagerRequest, ClimbingGym gym){

@@ -1,29 +1,23 @@
 package com.climeet.climeet_backend.domain.manager;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymService;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.user.User;
-import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
-import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Builder
+@SuperBuilder
 public class Manager extends User {
 
     @OneToOne
@@ -37,9 +31,6 @@ public class Manager extends User {
     private String password;
 
     @NotNull
-    private String name;
-
-    @NotNull
     private String phoneNumber;
 
     @NotNull
@@ -48,7 +39,6 @@ public class Manager extends User {
     private String businessRegistrationImageUrl;
 
     private Boolean isRegistered = false;
-
 
     public void setClimbingGym(ClimbingGym climbingGym){
         this.climbingGym = climbingGym;
@@ -59,7 +49,7 @@ public class Manager extends User {
         return Manager.builder()
             .loginId(createManagerRequest.getLoginId())
             .password(createManagerRequest.getPassword())
-            .name(createManagerRequest.getName())
+            .profileName(createManagerRequest.getName())
             .phoneNumber(createManagerRequest.getPhoneNumber())
             .email(createManagerRequest.getEmail())
             .isRegistered(true)

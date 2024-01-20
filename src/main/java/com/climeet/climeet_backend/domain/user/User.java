@@ -12,13 +12,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User extends BaseTimeEntity {
+
+    protected String profileName;
+
+    protected String profileImageUrl;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
