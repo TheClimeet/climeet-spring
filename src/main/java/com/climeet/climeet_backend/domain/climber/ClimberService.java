@@ -111,15 +111,12 @@ public class ClimberService {
         //가입 시 암장 팔로우
         List<String> gymFollowList = climberRequestDto.getGymFollowList();
         for(String gymName : gymFollowList){
-            Optional<ClimbingGym> optionalGym = climbingGymRepository.findByName(gymName);
-            if(optionalGym.isEmpty()){
-                throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
-            }
-            Optional<Manager> optionalManager = managerRepository.findByClimbingGym(optionalGym.get());
-            if(optionalManager.isEmpty()){
-                throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
-            }
-            followRelationshipService.createFollowRelationship(optionalManager.get(), climber);
+            ClimbingGym optionalGym = climbingGymRepository.findByName(gymName)
+                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+            Manager manager = managerRepository.findByClimbingGym(optionalGym)
+                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
+            followRelationshipService.createFollowRelationship(manager, climber);
 
         }
 
