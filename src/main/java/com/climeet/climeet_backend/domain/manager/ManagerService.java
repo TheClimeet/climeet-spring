@@ -40,6 +40,9 @@ public class ManagerService {
         if(!IdManager.checkPassword(password, passwordEncoder)){
             throw new GeneralException(ErrorStatus._WRONG_PASSWORD);
         }
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(IdManager.getId()));
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        IdManager.updateToken(accessToken, refreshToken);
 
         return new ManagerSimpleInfo(IdManager);
 
