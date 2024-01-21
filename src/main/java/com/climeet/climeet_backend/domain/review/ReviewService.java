@@ -38,12 +38,17 @@ public class ReviewService {
             throw new GeneralException(ErrorStatus._RATING_OUT_OF_RANGE);
         }
 
-        Climber climber = climberRepository.findById(createReviewRequest.getClimberId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
-
         ClimbingGym climbingGym = climbingGymRepository.findById(
                 createReviewRequest.getClimbingGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        // 관리자가 등록된 암장인지 확인
+        if(climbingGym.getManager() == null){
+            throw new GeneralException(ErrorStatus._UNREGISTERED_GYM);
+        }
+
+        Climber climber = climberRepository.findById(createReviewRequest.getClimberId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         // 이미 작성된 리뷰가 있는지 확인 (1명의 유저는 1개의 암장에 1개의 리뷰만 가능)
         Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimber(

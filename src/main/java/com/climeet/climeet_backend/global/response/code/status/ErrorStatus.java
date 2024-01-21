@@ -21,6 +21,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
+    _UNREGISTERED_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 등록되지 않은 암장입니다."),
+
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
