@@ -23,7 +23,6 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
     _EMPTY_MANAGER_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 존재하지 않는 암장입니다"),
 
-
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
     _DUPLICATE_SECTOR_NAME(HttpStatus.CONFLICT, "SECTOR_002", "섹터 이름이 중복됩니다."),
@@ -61,6 +60,8 @@ public enum ErrorStatus implements BaseErrorCode {
     _CONTENT_TOO_LARGE(HttpStatus.CONFLICT, "REVIEW_001", "리뷰 최대 입력 길이를 초과했습니다."),
     _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_002", "rating의 범위가 올바르지 않습니다."),
     _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_003", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다.")
+
+
 
     ;
     private final HttpStatus httpStatus;

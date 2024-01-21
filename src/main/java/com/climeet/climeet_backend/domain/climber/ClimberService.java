@@ -4,6 +4,8 @@ package com.climeet.climeet_backend.domain.climber;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -31,6 +33,7 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 public class ClimberService {
 
     private final ClimberRepository climberRepository;
+    private final ClimbingGymRepository climbingGymRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final ManagerRepository managerRepository;
     private final FollowRelationshipService followRelationshipService;
@@ -98,7 +101,7 @@ public class ClimberService {
 
         //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
-            climber.setProfileImageUrl(climberRequestDto.getProfileImgUrl());
+            climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
         User user = climber;
         userService.updateNotification(user, climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
@@ -106,21 +109,16 @@ public class ClimberService {
 
 
         //가입 시 암장 팔로우
-//        List<String> gymFollowList = climberRequestDto.getGymFollowList();
-//        for(String gymName : gymFollowList){
-//            Optional<Manager> optionalManager = managerRepository.findByName(gymName);
-//            System.out.println("Found manager: " + optionalManager.isPresent());
-//            if(optionalManager.isEmpty()){
-//                throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
-//            }
-//
-//            //Optional<Manager> optionalManager = managerRepository.findByName(gymName);
-////            if(optionalManager.isEmpty()){
-////                throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM);
-////            }
-//            followRelationshipService.createFollowRelationship(optionalManager.get(), climber);
-//
-//        }
+        List<String> gymFollowList = climberRequestDto.getGymFollowList();
+        for(String gymName : gymFollowList){
+            ClimbingGym optionalGym = climbingGymRepository.findByName(gymName)
+                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+            Manager manager = managerRepository.findByClimbingGym(optionalGym)
+                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
+            followRelationshipService.createFollowRelationship(manager, climber);
+
+        }
 
         Climber savedClimber = climberRepository.save(climber);
 
@@ -130,7 +128,7 @@ public class ClimberService {
     public void updateClimber(Climber climber, String accessToken, String refreshToken,
         CreateClimberRequest climberRequestDto) {
         climber.updateToken(accessToken, refreshToken);
-        climber.updateNickName(climberRequestDto.getNickName());
+        climber.updateProfileName(climberRequestDto.getNickName());
         climber.updateClimbingLevel(climberRequestDto.getClimbingLevel());
         climber.updateDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
