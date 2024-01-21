@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.global.response.ApiResponse;
@@ -9,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,10 +55,10 @@ public class ClimbingRecordController {
         return ApiResponse.onSuccess(climbingRecords);
     }
 
-    @Operation(summary = "클라이밍 기록 id 조회")
+    @Operation(summary = "클라이밍 기록 id 조회(루트기록들 포함)")
     @GetMapping("/{id}")
-    public ApiResponse<ClimbingRecordSimpleInfo> addClimbingRecord(@PathVariable Long id) {
-        return ApiResponse.onSuccess(climbingRecordService.getClimbingRecord(id));
+    public ApiResponse<ClimbingRecordDetailInfo> addClimbingRecord(@PathVariable Long id) {
+        return ApiResponse.onSuccess(climbingRecordService.getClimbingRecordById(id));
     }
 
 

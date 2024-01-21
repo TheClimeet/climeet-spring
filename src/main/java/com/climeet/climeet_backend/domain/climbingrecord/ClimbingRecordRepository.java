@@ -18,8 +18,7 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
     @Query("SELECT " +
         "   SUM(HOUR(cr.climbingTime) * 3600 + MINUTE(cr.climbingTime) * 60 + SECOND(cr.climbingTime)) as totalTime, " +
         "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
-        "   SUM(cr.attemptRouteCount) as attemptRouteCount, " +
-        "   SUM(cr.avgDifficulty) as avgDifficulty " +
+        "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
         "FROM ClimbingRecord cr " +
         "WHERE cr.climbingDate BETWEEN :startDate AND :endDate")
     Tuple getStatisticsInfoBetween(@Param("startDate") LocalDate startDate,
