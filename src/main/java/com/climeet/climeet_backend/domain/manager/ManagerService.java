@@ -6,9 +6,9 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +23,7 @@ public class ManagerService {
     private final ManagerRepository managerRepository;
     private final ClimbingGymRepository climbingGymRepository;
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public boolean checkManagerRegistration(String gymName){
@@ -45,8 +46,11 @@ public class ManagerService {
         saveClimbingGymBackgroundImage(createManagerRequest, manager.getClimbingGym());
         //관리자 등록
         manager.updateClimbingGym(gym);
-        User user = manager;
-        user.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
+        manager.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(manager.getId()));
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        manager.updateToken(accessToken, refreshToken);
+
         return manager;
     }
     private void saveClimbingGymBackgroundImage(CreateManagerRequest createManagerRequest, ClimbingGym gym){

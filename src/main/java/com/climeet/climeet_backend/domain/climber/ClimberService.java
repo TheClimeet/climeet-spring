@@ -101,8 +101,8 @@ public class ClimberService {
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
             climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
-        User user = climber;
-        userService.updateNotification(user, climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
+
+        userService.updateNotification(climber, climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
         updateClimber(climber, accessToken, refreshToken, climberRequestDto);
 
 
