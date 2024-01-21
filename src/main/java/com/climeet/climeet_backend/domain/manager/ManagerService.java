@@ -5,13 +5,17 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
+import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
+import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -24,7 +28,22 @@ public class ManagerService {
     private final ClimbingGymRepository climbingGymRepository;
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
+    @Transactional
+    public ManagerSimpleInfo login(@RequestBody CreateAccessTokenRequest createAccessTokenRequest){
+        String loginId = createAccessTokenRequest.getLoginId();
+        String password = createAccessTokenRequest.getPassword();
+        Manager IdManager = managerRepository.findByLoginId(loginId)
+                .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID));
+
+        if(!IdManager.checkPassword(password, passwordEncoder)){
+            throw new GeneralException(ErrorStatus._WRONG_PASSWORD);
+        }
+
+        return new ManagerSimpleInfo(IdManager);
+
+    }
     @Transactional
     public boolean checkManagerRegistration(String gymName){
         ClimbingGym gym = climbingGymRepository.findByName(gymName)
@@ -39,7 +58,14 @@ public class ManagerService {
        ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
+       //todo : 관리자 중복 매핑 예외 처리
+
+        if(managerRepository.findByLoginId(createManagerRequest.getLoginId()).isPresent()){
+            throw new GeneralException(ErrorStatus._DUPLICATE_LOGINID);
+        }
+
         Manager manager = Manager.toEntity(createManagerRequest, gym);
+        manager.hashPassword(passwordEncoder);
         managerRepository.save(manager);
 
         //배경사진 추가

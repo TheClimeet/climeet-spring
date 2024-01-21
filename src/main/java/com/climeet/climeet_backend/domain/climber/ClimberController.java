@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class ClimberController {
     private final ClimberService climberService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * OAuth2.0 로그인 API
