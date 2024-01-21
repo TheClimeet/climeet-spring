@@ -26,14 +26,6 @@ public class Climber extends User {
     @Column(name = "social_id")
     private String socialId;
 
-    @NotNull
-    @Column(name = "access_token")
-    private String accessToken;
-
-    @NotNull
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "climbing_level")
     private ClimbingLevel climbingLevel;
@@ -48,11 +40,6 @@ public class Climber extends User {
 
     private boolean status = true;
 
-
-    public void updateToken(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-    }
 
     public void updateProfileName(String profileName) {
         this.profileName = profileName; // User 클래스의 profileName 필드를 업데이트
