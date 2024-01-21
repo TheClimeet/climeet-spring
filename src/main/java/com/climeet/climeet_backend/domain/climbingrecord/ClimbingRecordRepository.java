@@ -1,6 +1,5 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import jakarta.persistence.Tuple;
 import java.time.LocalDate;
 import java.util.List;
