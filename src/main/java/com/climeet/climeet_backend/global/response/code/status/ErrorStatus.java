@@ -18,9 +18,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //멤버 관련
     _EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER_001", "존재하지 않는 사용자입니다."),
-    _WRONG_LOGINID(HttpStatus.CONFLICT, "MEMBER_002", "존재하지 않는 ID입니다."),
-    _WRONG_PASSWORD(HttpStatus.CONFLICT, "MEMBER_003", "잘못된 비밀번호입니다."),
-    _DUPLICATE_LOGINID(HttpStatus.CONFLICT, "MEMBER_004", "중복된 ID입니다."),
+    _WRONG_LOGINID_PASSWORD(HttpStatus.CONFLICT, "MEMBER_002", "아이디 또는 비밀번호가 일치하지 않습니다."),
+    _DUPLICATE_LOGINID(HttpStatus.CONFLICT, "MEMBER_003", "중복된 ID입니다."),
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
