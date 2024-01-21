@@ -39,11 +39,28 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String profileImageUrl;
 
-    private Float AverageRating = 0.0F;
-
     private String layoutImageUrl;
 
+    private Float AverageRating = 0.0F;
+
+    private Float sumRating = 0.0F;
+
     private int reviewCount = 0;
+
+    public void reviewCreate(Float rating) {
+        this.sumRating += rating;
+        this.reviewCount++;
+        this.averageRatingCalculate();
+    }
+
+    public void averageRatingCalculate() {
+        if (this.reviewCount > 0) {
+            this.AverageRating = this.sumRating / this.reviewCount;
+        } else {
+            this.AverageRating = 0.0F;
+        }
+    }
+
 
     private int selectionCount = 0;
 
@@ -65,19 +82,19 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int thisWeekSelectionCount = 0;
 
-    public void thisWeekFollowCountUp(){
+    public void thisWeekFollowCountUp() {
         this.thisWeekFollowCount++;
     }
 
-    public void thisWeekFollowCountDown(){
+    public void thisWeekFollowCountDown() {
         this.thisWeekFollowCount--;
     }
 
-    public void thisWeekSelectionCountUp(){
+    public void thisWeekSelectionCountUp() {
         this.thisWeekSelectionCount++;
     }
 
-    public void thisWeekSelectionCountDown(){
+    public void thisWeekSelectionCountDown() {
         this.thisWeekSelectionCount--;
 
     }
