@@ -44,7 +44,7 @@ public class ReviewService {
 
         // 관리자가 등록된 암장인지 확인
         if(climbingGym.getManager() == null){
-            throw new GeneralException(ErrorStatus._UNREGISTERED_GYM);
+            throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
         }
 
         Climber climber = climberRepository.findById(createReviewRequest.getClimberId())

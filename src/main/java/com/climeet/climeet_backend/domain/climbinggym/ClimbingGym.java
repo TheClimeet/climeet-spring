@@ -28,8 +28,7 @@ public class ClimbingGym extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "manager_id")
+    @OneToOne(mappedBy = "climbingGym")
     private Manager manager;
 
     @OneToMany(mappedBy = "climbingGym")
