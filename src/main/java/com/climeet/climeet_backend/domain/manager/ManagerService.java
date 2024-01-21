@@ -61,7 +61,9 @@ public class ManagerService {
        ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-       //todo : 관리자 중복 매핑 예외 처리
+        if(gym.getManager()!=null){
+            throw new GeneralException(ErrorStatus._DUPLICATE_GYM_MANAGER);
+        }
 
         if(managerRepository.findByLoginId(createManagerRequest.getLoginId()).isPresent()){
             throw new GeneralException(ErrorStatus._DUPLICATE_LOGINID);
