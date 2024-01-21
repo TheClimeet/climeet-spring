@@ -17,11 +17,17 @@ public class ClimbingGymResponseDto {
 
         private Long id;
         private String name;
+        private Long managerId;
 
         public static ClimbingGymSimpleResponse toDTO(ClimbingGym climbingGym) {
+            Long managerId = null;
+            if(climbingGym.getManager() != null){
+                managerId = climbingGym.getManager().getId();
+            }
             return ClimbingGymSimpleResponse.builder()
                 .id(climbingGym.getId())
                 .name(climbingGym.getName())
+                .managerId(managerId)
                 .build();
         }
     }

@@ -10,7 +10,7 @@ public interface ClimbingGymRepository extends JpaRepository<ClimbingGym, Long> 
 
     Optional<ClimbingGym> findByName(String gymName);
 
-    List<ClimbingGym> findByNameContaining(String word);
+    List<ClimbingGym> findByNameContaining(String gymName);
 
-    List<ClimbingGym> findByNameContainingAndManagerIsNotNull(String word);
+    List<ClimbingGym> findByNameContainingAndManagerIsNotNull(String gymName);
 }
