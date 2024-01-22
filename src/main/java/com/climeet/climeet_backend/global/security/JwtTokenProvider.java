@@ -1,5 +1,6 @@
-package com.climeet.climeet_backend.domain.climber;
+package com.climeet.climeet_backend.global.security;
 
+import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
