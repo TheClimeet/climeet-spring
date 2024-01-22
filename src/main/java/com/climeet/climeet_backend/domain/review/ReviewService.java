@@ -29,10 +29,6 @@ public class ReviewService {
 
     @Transactional
     public void createReview(CreateReviewRequest createReviewRequest) {
-        // 리뷰 내용 길이 초과 확인
-        if (createReviewRequest.getContent().length() > 1000) {
-            throw new GeneralException(ErrorStatus._CONTENT_TOO_LARGE);
-        }
 
         // 리뷰 rating의 범위 확인
         if (createReviewRequest.getRating() < 0 || createReviewRequest.getRating() > 5

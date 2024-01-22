@@ -29,9 +29,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(summary = "암장 리뷰 작성")
-    @SwaggerApiError({ErrorStatus._CONTENT_TOO_LARGE, ErrorStatus._RATING_OUT_OF_RANGE,
-        ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER,
-        ErrorStatus._REVIEW_EXIST})
+    @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
+        ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._REVIEW_EXIST})
     @PostMapping("/review")
     public ResponseEntity<String> createReview(
         @RequestBody CreateReviewRequest createReviewRequest) {
