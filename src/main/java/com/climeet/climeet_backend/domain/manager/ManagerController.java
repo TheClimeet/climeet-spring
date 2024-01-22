@@ -25,9 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerController {
     private final ManagerService managerService;
 
-    /**
-     * [POST] 관리자 로그인 API
-     */
     @PostMapping("/login")
     @Operation(summary = "관리자 로그인", description = "관리자 로그인")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._WRONG_LOGINID_PASSWORD})
@@ -37,11 +34,6 @@ public class ManagerController {
         return ResponseEntity.ok(managerSimpleInfo);
     }
 
-
-
-    /**
-     * [POST] 관리자 회원가입 API
-     */
     @PostMapping("/signup")
     @Operation(summary = "관리자 회원가입", description = "관리자 회원가입 API")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._DUPLICATE_LOGINID})
