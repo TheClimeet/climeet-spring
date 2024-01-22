@@ -12,6 +12,7 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class RouteRecordService {
     private final RouteRepository routeRepository;
 
     @Transactional
-    public ApiResponse<String> addRouteRecord(CreateRouteRecordDto requestDto,
+    public ResponseEntity<String> addRouteRecord(CreateRouteRecordDto requestDto,
         ClimbingRecord climbingRecord) {
 
         Route route = routeRepository.findById(requestDto.getRouteId())
@@ -41,7 +42,7 @@ public class RouteRecordService {
         if (requestDto.getIsCompleted()) {
             climbingRecord.totalCompletedCountUp();
         }
-        return ApiResponse.onSuccess("루트 기록 성공");
+        return ResponseEntity.ok("루트 기록 성공");
 
     }
 
@@ -115,7 +116,7 @@ public class RouteRecordService {
     }
 
     @Transactional
-    public ApiResponse<String> deleteRouteRecord(Long id) {
+    public ResponseEntity<String> deleteRouteRecord(Long id) {
         RouteRecord routeRecord = routeRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD));
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
@@ -138,7 +139,7 @@ public class RouteRecordService {
         climbingRecord.attemptRouteCountDown();
 
         routeRecordRepository.delete(routeRecord);
-        return ApiResponse.onSuccess("루트기록이 삭제되었습니다.");
+        return ResponseEntity.ok("루트기록이 삭제되었습니다.");
     }
 
     private int newAvgDifficulty(int routeDifficulty, int oldAvgDifficulty, int oldCount,
