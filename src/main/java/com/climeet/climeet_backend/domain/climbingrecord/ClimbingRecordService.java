@@ -62,7 +62,7 @@ public class ClimbingRecordService {
         try {
             List<ClimbingRecord> recordList = climbingRecordRepository.findAll();
             return recordList.stream()
-                .map(ClimbingRecordSimpleInfo::new)
+                .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
                 .toList();
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
@@ -82,7 +82,7 @@ public class ClimbingRecordService {
                 .map(RouteRecordSimpleInfo::new)
                 .toList();
 
-        return new ClimbingRecordDetailInfo(climbingRecord, routeRecordSimpleInfoList);
+        return ClimbingRecordDetailInfo.toDTO(climbingRecord, routeRecordSimpleInfoList);
     }
 
     public List<ClimbingRecordSimpleInfo> getClimbingRecordsBetweenLocalDates(LocalDate startDate,
@@ -95,7 +95,7 @@ public class ClimbingRecordService {
             startDate, endDate);
         // Dto로 변환
         return climbingRecords.stream()
-            .map(ClimbingRecordSimpleInfo::new)
+            .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
             .collect(Collectors.toList());
     }
 
@@ -126,7 +126,7 @@ public class ClimbingRecordService {
 
         climbingRecord.update(oldDate, oldTime);
 
-        return new ClimbingRecordSimpleInfo(climbingRecord);
+        return ClimbingRecordSimpleInfo.toDTO(climbingRecord);
     }
 
     @Transactional
@@ -164,7 +164,7 @@ public class ClimbingRecordService {
             endDate
             );
 
-        return new ClimbingRecordStatisticsInfo(
+        return ClimbingRecordStatisticsInfo.toDTO(
             time,
             totalCompletedCount,
             attemptRouteCount,

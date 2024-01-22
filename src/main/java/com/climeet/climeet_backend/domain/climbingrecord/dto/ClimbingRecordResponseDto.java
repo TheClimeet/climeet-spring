@@ -7,17 +7,19 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public class ClimbingRecordResponseDto {
 
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class ClimbingRecordSimpleInfo {
 
-        private Long ClimbingRecordId;
+        private Long climbingRecordId;
         private LocalDate date;
         private LocalTime time;
         private Integer totalCompletedCount;
@@ -25,22 +27,26 @@ public class ClimbingRecordResponseDto {
         private Integer avgDifficulty;
         private Long gymId;
 
-        public ClimbingRecordSimpleInfo(ClimbingRecord climbingRecord) {
-            this.ClimbingRecordId = climbingRecord.getId();
-            this.date = climbingRecord.getClimbingDate();
-            this.avgDifficulty = climbingRecord.getAvgDifficulty();
-            this.time = climbingRecord.getClimbingTime();
-            this.totalAttemptCount = climbingRecord.getTotalAttemptCount();
-            this.totalCompletedCount = climbingRecord.getTotalCompletedCount();
-            this.gymId = climbingRecord.getId();
+        public static ClimbingRecordSimpleInfo toDTO(ClimbingRecord climbingRecord) {
+            return ClimbingRecordSimpleInfo.builder()
+                .climbingRecordId(climbingRecord.getId())
+                .date(climbingRecord.getClimbingDate())
+                .avgDifficulty(climbingRecord.getAvgDifficulty())
+                .time(climbingRecord.getClimbingTime())
+                .totalAttemptCount(climbingRecord.getTotalAttemptCount())
+                .totalCompletedCount(climbingRecord.getTotalCompletedCount())
+                .gymId(climbingRecord.getGym().getId())
+                .build();
         }
     }
 
     @Getter
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class ClimbingRecordDetailInfo {
 
-        private Long ClimbingRecordId;
+        private Long climbingRecordId;
         private LocalDate date;
         private LocalTime time;
         private Integer totalCompletedCount;
@@ -49,23 +55,26 @@ public class ClimbingRecordResponseDto {
         private Long gymId;
         private List<RouteRecordSimpleInfo> routeRecordSimpleInfoList;
 
-        public ClimbingRecordDetailInfo(ClimbingRecord climbingRecord,
+        public static ClimbingRecordDetailInfo toDTO(ClimbingRecord climbingRecord,
             List<RouteRecordSimpleInfo> routeRecordSimpleInfoList) {
-            this.ClimbingRecordId = climbingRecord.getId();
-            this.date = climbingRecord.getClimbingDate();
-            this.avgDifficulty = climbingRecord.getAvgDifficulty();
-            this.time = climbingRecord.getClimbingTime();
-            this.totalAttemptCount = climbingRecord.getTotalAttemptCount();
-            this.totalCompletedCount = climbingRecord.getTotalCompletedCount();
-            this.gymId = climbingRecord.getGym().getId();
-            this.routeRecordSimpleInfoList = routeRecordSimpleInfoList;
+
+            return ClimbingRecordDetailInfo.builder()
+                .climbingRecordId(climbingRecord.getId())
+                .date(climbingRecord.getClimbingDate())
+                .avgDifficulty(climbingRecord.getAvgDifficulty())
+                .time(climbingRecord.getClimbingTime())
+                .totalAttemptCount(climbingRecord.getTotalAttemptCount())
+                .totalCompletedCount(climbingRecord.getTotalCompletedCount())
+                .gymId(climbingRecord.getGym().getId())
+                .routeRecordSimpleInfoList(routeRecordSimpleInfoList)
+                .build();
         }
     }
 
     @Getter
     @NoArgsConstructor
-    @Setter
     @AllArgsConstructor
+    @Builder
     public static class ClimbingRecordStatisticsInfo {
 
         private LocalTime time;
@@ -73,5 +82,15 @@ public class ClimbingRecordResponseDto {
         private Long attemptRouteCount;
         private List<Map<Long, Long>> difficulty;
 
+        public static ClimbingRecordStatisticsInfo toDTO(LocalTime time, Long totalCompletedCount,
+            Long attemptRouteCount, List<Map<Long, Long>> difficulty) {
+
+            return ClimbingRecordStatisticsInfo.builder()
+                .time(time)
+                .totalCompletedCount(totalCompletedCount)
+                .attemptRouteCount(attemptRouteCount)
+                .difficulty(difficulty)
+                .build();
+        }
     }
 }
