@@ -49,9 +49,9 @@ public class ClimberController {
         if(provider.equals("KAKAO")){
             accessToken = climberService.refreshKakaoToken(refreshToken);
         }
-//        if(provider.equals("NAVER")){
-//            accessToken = climberService.refreshNaverToken(refreshToken);
-//        }
+        if(provider.equals("NAVER")){
+            accessToken = climberService.refreshNaverToken(refreshToken);
+        }
         if(accessToken==null){
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }

@@ -10,7 +10,6 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserService;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
@@ -29,7 +28,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -239,25 +237,50 @@ public class ClimberService {
 
 
     @Value("${spring.security.oauth2.client.registration.kakao.client_id}")
-    private String clientId;
+    private String kakaoClientId;
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
-    private String clientSecret;
-    public String  refreshKakaoToken(String refreshToken){
+    private String kakaoClientSecret;
+    public String refreshKakaoToken(String refreshToken){
         WebClient webClient = WebClient.builder().build();
 
         Mono<ClimberTokenRefreshResponse> mono = webClient.post()
             .uri("https://kauth.kakao.com/oauth/token")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8")
             .body(BodyInserters.fromFormData("grant_type", "refresh_token")
-                .with("client_id", clientId )
+                .with("client_id", kakaoClientId)
                 .with("refresh_token", refreshToken)
-                .with("client_secret", clientSecret))
+                .with("client_secret", kakaoClientSecret))
             .retrieve()
             .bodyToMono(ClimberTokenRefreshResponse.class);
 
         ClimberTokenRefreshResponse response = mono.block();
 
         return response!=null ? response.getAccessToken() : null;
+
+    }
+    @Value("${spring.security.oauth2.client.registration.naver.client_id}")
+    private String naverClientId;
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    private String naverClientSecret;
+    public String refreshNaverToken(String refreshToken){
+        WebClient webClient = WebClient.builder().build();
+
+        Mono<ClimberTokenRefreshResponse> mono = webClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .scheme("https")
+                .host("nid.naver.com")
+                .path("/oauth2.0/token")
+                .queryParam("grant_type", "refresh_token")
+                .queryParam("client_id", naverClientId)
+                .queryParam("client_secret", naverClientSecret)
+                .queryParam("refresh_token", refreshToken)
+                .build())
+            .retrieve()
+            .bodyToMono(ClimberTokenRefreshResponse.class);
+
+        ClimberTokenRefreshResponse response = mono.block();
+
+        return response != null ? response.getAccessToken() : null;
 
     }
 
