@@ -43,10 +43,6 @@ public class ManagerController {
        return ResponseEntity.ok("관리자 회원가입이 성공적으로 완료되었습니다. ");
     }
 
-
-    /**
-     * [GET] 암장 관리자 등록 여부 확인
-     */
     @Operation(summary = "암장 등록 중복 확인", description = "이미 관리자가 등록된 암장인지 확인하는 API \n\n **이미 관리자 등록 되어있음** : false \n\n **관리자 등록 안되어 있음** : true")
     @GetMapping("/isRegistered/{gymName}")
     public ResponseEntity<Boolean> isRegistered(@PathVariable String gymName){
@@ -55,9 +51,6 @@ public class ManagerController {
     }
 
 
-    /**
-     * [GET] 관리자 ID 중복확인
-     */
     @GetMapping("/check-id/{loginId}")
     @Operation(summary = "관리자 ID 중복 확인", description = "**이미 존재하는 ID** : false \n\n **사용 가능한 ID** : true")
     public ResponseEntity<Boolean> checkLoginId(@PathVariable String loginId){

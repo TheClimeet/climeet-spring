@@ -10,6 +10,7 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.domain.user.UserService;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
@@ -44,6 +45,7 @@ public class ClimberService {
     private final ManagerRepository managerRepository;
     private final FollowRelationshipService followRelationshipService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
@@ -258,7 +260,7 @@ public class ClimberService {
         return response!=null ? response.getAccessToken() : null;
 
     }
-    @Value("${spring.security.oauth2.client.registration.naver.client_id}")
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String naverClientId;
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
@@ -282,6 +284,11 @@ public class ClimberService {
 
         return response != null ? response.getAccessToken() : null;
 
+    }
+
+    @Transactional
+    public boolean checkNicknameDuplication(String nickName){
+        return userRepository.findByprofileName(nickName).isPresent();
     }
 
 

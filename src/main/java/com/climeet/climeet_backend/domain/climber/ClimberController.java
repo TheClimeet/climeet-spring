@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -61,7 +63,13 @@ public class ClimberController {
         }
         return ResponseEntity.ok(accessToken);
 
+    }
 
+    @GetMapping("/check-nickname/{nickName}")
+    @Operation(summary = "클라이머 닉네임 중복 확인", description = "**이미 존재하는 닉네임** : false \n\n **사용 가능한 닉네임** : true")
+    public ResponseEntity<Boolean> checkNickName(@PathVariable String nickName){
+        boolean isDuplicated = !climberService.checkNicknameDuplication(nickName);
+        return ResponseEntity.ok(isDuplicated);
 
     }
 
