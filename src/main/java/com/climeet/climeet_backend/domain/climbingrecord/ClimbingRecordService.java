@@ -12,7 +12,6 @@ import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
-import com.climeet.climeet_backend.global.response.ApiResponse;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.persistence.Tuple;
