@@ -23,9 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClimberController {
     private final ClimberService climberService;
 
-    /**
-     * OAuth2.0 로그인 API
-     */
     @PostMapping("/login")
     @Operation(summary = "OAuth 2.0 소셜 로그인", description = "**Enum 설명**\n\n**ClimbingLevel** : BEGINNER, NOVICE, INTERMEDIATE, ADVANCED, EXPERT\n\n**DiscoveryChannel** : INSTAGRAM_FACEBOOK, YOUTUBE, FRIEND_RECOMMENDATION, BLOG_CAFE_COMMUNITY, OTHER\n\n**SocialType(provider에 입력)**: KAKAO, NAVER \n\n **로그인 시 climberRequestDto 빈 값으로 보내기, 회원가입 시에만 채워서 보내기!**")
     public ResponseEntity<ClimberResponseDto> login(@RequestParam String provider, @RequestHeader("Authorization") String accessToken, @RequestBody(required = false)
@@ -33,11 +30,14 @@ public class ClimberController {
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring("Bearer ".length());
         }
+        climberService.isTokenExpired(accessToken, provider);
         ClimberResponseDto climberResponseDto = climberService.handleSocialLogin(provider, accessToken, climberRequestDto);
 
         return ResponseEntity.ok(climberResponseDto);
 
     }
+
+
 
 
 

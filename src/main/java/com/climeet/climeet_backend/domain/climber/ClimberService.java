@@ -21,10 +21,12 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -186,4 +188,50 @@ public class ClimberService {
         return userInfo;
 
     }
+
+    public Map<String ,Object> isTokenExpired(String accessToken, String provider){
+        if(!provider.equals("KAKAO") && !provider.equals("NAVER")) {
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+        if(provider.equals("KAKAO")){
+            return isKakaoTokenExpired(accessToken);
+
+        }
+            return isNaverTokenExpired(accessToken);
+
+    }
+
+    public Map<String, Object> isKakaoTokenExpired(String accessToken){
+        return WebClient.create()
+            .get()
+            .uri("https://kapi.kakao.com/v1/user/access_token_info")
+            .headers(httpHeaders -> httpHeaders.setBearerAuth(String.valueOf(accessToken)))
+            .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+                Mono.error(new GeneralException(ErrorStatus._EXPIRED_JWT)))
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block();
+
+    }
+
+    public Map<String, Object> isNaverTokenExpired(String accessToken){
+        return WebClient.create()
+            .get()
+            .uri("https://openapi.naver.com/v1/nid/me")
+            .headers(httpHeaders -> httpHeaders.setBearerAuth(String.valueOf(accessToken)))
+            .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+                Mono.error(new GeneralException(ErrorStatus._EXPIRED_JWT)))
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block();
+
+    }
+
+//    public Map<String, String> updateToken(String refreshToken){
+//        WebClient.create()
+//            .
+//    }
+
 }
