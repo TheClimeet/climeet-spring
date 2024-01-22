@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberTokenRefreshResponse;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
@@ -20,16 +21,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@PropertySource("classpath:application-dev.yml")
 public class ClimberService {
 
     private final ClimberRepository climberRepository;
@@ -229,9 +237,30 @@ public class ClimberService {
 
     }
 
-//    public Map<String, String> updateToken(String refreshToken){
-//        WebClient.create()
-//            .
-//    }
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client_id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String clientSecret;
+    public String  refreshKakaoToken(String refreshToken){
+        WebClient webClient = WebClient.builder().build();
+
+        Mono<ClimberTokenRefreshResponse> mono = webClient.post()
+            .uri("https://kauth.kakao.com/oauth/token")
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8")
+            .body(BodyInserters.fromFormData("grant_type", "refresh_token")
+                .with("client_id", clientId )
+                .with("refresh_token", refreshToken)
+                .with("client_secret", clientSecret))
+            .retrieve()
+            .bodyToMono(ClimberTokenRefreshResponse.class);
+
+        ClimberTokenRefreshResponse response = mono.block();
+
+        return response!=null ? response.getAccessToken() : null;
+
+    }
+
+
 
 }

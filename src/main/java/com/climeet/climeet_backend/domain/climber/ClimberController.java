@@ -2,11 +2,14 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +37,27 @@ public class ClimberController {
         ClimberResponseDto climberResponseDto = climberService.handleSocialLogin(provider, accessToken, climberRequestDto);
 
         return ResponseEntity.ok(climberResponseDto);
+
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<String> refreshToken(@RequestParam String provider, @RequestBody String refreshToken){
+        if (refreshToken != null && refreshToken.startsWith("Bearer ")) {
+            refreshToken = refreshToken.substring("Bearer ".length());
+        }
+        String accessToken = null;
+        if(provider.equals("KAKAO")){
+            accessToken = climberService.refreshKakaoToken(refreshToken);
+        }
+//        if(provider.equals("NAVER")){
+//            accessToken = climberService.refreshNaverToken(refreshToken);
+//        }
+        if(accessToken==null){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+        return ResponseEntity.ok(accessToken);
+
+
 
     }
 
