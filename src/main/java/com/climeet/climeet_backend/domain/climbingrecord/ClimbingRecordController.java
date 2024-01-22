@@ -5,6 +5,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordReque
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
@@ -84,5 +85,6 @@ public class ClimbingRecordController {
         @RequestParam int year,
         @RequestParam int month) {
         return ResponseEntity.ok(climbingRecordService.getClimbingRecordStatistics(year,month));
+
     }
 }

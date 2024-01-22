@@ -21,6 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
+    _EMPTY_MANAGER_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 존재하지 않는 암장입니다"),
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
@@ -50,9 +51,19 @@ public enum ErrorStatus implements BaseErrorCode {
         "시점상 시작 날짜는 종료 날짜보다 같거나 앞서야 합니다."),
 
     //루트 기록 관련
-    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다.");
+    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다."),
+
+    //숏츠 관련
+    _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다."),
+
+    //암장 리뷰 관련
+    _CONTENT_TOO_LARGE(HttpStatus.CONFLICT, "REVIEW_001", "리뷰 최대 입력 길이를 초과했습니다."),
+    _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_002", "rating의 범위가 올바르지 않습니다."),
+    _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_003", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다.")
 
 
+
+    ;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

@@ -13,6 +13,5 @@ public abstract class Oauth2UserInfo {
         return attributes;
     }
 
-    public abstract Long getID();
 
 }

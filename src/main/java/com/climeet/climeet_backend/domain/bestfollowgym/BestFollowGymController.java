@@ -1,11 +1,11 @@
 package com.climeet.climeet_backend.domain.bestfollowgym;
 
 import com.climeet.climeet_backend.domain.bestfollowgym.dto.BestFollowGymResponseDto.BestFollowGymSimpleDto;
-import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ public class BestFollowGymController {
      */
     @Operation(summary = "[팔로우 순] 이번주 짐 랭킹 조회")
     @GetMapping("/follow")
-    public ApiResponse<List<BestFollowGymSimpleDto>> findGymRankingOrderFollowCount() {
-        return ApiResponse.onSuccess(bestFollowGymService.findGymRankingOrderFollowCount());
+    public ResponseEntity<List<BestFollowGymSimpleDto>> findGymRankingOrderFollowCount() {
+        return ResponseEntity.ok(bestFollowGymService.findGymRankingOrderFollowCount());
     }
 }
