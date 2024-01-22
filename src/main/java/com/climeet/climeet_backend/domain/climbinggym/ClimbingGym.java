@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,7 +29,7 @@ public class ClimbingGym extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "climbingGym")
+    @OneToOne(mappedBy = "climbingGym", cascade = CascadeType.ALL)
     private Manager manager;
 
     @OneToMany(mappedBy = "climbingGym")

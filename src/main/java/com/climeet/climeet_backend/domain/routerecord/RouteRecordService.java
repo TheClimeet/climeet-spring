@@ -5,7 +5,6 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
-
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -37,7 +36,7 @@ public class RouteRecordService {
 
         climbingRecord.setAttemptCount(count);
 
-        route.thisWeekSelectionCountDown();
+        route.thisWeekSelectionCountUp();
 
         if (requestDto.getIsCompleted()) {
             climbingRecord.totalCompletedCountUp();
@@ -108,6 +107,8 @@ public class RouteRecordService {
         Route route = routeRepository.findById(oldRouteId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
+        climbingRecord.attemptRouteCountUp();
+
         routeRecord.update(oldAttemptTime, oldIsCompleted, route);
 
         return new RouteRecordSimpleInfo(routeRecord);
@@ -133,6 +134,8 @@ public class RouteRecordService {
         climbingRecord.setAttemptCount(-routeRecord.getAttemptCount());
 
         routeRecord.getRoute().thisWeekSelectionCountDown();
+
+        climbingRecord.attemptRouteCountDown();
 
         routeRecordRepository.delete(routeRecord);
         return ResponseEntity.ok("루트기록이 삭제되었습니다.");
