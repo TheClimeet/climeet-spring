@@ -20,7 +20,6 @@ public class ReviewResponseDto {
         private Long gymId;
         private Float averageRating;
         private int reviewCount;
-        @Setter
         private ReviewDetailResponse myReview;
 
         public static ReviewSummaryDetailResponse toDTO(ClimbingGym climbingGym,
