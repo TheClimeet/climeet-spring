@@ -35,6 +35,8 @@ public class ClimbingRecordService {
     private final RouteRecordService routeRecordService;
     private final RouteRecordRepository routeRecordRepository;
 
+    public static final int START_DAY_OF_MONTH = 1;
+
 
     @Transactional
     public ApiResponse<String> createClimbingRecord(CreateClimbingRecordDto requestDto) {
@@ -140,7 +142,8 @@ public class ClimbingRecordService {
     }
 
     public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(int year, int month) {
-        LocalDate startDate = LocalDate.of(year, month, 1);
+
+        LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
         Tuple crTuple = climbingRecordRepository.getStatisticsInfoBetween(startDate, endDate);
