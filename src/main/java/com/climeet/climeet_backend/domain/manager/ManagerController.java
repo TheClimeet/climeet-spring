@@ -3,6 +3,8 @@ package com.climeet.climeet_backend.domain.manager;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class ManagerController {
      */
     @PostMapping("/login")
     @Operation(summary = "관리자 로그인", description = "관리자 로그인")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._WRONG_LOGINID_PASSWORD})
     public ResponseEntity<ManagerSimpleInfo> login(@RequestBody
         CreateAccessTokenRequest createAccessTokenRequest){
         ManagerSimpleInfo managerSimpleInfo = managerService.login(createAccessTokenRequest);
@@ -41,6 +44,7 @@ public class ManagerController {
      */
     @PostMapping("/signup")
     @Operation(summary = "관리자 회원가입", description = "관리자 회원가입 API")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._DUPLICATE_LOGINID})
     public ResponseEntity<String> signUp(@RequestBody
         CreateManagerRequest createManagerRequest){
         managerService.signUp(createManagerRequest);

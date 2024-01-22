@@ -35,10 +35,10 @@ public class ManagerService {
         String loginId = createAccessTokenRequest.getLoginId();
         String password = createAccessTokenRequest.getPassword();
         Manager IdManager = managerRepository.findByLoginId(loginId)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID));
+                .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD));
 
         if(!IdManager.checkPassword(password, passwordEncoder)){
-            throw new GeneralException(ErrorStatus._WRONG_PASSWORD);
+            throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(IdManager.getId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
