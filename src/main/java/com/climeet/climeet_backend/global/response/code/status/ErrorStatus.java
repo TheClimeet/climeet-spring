@@ -62,7 +62,8 @@ public enum ErrorStatus implements BaseErrorCode {
     //암장 리뷰 관련
     _CONTENT_TOO_LARGE(HttpStatus.CONFLICT, "REVIEW_001", "리뷰 최대 입력 길이를 초과했습니다."),
     _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_002", "rating의 범위가 올바르지 않습니다."),
-    _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_003", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다.")
+    _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_003", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다."),
+    _EMPTY_REVIEW(HttpStatus.CONFLICT, "REVIEW_004", "리뷰 내용이 없습니다.")
 
 
 

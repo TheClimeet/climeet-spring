@@ -5,17 +5,12 @@ import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.review.dto.ReviewRequestDto.CreateReviewRequest;
-import com.climeet.climeet_backend.domain.route.Route;
-import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
-import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -43,7 +38,7 @@ public class ReviewService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         // 관리자가 등록된 암장인지 확인
-        if(climbingGym.getManager() == null){
+        if (climbingGym.getManager() == null) {
             throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
         }
 
@@ -61,6 +56,41 @@ public class ReviewService {
         climbingGym.reviewCreate(createReviewRequest.getRating());
 
         reviewRepository.save(Review.toEntity(createReviewRequest, climbingGym, climber));
+    }
+
+
+    @Transactional
+    public void changeReview(CreateReviewRequest changeReviewRequest) {
+        // 리뷰 rating의 범위 확인
+        if (changeReviewRequest.getRating() < 0 || changeReviewRequest.getRating() > 5
+            || changeReviewRequest.getRating() % 0.5 != 0) {
+            throw new GeneralException(ErrorStatus._RATING_OUT_OF_RANGE);
+        }
+
+        ClimbingGym climbingGym = climbingGymRepository.findById(
+                changeReviewRequest.getClimbingGymId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        // 관리자가 등록된 암장인지 확인
+        if (climbingGym.getManager() == null) {
+            throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
+        }
+
+        Climber climber = climberRepository.findById(changeReviewRequest.getClimberId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
+
+        // 리뷰 데이터 불러오기
+        Review review = reviewRepository.findByClimbingGymAndClimber(
+                climbingGym, climber)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_REVIEW));
+
+        // 리뷰 추가로 인한 평균 리뷰 갱신
+        climbingGym.reviewChange(review.getRating(), changeReviewRequest.getRating());
+
+        review.setRating(changeReviewRequest.getRating());
+        review.setContent(changeReviewRequest.getContent());
+
+        reviewRepository.save(review);
     }
 
 }
