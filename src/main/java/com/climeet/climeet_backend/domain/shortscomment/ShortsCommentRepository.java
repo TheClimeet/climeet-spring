@@ -1,7 +1,5 @@
 package com.climeet.climeet_backend.domain.shortscomment;
 
-import com.climeet.climeet_backend.domain.user.User;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

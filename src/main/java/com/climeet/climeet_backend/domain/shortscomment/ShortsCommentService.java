@@ -45,7 +45,7 @@ public class ShortsCommentService {
 
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._Empty_SHORTS_COMMENT));
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
             if(parentComment.getChildCommentCount() == 0) {
                 shortsComment.updateIsFirstChildTrue();
             }
@@ -61,7 +61,7 @@ public class ShortsCommentService {
         Pageable pageable = PageRequest.of(page, size);
         Slice<ShortsComment> parentCommentList = shortsCommentRepository.findParentCommentsByShortsIdOrderedByCreatedAtAsc(
                 shortsId, pageable)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._Empty_SHORTS_COMMENT));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
         List<ShortsComment> shortsCommentIncludeChildList = fetchParentAndFirstChildComments(
             parentCommentList.getContent());
@@ -94,7 +94,7 @@ public class ShortsCommentService {
         Pageable pageable = PageRequest.of(page, size);
         Slice<ShortsComment> childCommentList = shortsCommentRepository.findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtAsc(
                 shortsId, parentCommentId, pageable)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._Empty_SHORTS_COMMENT));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
         Map<Long, CommentLikeStatus> likeStatusMap = shortsCommentLikeService.fetchUserLikeStatuses(
             user, childCommentList.getContent());

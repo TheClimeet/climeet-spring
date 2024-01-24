@@ -67,7 +67,7 @@ public class ShortsComment extends BaseTimeEntity {
 
     public void updateIsFirstChildTrue() {
         this.isFirstChild = true;
-    };
+    }
 
     public boolean isParentComment() {
         return childCommentCount != 0;

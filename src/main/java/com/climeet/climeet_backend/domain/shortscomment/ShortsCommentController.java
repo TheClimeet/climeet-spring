@@ -29,6 +29,7 @@ public class ShortsCommentController {
     private final ShortsCommentService shortsCommentService;
 
     @Operation(summary = "숏츠 댓글 작성")
+    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS, ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PostMapping("/shorts/{shortsId}/shortsComments")
     public ResponseEntity<String> createShortsComment(
         @CurrentUser User user,
@@ -41,7 +42,7 @@ public class ShortsCommentController {
     }
 
     @Operation(summary = "숏츠 댓글 조회")
-    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._DUPLICATE_LOGINID, ErrorStatus._DUPLICATE_LOGINID})
+    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @GetMapping("/shorts/{shortsId}")
     public ResponseEntity<PageResponseDto<List<ShortsCommentParentResponse>>> findShortsCommentList(
         @CurrentUser User user,
@@ -53,6 +54,7 @@ public class ShortsCommentController {
     }
 
     @Operation(summary = "숏츠 대댓글 조회")
+    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @GetMapping("/shorts/{shortsId}/{parentCommentId}")
     public ResponseEntity<PageResponseDto<List<ShortsCommentChildResponse>>> findShortsChildCommentList(
         @CurrentUser User user,
