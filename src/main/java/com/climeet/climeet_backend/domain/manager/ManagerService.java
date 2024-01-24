@@ -48,8 +48,8 @@ public class ManagerService {
 
     }
     @Transactional
-    public boolean checkManagerRegistration(String gymName){
-        ClimbingGym gym = climbingGymRepository.findByName(gymName)
+    public boolean checkManagerRegistration(Long gymId){
+        ClimbingGym gym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         return managerRepository.existsByClimbingGym(gym);
