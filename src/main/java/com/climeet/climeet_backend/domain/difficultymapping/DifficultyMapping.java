@@ -1,12 +1,9 @@
 package com.climeet.climeet_backend.domain.difficultymapping;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class DifficultyMapping extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,12 +28,15 @@ public class DifficultyMapping extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ClimbingGym climbingGym;
 
-    @Enumerated(EnumType.STRING)
-    private ClimeetDifficulty climeetDifficulty;
+    @NotNull
+    private int climeetDifficulty;
+
+    @NotNull
+    private int gymDifficulty;
 
     @NotNull
     @Column(length = 10)
-    private String gymDifficulty;
+    private String gymDifficultyName;
 
     @NotNull
     @Column(length = 7)
