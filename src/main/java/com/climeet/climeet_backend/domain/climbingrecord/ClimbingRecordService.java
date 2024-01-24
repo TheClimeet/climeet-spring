@@ -38,10 +38,13 @@ public class ClimbingRecordService {
     public static final int START_DAY_OF_MONTH = 1;
 
 
+    /**
+     * 클라이밍기록 생성(루트기록생성포함)
+     */
     @Transactional
     public ResponseEntity<String> createClimbingRecord(CreateClimbingRecordDto requestDto) {
         ClimbingGym climbingGym = gymRepository.findById(requestDto.getGymId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
         ClimbingRecord savedClimbingRecord = climbingRecordRepository
             .save(ClimbingRecord.toEntity(requestDto, climbingGym));
@@ -58,21 +61,26 @@ public class ClimbingRecordService {
         return ResponseEntity.ok("클라이밍 기록생성 성공");
     }
 
+    /**
+     * 클라이밍 간편기록 전체 조회
+     */
     public List<ClimbingRecordSimpleInfo> getClimbingRecords() {
-        try {
-            List<ClimbingRecord> recordList = climbingRecordRepository.findAll();
-            return recordList.stream()
-                .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
-                .toList();
-        } catch (Exception e) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        List<ClimbingRecord> recordList = climbingRecordRepository.findAll();
+        if(recordList.isEmpty()){
+            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
         }
+        return recordList.stream()
+            .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
+            .toList();
     }
 
 
+    /**
+     * 클라이밍 상세기록 Id로 조회
+     */
     public ClimbingRecordDetailInfo getClimbingRecordById(Long climbingRecordId) {
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(climbingRecordId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
         List<RouteRecord> routeRecordList = routeRecordRepository.findAllByClimbingRecordId(
             climbingRecordId);
@@ -85,28 +93,39 @@ public class ClimbingRecordService {
         return ClimbingRecordDetailInfo.toDTO(climbingRecord, routeRecordSimpleInfoList);
     }
 
+    /**
+     * 클라이밍 간편기록 날짜범위조회
+     */
     public List<ClimbingRecordSimpleInfo> getClimbingRecordsBetweenLocalDates(LocalDate startDate,
         LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new GeneralException(ErrorStatus._INVALID_DATE_RANGE);
         }
 
-        List<ClimbingRecord> climbingRecords = climbingRecordRepository.findByClimbingDateBetween(
+        List<ClimbingRecord> climbingRecordList = climbingRecordRepository.findByClimbingDateBetween(
             startDate, endDate);
+
+        if(climbingRecordList.isEmpty()){
+            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
+        }
+
         // Dto로 변환
-        return climbingRecords.stream()
+        return climbingRecordList.stream()
             .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
             .collect(Collectors.toList());
     }
 
 
+    /**
+     * 클라이밍 기록 수정
+     */
     // TODO: 2024/01/21 업데이트 될 때 routeRecordDate도 업데이트
     @Transactional
     public ClimbingRecordSimpleInfo updateClimbingRecord(Long id,
         UpdateClimbingRecordDto requestDto) {
 
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
         LocalDate oldDate = climbingRecord.getClimbingDate();
         LocalTime oldTime = climbingRecord.getClimbingTime();
@@ -132,7 +151,7 @@ public class ClimbingRecordService {
     @Transactional
     public ResponseEntity<String> deleteClimbingRecord(Long id) {
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
         climbingRecordRepository.deleteById(id);
 
@@ -149,7 +168,7 @@ public class ClimbingRecordService {
         Tuple crTuple = climbingRecordRepository.getStatisticsInfoBetween(startDate, endDate);
 
         if (crTuple.get("totalTime") == null) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
         }
         Double totalTime = (Double) crTuple.get("totalTime");
         LocalTime time = convertDoubleToTime(totalTime);
@@ -171,8 +190,8 @@ public class ClimbingRecordService {
             difficultyList
         );
     }
-// TODO: 2024/01/21 24시간을 초과했을 때 에러처리
 
+// TODO: 2024/01/21 24시간을 초과했을 때 에러처리
     public static LocalTime convertDoubleToTime(double totalSeconds) {
         int seconds = (int) totalSeconds;
         int hours = (seconds / 3600) % 24;

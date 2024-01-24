@@ -3,6 +3,8 @@ package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -29,18 +31,21 @@ public class RouteRecordController {
 
     @Operation(summary = "루트 기록 전체 조회")
     @GetMapping
+    @SwaggerApiError({ErrorStatus._EMPTY_ROUTE_RECORD})
     public ResponseEntity<List<RouteRecordSimpleInfo>> getRouteRecords() {
         return ResponseEntity.ok(routeRecordService.getRouteRecords());
     }
 
-    @Operation(summary = "루트 기록 Id 조회")
+    @Operation(summary = "루트 기록 id 조회")
     @GetMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._ROUTE_RECORD_NOT_FOUND, ErrorStatus._EMPTY_ROUTE})
     public ResponseEntity<RouteRecordSimpleInfo> getRouteRecord(@PathVariable Long id) {
         return ResponseEntity.ok(routeRecordService.getRouteRecord(id));
     }
 
     @Operation(summary = "RouteRecord 수정")
     @PatchMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._ROUTE_RECORD_NOT_FOUND})
     public ResponseEntity<RouteRecordSimpleInfo> updateRouteRecord(
         @PathVariable Long id,
         @RequestBody UpdateRouteRecordDto updateRouteRecordDto) {
@@ -49,6 +54,7 @@ public class RouteRecordController {
 
     @Operation(summary = "RouteRecord 삭제")
     @DeleteMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._ROUTE_RECORD_NOT_FOUND})
     public ResponseEntity<String> deleteRouteRecord(@PathVariable Long id){
         routeRecordService.deleteRouteRecord(id);
         return ResponseEntity.ok("루트기록이 삭제되었습니다.");

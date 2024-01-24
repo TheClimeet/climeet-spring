@@ -5,7 +5,8 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordReque
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
-
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
@@ -34,13 +35,16 @@ public class ClimbingRecordController {
 
     @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
-    public ResponseEntity<String> addClimbingRecord(@RequestBody CreateClimbingRecordDto requestDto) {
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_ROUTE})
+    public ResponseEntity<String> addClimbingRecord(
+        @RequestBody CreateClimbingRecordDto requestDto) {
         climbingRecordService.createClimbingRecord(requestDto);
         return ResponseEntity.ok("클라이밍 기록을 생성하였습니다.");
     }
 
     @Operation(summary = "클라이밍 간편 기록 전체 조회")
     @GetMapping
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD})
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecords() {
         return ResponseEntity.ok(climbingRecordService.getClimbingRecords());
     }
@@ -48,6 +52,7 @@ public class ClimbingRecordController {
 
     @Operation(summary = "클라이밍 기록 날짜 조회")
     @GetMapping("/between-dates")
+    @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE, ErrorStatus._EMPTY_CLIMBING_RECORD})
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -56,8 +61,9 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecords);
     }
 
-    @Operation(summary = "클라이밍 기록 id 조회(루트기록들 포함)")
+    @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.)")
     @GetMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
     public ResponseEntity<ClimbingRecordDetailInfo> addClimbingRecord(@PathVariable Long id) {
         return ResponseEntity.ok(climbingRecordService.getClimbingRecordById(id));
     }
@@ -65,6 +71,7 @@ public class ClimbingRecordController {
 
     @Operation(summary = "ClimbingRecord 수정")
     @PatchMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
     public ResponseEntity<ClimbingRecordSimpleInfo> updateClimbingRecord(
         @PathVariable Long id,
         @RequestBody UpdateClimbingRecordDto updateClimbingRecordDto) {
@@ -74,6 +81,7 @@ public class ClimbingRecordController {
 
     @Operation(summary = "ClimbingRecord 삭제")
     @DeleteMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
     public ResponseEntity<String> deleteClimbingRecord(@PathVariable Long id) {
         climbingRecordService.deleteClimbingRecord(id);
         return ResponseEntity.ok("클라이밍 기록을 삭제하였습니다.");
@@ -81,10 +89,10 @@ public class ClimbingRecordController {
 
     @Operation(summary = "월별 운동기록 통계")
     @GetMapping("/statistics")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD})
     public ResponseEntity<ClimbingRecordStatisticsInfo> findClimbingStatistics(
         @RequestParam int year,
         @RequestParam int month) {
-        return ResponseEntity.ok(climbingRecordService.getClimbingRecordStatistics(year,month));
-
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecordStatistics(year, month));
     }
 }

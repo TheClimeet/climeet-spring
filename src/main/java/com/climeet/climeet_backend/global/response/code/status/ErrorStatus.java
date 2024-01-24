@@ -46,12 +46,14 @@ public enum ErrorStatus implements BaseErrorCode {
     _FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다."),
 
     //운동 기록 관련
-    _EMPTY_CLIMBING_RECORD(HttpStatus.CONFLICT, "CLIMBING_RECORD_001", "존재하지 않는 암장운동기록입니다."),
+    _EMPTY_CLIMBING_RECORD(HttpStatus.CONFLICT, "CLIMBING_RECORD_001", "암장운동기록이 존재하지 않습니다."),
     _INVALID_DATE_RANGE(HttpStatus.CONFLICT, "CLIMBING_RECORD_002",
-        "시점상 시작 날짜는 종료 날짜보다 같거나 앞서야 합니다."),
+        "시점상 시작 날짜는 종료 날짜와 같거나 앞서야 합니다."),
+    _CLIMBING_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "CLIMBING_RECORD_003", "존재하지 않는 암장기록입니다."),
 
     //루트 기록 관련
-    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다."),
+    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "루트운동기록이 존재하지 않습니다."),
+    _ROUTE_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "ROUTE_RECORD_002", "존재하지 않는 암장기록입니다."),
 
     //숏츠 관련
     _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다."),
