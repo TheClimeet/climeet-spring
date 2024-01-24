@@ -37,33 +37,12 @@ public class ClimberController {
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring("Bearer ".length());
         }
-        climberService.isTokenExpired(accessToken, provider);
         ClimberResponseDto climberResponseDto = climberService.handleSocialLogin(provider, accessToken, climberRequestDto);
 
         return ResponseEntity.ok(climberResponseDto);
 
     }
 
-    @PostMapping("/refreshToken")
-    @Operation(summary = "access token 만료 시 재발급(Kakao, Naver Resource Server에서 발급 받아오는 Social Access Token)")
-    @SwaggerApiError({ErrorStatus._BAD_REQUEST})
-    public ResponseEntity<String> refreshToken(@RequestParam String provider, @RequestBody String refreshToken){
-        if (refreshToken != null && refreshToken.startsWith("Bearer ")) {
-            refreshToken = refreshToken.substring("Bearer ".length());
-        }
-        String accessToken = null;
-        if(provider.equals("KAKAO")){
-            accessToken = climberService.refreshKakaoToken(refreshToken);
-        }
-        if(provider.equals("NAVER")){
-            accessToken = climberService.refreshNaverToken(refreshToken);
-        }
-        if(accessToken==null){
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
-        }
-        return ResponseEntity.ok(accessToken);
-
-    }
 
     @GetMapping("/check-nickname/{nickName}")
     @Operation(summary = "클라이머 닉네임 중복 확인", description = "**이미 존재하는 닉네임** : false \n\n **사용 가능한 닉네임** : true")
