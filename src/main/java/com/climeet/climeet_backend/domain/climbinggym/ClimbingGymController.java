@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +39,7 @@ public class ClimbingGymController {
      */
     @Operation(summary = "Manager가 등록된 암장 검색 기능")
     @GetMapping("/search")
-    public ResponseEntity<List<ClimbingGymSimpleResponse>> getAcceptedClimbingGymSearchingList(
+    public ResponseEntity<List<AcceptedClimbingGymSimpleResponse>> getAcceptedClimbingGymSearchingList(
         @RequestParam("gymname") String gymName
     ) {
         return ResponseEntity.ok(climbingGymService.searchAcceptedClimbingGym(gymName));

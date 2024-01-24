@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
@@ -25,12 +26,14 @@ public class ClimbingGymService {
 
     }
 
-    public List<ClimbingGymSimpleResponse> searchAcceptedClimbingGym(String gymName) {
+    public List<AcceptedClimbingGymSimpleResponse> searchAcceptedClimbingGym(String gymName) {
         List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
             gymName);
 
         return climbingGymList.stream()
-            .map(climbingGym -> ClimbingGymSimpleResponse.toDTO(climbingGym))
+            .map(climbingGym -> AcceptedClimbingGymSimpleResponse.toDTO(climbingGym))
             .toList();
+
+
     }
 }

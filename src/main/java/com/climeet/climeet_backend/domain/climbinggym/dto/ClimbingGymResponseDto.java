@@ -30,7 +30,38 @@ public class ClimbingGymResponseDto {
                 .managerId(managerId)
                 .build();
         }
+
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AcceptedClimbingGymSimpleResponse {
+
+        private Long id;
+        private String name;
+        private Long managerId;
+        private Long follower;
+
+        public static AcceptedClimbingGymSimpleResponse toDTO(ClimbingGym climbingGym) {
+            Long managerId = null;
+            Long follower = 0L;
+            if(climbingGym.getManager() != null){
+                managerId = climbingGym.getManager().getId();
+                if(climbingGym.getManager().getFollowerCount() != null){
+                    follower = climbingGym.getManager().getFollowerCount();
+                }
+            }
+
+            return AcceptedClimbingGymSimpleResponse.builder()
+                .id(climbingGym.getId())
+                .name(climbingGym.getName())
+                .managerId(managerId)
+                .follower(follower)
+                .build();
+        }
+
+    }
 
 }
