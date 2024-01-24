@@ -72,7 +72,7 @@ public class ShortsCommentService {
                 comment.getUser().getProfileImageUrl(),
                 comment.getContent(),
                 likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
-                comment.getChildCommentCount() != 0,
+                comment.isParentComment(),
                 comment.getLikeCount(),
                 comment.getDislikeCount(),
                 fetchParentCommentId(comment),
@@ -94,7 +94,7 @@ public class ShortsCommentService {
             // 댓글의 가장 오래된 대댓글 가져와 부모 댓글 바로 뒤에 추가
             shortsCommentRepository.findFirstChildCommentByIdAndNotParentOrderByCreatedAtAsc(
                     parentComment.getId())
-                .ifPresent(childComment -> commentListWithChild.add((ShortsComment) childComment));
+                .ifPresent(commentListWithChild::add);
         });
 
         return commentListWithChild;
