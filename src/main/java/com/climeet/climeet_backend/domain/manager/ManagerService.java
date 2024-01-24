@@ -41,7 +41,7 @@ public class ManagerService {
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(IdManager.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);
 
         return new ManagerSimpleInfo(IdManager);
@@ -57,7 +57,7 @@ public class ManagerService {
 
 
     @Transactional
-    public Manager signUp(@RequestBody CreateManagerRequest createManagerRequest){
+    public ManagerSimpleInfo signUp(@RequestBody CreateManagerRequest createManagerRequest){
        ClimbingGym gym = climbingGymRepository.findById(createManagerRequest.getGymId())
            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -77,10 +77,10 @@ public class ManagerService {
         manager.updateClimbingGym(gym);
         manager.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(manager.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(manager.getId());
         manager.updateToken(accessToken, refreshToken);
 
-        return manager;
+        return new ManagerSimpleInfo(manager);
     }
     private void saveClimbingGymBackgroundImage(CreateManagerRequest createManagerRequest, ClimbingGym gym){
         ClimbingGymBackgroundImage climbingGymBackgroundImage = ClimbingGymBackgroundImage.builder()

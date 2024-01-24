@@ -78,7 +78,7 @@ public class ClimberService {
         try {
             String accessToken = jwtTokenProvider.createAccessToken(
                 String.valueOf(climber.getId()));
-            String refreshToken = jwtTokenProvider.createRefreshToken();
+            String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
 
             climber.updateToken(accessToken, refreshToken);
             return climber;
@@ -105,7 +105,7 @@ public class ClimberService {
         climberRepository.save(climber);
 
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
 
         //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {

@@ -1,5 +1,8 @@
 package com.climeet.climeet_backend.global.security;
 
+import static java.lang.Long.parseLong;
+
+import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -20,6 +23,7 @@ import java.security.interfaces.ECPrivateKey;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
@@ -62,12 +66,19 @@ public class JwtTokenProvider {
       return createToken(payload, accessTokenValidityInMilliseconds);
   }
 
-public String createRefreshToken() {
-    byte[] array = new byte[7];
-    new Random().nextBytes(array);
-    String generatedString = Base64.getUrlEncoder().withoutPadding().encodeToString(array);
-    return createToken(generatedString, refreshTokenValidityInMillseconds);
-}
+    public String createRefreshToken(Long climberId) {
+        return createToken(climberId.toString(), refreshTokenValidityInMillseconds);
+    }
+
+    public String refreshAccessToken(String refreshToken) {
+        if (validateToken(refreshToken)) {
+            return createAccessToken(getPayload(refreshToken));
+        } else {
+            throw new GeneralException(ErrorStatus._INVALID_JWT);
+        }
+    }
+
+
 
 
     public String createToken(String payload, long expireLength){
@@ -92,7 +103,7 @@ public String createRefreshToken() {
       }catch (ExpiredJwtException e){
           return e.getClaims().getSubject();
       }catch(JwtException e){
-          throw new RuntimeException("유효하지 않은 토큰입니다.");
+          throw new GeneralException(ErrorStatus._INVALID_JWT);
       }
     }
     public boolean validateToken(String token) {
@@ -109,25 +120,7 @@ public String createRefreshToken() {
         }
     }
 
-//    public String refreshAccessToken(String refreshToken) {
-//        if (validateToken(refreshToken)) {
-//            String payload = getPayload(refreshToken);
-//            // Optional<Climber> climber = climberRepository.findByPayload(payload);
-//
-//            // if (climber.isPresent()) {
-//            //     return createAccessToken(climber.get().getPayload());
-//            // } else {
-//            //     throw new GeneralException(ErrorStatus._INVALID_JWT);
-//            // }
-//
-//            // 위의 주석 처리된 코드는 실제로 Climber 엔티티와 연동할 때 사용하면 됩니다.
-//            // 현재는 페이로드를 그대로 사용하여 액세스 토큰을 재발급하는 코드를 작성할게요.
-//
-//            return createAccessToken(payload);
-//        } else {
-//            throw new GeneralException(ErrorStatus._INVALID_JWT);
-//        }
-//    }
+
 
 
 }
