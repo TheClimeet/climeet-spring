@@ -117,9 +117,9 @@ public class ClimberService {
 
 
         //가입 시 암장 팔로우
-        List<String> gymFollowList = climberRequestDto.getGymFollowList();
-        for(String gymName : gymFollowList){
-            ClimbingGym optionalGym = climbingGymRepository.findByName(gymName)
+        List<Long> gymFollowList = climberRequestDto.getGymFollowList();
+        for(Long gymId : gymFollowList){
+            ClimbingGym optionalGym = climbingGymRepository.findById(gymId)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
             Manager manager = managerRepository.findByClimbingGym(optionalGym)
