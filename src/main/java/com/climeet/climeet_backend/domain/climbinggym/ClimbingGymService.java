@@ -2,10 +2,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
-import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
-import com.climeet.climeet_backend.global.common.PageResponseDto;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +15,8 @@ public class ClimbingGymService {
     private final ClimbingGymRepository climbingGymRepository;
 
     public List<ClimbingGymSimpleResponse> searchClimbingGym(String gymName) {
-        List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContaining(gymName);
+        Pageable pageable = PageRequest.of(0, 20);
+        List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContaining(gymName, pageable);
 
         return climbingGymList.stream()
             .map(climbingGym -> ClimbingGymSimpleResponse.toDTO(climbingGym))
@@ -27,8 +25,9 @@ public class ClimbingGymService {
     }
 
     public List<AcceptedClimbingGymSimpleResponse> searchAcceptedClimbingGym(String gymName) {
+        Pageable pageable = PageRequest.of(0, 20);
         List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
-            gymName);
+            gymName, pageable);
 
         return climbingGymList.stream()
             .map(climbingGym -> AcceptedClimbingGymSimpleResponse.toDTO(climbingGym))
