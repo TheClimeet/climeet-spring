@@ -1,7 +1,8 @@
 package com.climeet.climeet_backend.domain.shortscomment;
 
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
-import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentResponse;
+import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentChildResponse;
+import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentParentResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -42,7 +43,7 @@ public class ShortsCommentController {
     @Operation(summary = "숏츠 댓글 조회")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._DUPLICATE_LOGINID, ErrorStatus._DUPLICATE_LOGINID})
     @GetMapping("/shorts/{shortsId}")
-    public ResponseEntity<PageResponseDto<List<ShortsCommentResponse>>> findShortsCommentList(
+    public ResponseEntity<PageResponseDto<List<ShortsCommentParentResponse>>> findShortsCommentList(
         @CurrentUser User user,
         @PathVariable Long shortsId,
         @RequestParam int page, @RequestParam int size
@@ -51,4 +52,15 @@ public class ShortsCommentController {
             shortsCommentService.findShortsCommentList(user, shortsId, page, size));
     }
 
+    @Operation(summary = "숏츠 대댓글 조회")
+    @GetMapping("/shorts/{shortsId}/{parentCommentId}")
+    public ResponseEntity<PageResponseDto<List<ShortsCommentChildResponse>>> findShortsChildCommentList(
+        @CurrentUser User user,
+        @PathVariable Long shortsId,
+        @PathVariable Long parentCommentId,
+        @RequestParam int page, @RequestParam int size
+    ) {
+        return ResponseEntity.ok(
+            shortsCommentService.findShortsChildCommentList(user, shortsId, parentCommentId, page, size));
+    }
 }

@@ -6,7 +6,8 @@ import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeSer
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
-import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentResponse;
+import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentChildResponse;
+import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentParentResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -52,7 +53,7 @@ public class ShortsCommentService {
         shortsCommentRepository.save(shortsComment);
     }
 
-    public PageResponseDto<List<ShortsCommentResponse>> findShortsCommentList(User user,
+    public PageResponseDto<List<ShortsCommentParentResponse>> findShortsCommentList(User user,
         Long shortsId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<ShortsComment> parentCommentList = shortsCommentRepository.findParentCommentsByShortsIdOrderedByCreatedAtAsc(
@@ -65,8 +66,8 @@ public class ShortsCommentService {
         Map<Long, CommentLikeStatus> likeStatusMap = shortsCommentLikeService.fetchUserLikeStatuses(
             user, shortsCommentIncludeChildList);
 
-        List<ShortsCommentResponse> responses = shortsCommentIncludeChildList.stream()
-            .map(comment -> ShortsCommentResponse.toDto(
+        List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
+            .map(comment -> ShortsCommentParentResponse.toDto(
                 comment.getId(),
                 comment.getUser().getProfileName(),
                 comment.getUser().getProfileImageUrl(),
@@ -82,6 +83,34 @@ public class ShortsCommentService {
             .collect(Collectors.toList());
 
         return new PageResponseDto<>(pageable.getPageNumber(), parentCommentList.hasNext(),
+            responses);
+    }
+
+    public PageResponseDto<List<ShortsCommentChildResponse>> findShortsChildCommentList(User user,
+        Long shortsId, Long parentCommentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ShortsComment> childCommentList = shortsCommentRepository.findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtAsc(
+                shortsId, parentCommentId, pageable)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._Empty_SHORTS_COMMENT));
+
+        Map<Long, CommentLikeStatus> likeStatusMap = shortsCommentLikeService.fetchUserLikeStatuses(
+            user, childCommentList.getContent());
+
+        List<ShortsCommentChildResponse> responses = childCommentList.stream()
+            .map(comment -> ShortsCommentChildResponse.toDto(
+                comment.getId(),
+                comment.getUser().getProfileName(),
+                comment.getUser().getProfileImageUrl(),
+                comment.getContent(),
+                likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
+                comment.getLikeCount(),
+                comment.getDislikeCount(),
+                fetchParentCommentId(comment),
+                convertToDisplayTime(comment.getCreatedAt())
+            ))
+            .collect(Collectors.toList());
+
+        return new PageResponseDto<>(pageable.getPageNumber(), childCommentList.hasNext(),
             responses);
     }
 
@@ -107,5 +136,4 @@ public class ShortsCommentService {
             return null;
         }
     }
-
 }

@@ -40,11 +40,13 @@ public class ShortsComment extends BaseTimeEntity {
     @ManyToOne
     private ShortsComment parentComment;
 
-    private int childCommentCount;
+    private int childCommentCount = 0;
 
-    private int likeCount;
+    private int likeCount = 0;
 
-    private int dislikeCount;
+    private int dislikeCount = 0;
+
+    private Boolean isFirstChild = false;
 
     public static ShortsComment toEntity(User user, CreateShortsCommentRequest createShortsCommentRequest,
         Shorts shorts) {

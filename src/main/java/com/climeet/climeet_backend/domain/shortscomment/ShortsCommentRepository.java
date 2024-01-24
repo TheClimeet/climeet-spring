@@ -13,9 +13,13 @@ public interface ShortsCommentRepository extends JpaRepository<ShortsComment, Lo
 
 
     @Query("SELECT sc FROM ShortsComment sc WHERE sc.shorts.id = :shortsId AND sc.parentComment IS NULL ORDER BY sc.createdAt ASC")
-    Optional<Slice<ShortsComment>> findParentCommentsByShortsIdOrderedByCreatedAtAsc(@Param("shortsId") Long shortsId, Pageable pageable);
+    Optional<Slice<ShortsComment>> findParentCommentsByShortsIdOrderedByCreatedAtAsc(
+        @Param("shortsId") Long shortsId, Pageable pageable);
 
     @Query("SELECT sc FROM ShortsComment sc WHERE sc.parentComment.id = :parentId AND sc.id != :parentId ORDER BY sc.createdAt ASC limit 1")
-    Optional<ShortsComment> findFirstChildCommentByIdAndNotParentOrderByCreatedAtAsc(@Param("parentId") Long parentId);
+    Optional<ShortsComment> findFirstChildCommentByIdAndNotParentOrderByCreatedAtAsc(
+        @Param("parentId") Long parentId);
 
+    Optional<Slice<ShortsComment>> findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtAsc(
+        Long shortsId, Long parentCommentId, Pageable pageable);
 }

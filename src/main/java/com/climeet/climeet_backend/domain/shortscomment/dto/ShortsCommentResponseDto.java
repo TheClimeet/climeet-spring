@@ -10,7 +10,7 @@ public class ShortsCommentResponseDto {
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class ShortsCommentResponse {
+    public static class ShortsCommentParentResponse {
 
         Long commentId;
         String nickname;
@@ -24,11 +24,12 @@ public class ShortsCommentResponseDto {
         int childCommentCount;
         String createdDate;
 
-        public static ShortsCommentResponse toDto(Long commentId,String nickname, String profileImageUrl,
+        public static ShortsCommentParentResponse toDto(Long commentId, String nickname,
+            String profileImageUrl,
             String content, CommentLikeStatus commentLikeStatus, Boolean isParent,
             int likeCount, int dislikeCount,
             Long parentCommentId, int childCommentCount, String createdDate) {
-            return ShortsCommentResponse.builder()
+            return ShortsCommentParentResponse.builder()
                 .commentId(commentId)
                 .nickname(nickname)
                 .profileImageUrl(profileImageUrl)
@@ -39,6 +40,40 @@ public class ShortsCommentResponseDto {
                 .isParent(isParent)
                 .parentCommentId(parentCommentId)
                 .childCommentCount(childCommentCount)
+                .createdDate(createdDate)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class ShortsCommentChildResponse {
+
+        Long commentId;
+        String nickname;
+        String profileImageUrl;
+        String content;
+        CommentLikeStatus commentLikeStatus;
+        int likeCount;
+        int dislikeCount;
+        Long parentCommentId;
+        String createdDate;
+
+        public static ShortsCommentChildResponse toDto(Long commentId, String nickname,
+            String profileImageUrl,
+            String content, CommentLikeStatus commentLikeStatus,
+            int likeCount, int dislikeCount,
+            Long parentCommentId, String createdDate) {
+            return ShortsCommentChildResponse.builder()
+                .commentId(commentId)
+                .nickname(nickname)
+                .profileImageUrl(profileImageUrl)
+                .content(content)
+                .commentLikeStatus(commentLikeStatus)
+                .likeCount(likeCount)
+                .dislikeCount(dislikeCount)
+                .parentCommentId(parentCommentId)
                 .createdDate(createdDate)
                 .build();
         }
