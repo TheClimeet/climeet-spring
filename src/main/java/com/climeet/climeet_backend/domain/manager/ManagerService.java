@@ -58,7 +58,7 @@ public class ManagerService {
 
     @Transactional
     public Manager signUp(@RequestBody CreateManagerRequest createManagerRequest){
-       ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
+       ClimbingGym gym = climbingGymRepository.findById(createManagerRequest.getGymId())
            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
        //todo : 관리자 중복 매핑 예외 처리

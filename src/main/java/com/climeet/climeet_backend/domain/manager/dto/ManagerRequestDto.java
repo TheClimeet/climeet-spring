@@ -10,7 +10,7 @@ public class ManagerRequestDto {
     @NoArgsConstructor
     public static class CreateManagerRequest {
 
-        private String gymName;
+        private Long gymId;
         private String loginId;
         private String password;
         private String name;
