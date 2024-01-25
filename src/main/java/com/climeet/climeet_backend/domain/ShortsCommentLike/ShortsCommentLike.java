@@ -14,12 +14,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Entity
 public class ShortsCommentLike extends BaseTimeEntity {
 
@@ -36,4 +38,16 @@ public class ShortsCommentLike extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private CommentLikeStatus commentLikeStatus;
 
+    public static ShortsCommentLike toEntity(User user, ShortsComment shortsComment,
+        CommentLikeStatus commentLikeStatus) {
+        return ShortsCommentLike.builder()
+            .user(user)
+            .shortsComment(shortsComment)
+            .commentLikeStatus(commentLikeStatus)
+            .build();
+    }
+
+    public void updateCommentLikeStatus(CommentLikeStatus commentLikeStatus) {
+        this.commentLikeStatus = commentLikeStatus;
+    }
 }
