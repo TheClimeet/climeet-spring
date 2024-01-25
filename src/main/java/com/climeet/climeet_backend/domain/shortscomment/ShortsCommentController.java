@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.shortscomment;
 
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +27,11 @@ public class ShortsCommentController {
     @Operation(summary = "숏츠 댓글 작성")
     @PostMapping("/shorts/{shortsId}/shortsComments")
     public ResponseEntity<String> createShortsComment(
+        @CurrentUser User user,
         @PathVariable Long shortsId,
         @RequestBody CreateShortsCommentRequest createShortsCommentRequest,
         @RequestParam(required = false) Long parentCommentId) {
-        shortsCommentService.createShortsComment(shortsId, createShortsCommentRequest,
+        shortsCommentService.createShortsComment(user, shortsId, createShortsCommentRequest,
             parentCommentId, parentCommentId != null);
         return ResponseEntity.ok("댓글 작성에 성공했습니다.");
     }

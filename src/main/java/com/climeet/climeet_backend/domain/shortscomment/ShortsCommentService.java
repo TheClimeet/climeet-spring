@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.shortscomment;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
@@ -17,7 +18,7 @@ public class ShortsCommentService {
     private final ShortsCommentRepository shortsCommentRepository;
 
     @Transactional
-    public void createShortsComment(Long shortsId,
+    public void createShortsComment(User user, Long shortsId,
         CreateShortsCommentRequest createShortsCommentRequest, Long parentCommentId,
         boolean isReply) {
 
@@ -26,7 +27,7 @@ public class ShortsCommentService {
 
         shorts.updateViewCountUp();
 
-        ShortsComment shortsComment = ShortsComment.toEntity(createShortsCommentRequest, shorts);
+        ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest, shorts);
 
         if (isReply) {
             shortsComment.updateParentCommentId(parentCommentId);

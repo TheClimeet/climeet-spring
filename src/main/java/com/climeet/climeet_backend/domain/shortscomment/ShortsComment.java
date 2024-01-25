@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor
@@ -39,11 +38,11 @@ public class ShortsComment {
 
     private Long parentCommentId;
 
-    public static ShortsComment toEntity(CreateShortsCommentRequest createShortsCommentRequest,
+    public static ShortsComment toEntity(User user, CreateShortsCommentRequest createShortsCommentRequest,
         Shorts shorts) {
         return ShortsComment.builder()
             .comment(createShortsCommentRequest.getContent())
-            //.user(user)
+            .user(user)
             .shorts(shorts)
             .build();
     }
