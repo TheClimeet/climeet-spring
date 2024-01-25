@@ -1,5 +1,4 @@
 package com.climeet.climeet_backend.domain.review;
-
 import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
@@ -11,6 +10,7 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -61,7 +61,7 @@ public class ReviewService {
         reviewRepository.save(Review.toEntity(createReviewRequest, climbingGym, climber));
     }
 
-    public ReviewSummaryDetailResponse getReviewSummary(Long gymId, Long userId) {
+    public ReviewSummaryDetailResponse getReviewSummary(Long gymId, User user) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -70,7 +70,7 @@ public class ReviewService {
             throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
         }
 
-        Climber climber = climberRepository.findById(userId)
+        Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         // 사용자 리뷰가 있으면 가져오고, 없으면 null을 myReview에 넣음
@@ -84,7 +84,7 @@ public class ReviewService {
         return ReviewSummaryDetailResponse.toDTO(climbingGym, myReview);
     }
 
-    public PageResponseDto<List<ReviewDetailResponse>> getReviewList(Long gymId, Long userId,
+    public PageResponseDto<List<ReviewDetailResponse>> getReviewList(Long gymId, User user,
         int page, int size) {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
@@ -95,7 +95,7 @@ public class ReviewService {
             throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
         }
 
-        Climber climber = climberRepository.findById(userId)
+        Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         Pageable pageable = PageRequest.of(page, size);

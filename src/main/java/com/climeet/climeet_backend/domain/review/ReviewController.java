@@ -46,8 +46,8 @@ public class ReviewController {
         ErrorStatus._EMPTY_MEMBER})
     @GetMapping("/{gymId}/review/summary")
     public ResponseEntity<ReviewSummaryDetailResponse> getReviewSummary(
-        @PathVariable Long gymId, @RequestParam Long userId) {
-        return ResponseEntity.ok(reviewService.getReviewSummary(gymId, userId));
+        @PathVariable Long gymId, @CurrentUser User user) {
+        return ResponseEntity.ok(reviewService.getReviewSummary(gymId, user));
     }
 
     @Operation(summary = "특정 암장 리뷰 목록 조회")
@@ -55,9 +55,9 @@ public class ReviewController {
         ErrorStatus._EMPTY_MEMBER})
     @GetMapping("/{gymId}/review")
     public ResponseEntity<PageResponseDto<List<ReviewDetailResponse>>> getReviewList(
-        @PathVariable Long gymId, @RequestParam Long userId, @RequestParam int page,
+        @PathVariable Long gymId, @CurrentUser User user, @RequestParam int page,
         @RequestParam int size) {
-        return ResponseEntity.ok(reviewService.getReviewList(gymId, userId, page, size));
+        return ResponseEntity.ok(reviewService.getReviewList(gymId, user, page, size));
     }
 
 
