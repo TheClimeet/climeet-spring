@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.shortscomment;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,14 +16,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-public class ShortsComment {
+public class ShortsComment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,20 +35,41 @@ public class ShortsComment {
     private Shorts shorts;
 
     @NotNull
-    private String comment;
+    private String content;
 
-    private Long parentCommentId;
+    @ManyToOne
+    private ShortsComment parentComment;
 
-    public static ShortsComment toEntity(CreateShortsCommentRequest createShortsCommentRequest,
+    private int childCommentCount = 0;
+
+    private int likeCount = 0;
+
+    private int dislikeCount = 0;
+
+    private Boolean isFirstChild = false;
+
+    public static ShortsComment toEntity(User user, CreateShortsCommentRequest createShortsCommentRequest,
         Shorts shorts) {
         return ShortsComment.builder()
-            .comment(createShortsCommentRequest.getContent())
-            //.user(user)
+            .content(createShortsCommentRequest.getContent())
+            .user(user)
             .shorts(shorts)
             .build();
     }
 
-    public void updateParentCommentId(Long parentCommentId) {
-        this.parentCommentId = parentCommentId;
+    public void updateParentComment(ShortsComment parentComment) {
+        this.parentComment = parentComment;
+    }
+
+    public void updateChildCommentCount() {
+        this.childCommentCount++;
+    }
+
+    public void updateIsFirstChildTrue() {
+        this.isFirstChild = true;
+    }
+
+    public boolean isParentComment() {
+        return childCommentCount != 0;
     }
 }
