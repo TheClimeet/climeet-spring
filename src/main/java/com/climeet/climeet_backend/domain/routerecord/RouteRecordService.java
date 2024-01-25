@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 
@@ -23,19 +24,22 @@ public class RouteRecordService {
     private final RouteRecordRepository routeRecordRepository;
     private final RouteRepository routeRepository;
 
+    /**
+     * 루트 기록 생성
+     */
     @Transactional
-    public ResponseEntity<String> addRouteRecord(CreateRouteRecordDto requestDto,
+    public ResponseEntity<String> addRouteRecord(User user, CreateRouteRecordDto requestDto,
         ClimbingRecord climbingRecord) {
 
         Route route = routeRepository.findById(requestDto.getRouteId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-        routeRecordRepository.save(RouteRecord.toEntity(requestDto, climbingRecord, route));
+        routeRecordRepository.save(RouteRecord.toEntity(user, requestDto, climbingRecord, route));
 
         int count = requestDto.getAttemptCount();
 
         climbingRecord.setAttemptCount(count);
-
+        climbingRecord.attemptRouteCountUp();
         route.thisWeekSelectionCountUp();
 
         if (requestDto.getIsCompleted()) {
@@ -45,28 +49,52 @@ public class RouteRecordService {
 
     }
 
-    public List<RouteRecordSimpleInfo> getRouteRecords() {
-        try {
-            List<RouteRecord> recordList = routeRecordRepository.findAll();
-            return recordList.stream()
-                .map(RouteRecordSimpleInfo::new)
-                .toList();
-        } catch (Exception e) {
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+    /**
+     * 루트 간편기록 전체 조회
+     */
+    public List<RouteRecordSimpleInfo> getRouteRecords(User user) {
+
+        List<RouteRecord> recordList = routeRecordRepository.findAllByUser(user);
+
+        if (recordList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD);
         }
+
+        return recordList.stream()
+            .map(RouteRecordSimpleInfo::new)
+            .toList();
+
     }
 
-    public RouteRecordSimpleInfo getRouteRecord(Long id) {
-        return new RouteRecordSimpleInfo(routeRecordRepository.findById(id)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD)));
+    /**
+     * 루트 간편기록 id로 조회
+     */
+    public RouteRecordSimpleInfo getRouteRecord(User user, Long id) {
+
+        RouteRecord routeRecord = routeRecordRepository.findById(id)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._ROUTE_RECORD_NOT_FOUND));
+
+        if (!user.getId().equals(routeRecord.getUser().getId())) {
+            throw new GeneralException(ErrorStatus._INVALID_MEMBER);
+        }
+        return new RouteRecordSimpleInfo(routeRecord);
     }
 
+
+    /**
+     * 루트기록 수정
+     */
     @Transactional
-    public RouteRecordSimpleInfo updateRouteRecord(Long id,
+    public RouteRecordSimpleInfo updateRouteRecord(User user, Long id,
         UpdateRouteRecordDto updateRouteRecordDto) {
 
         RouteRecord routeRecord = routeRecordRepository.findById(id)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._ROUTE_RECORD_NOT_FOUND));
+
+        if (!user.getId().equals(routeRecord.getUser().getId())) {
+            throw new GeneralException(ErrorStatus._INVALID_MEMBER);
+        }
+
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
         //각 필드의 기존값들
@@ -114,10 +142,18 @@ public class RouteRecordService {
         return new RouteRecordSimpleInfo(routeRecord);
     }
 
+    /**
+     * 루트기록 삭제
+     */
     @Transactional
-    public ResponseEntity<String> deleteRouteRecord(Long id) {
+    public ResponseEntity<String> deleteRouteRecord(User user, Long id) {
         RouteRecord routeRecord = routeRecordRepository.findById(id)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE_RECORD));
+            .orElseThrow(() -> new GeneralException(ErrorStatus._ROUTE_RECORD_NOT_FOUND));
+
+        if (!user.getId().equals(routeRecord.getUser().getId())) {
+            throw new GeneralException(ErrorStatus._INVALID_MEMBER);
+        }
+
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
         int difficulty = routeRecord.getRoute().getDifficulty();
@@ -146,8 +182,11 @@ public class RouteRecordService {
         if (isPlus) {
             return (int) (((oldCount * oldAvgDifficulty) + routeDifficulty) / (oldCount + 1));
         } else {
-            if(oldCount <= 1) return 0;
-            else return (int) (((oldCount * oldAvgDifficulty) - routeDifficulty) / (oldCount - 1));
+            if (oldCount <= 1) {
+                return 0;
+            } else {
+                return (int) (((oldCount * oldAvgDifficulty) - routeDifficulty) / (oldCount - 1));
+            }
         }
     }
 }
