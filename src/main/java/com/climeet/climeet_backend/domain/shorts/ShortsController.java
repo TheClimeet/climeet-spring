@@ -29,6 +29,7 @@ public class ShortsController {
     private final ShortsService shortsService;
 
     @PostMapping("/shorts")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_SECTOR, ErrorStatus._EMPTY_ROUTE})
     @Operation(summary = "숏츠 업로드")
     public ResponseEntity<String> uploadShorts(@RequestPart(value = "video") MultipartFile video,
         @RequestPart MultipartFile thumbnailImage, @RequestPart CreateShortsRequest createShortsRequest) {
