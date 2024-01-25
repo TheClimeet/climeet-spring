@@ -3,15 +3,17 @@ package com.climeet.climeet_backend.domain.climbinggym;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,7 +30,7 @@ public class ClimbingGym extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "climbingGym")
+    @OneToOne(mappedBy = "climbingGym", cascade = CascadeType.ALL)
     private Manager manager;
 
     @OneToMany(mappedBy = "climbingGym")
@@ -55,7 +57,11 @@ public class ClimbingGym extends BaseTimeEntity {
 
     public void averageRatingCalculate() {
         if (this.reviewCount > 0) {
-            this.AverageRating = this.sumRating / this.reviewCount;
+            float averageRating = this.sumRating / this.reviewCount;
+            DecimalFormat decimalFormat = new DecimalFormat("#.#");
+            decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+            String formattedAverageRating = decimalFormat.format(averageRating);
+            this.AverageRating = Float.parseFloat(formattedAverageRating);
         } else {
             this.AverageRating = 0.0F;
         }

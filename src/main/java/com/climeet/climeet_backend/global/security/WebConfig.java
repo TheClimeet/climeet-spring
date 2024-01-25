@@ -1,6 +1,5 @@
 package com.climeet.climeet_backend.global.security;
 
-import com.climeet.climeet_backend.domain.climber.JwtTokenProvider;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;

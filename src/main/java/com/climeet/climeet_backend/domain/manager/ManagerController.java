@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.manager;
 
+import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
+import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class ManagerController {
     private final ManagerService managerService;
+
+    /**
+     * [POST] 관리자 로그인 API
+     */
+    @PostMapping("/login")
+    @Operation(summary = "관리자 로그인", description = "관리자 로그인")
+    public ResponseEntity<ManagerSimpleInfo> login(@RequestBody
+        CreateAccessTokenRequest createAccessTokenRequest){
+        ManagerSimpleInfo managerSimpleInfo = managerService.login(createAccessTokenRequest);
+        return ResponseEntity.ok(managerSimpleInfo);
+    }
+
+
 
     /**
      * [POST] 관리자 회원가입 API

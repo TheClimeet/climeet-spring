@@ -24,4 +24,12 @@ public class ManagerRequestDto {
         private Boolean isAllowAdNotification;
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class CreateAccessTokenRequest{
+        private String loginId;
+        private String password;
+    }
+
+
 }

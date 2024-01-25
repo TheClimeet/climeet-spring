@@ -1,11 +1,13 @@
 package com.climeet.climeet_backend.domain.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -54,6 +56,19 @@ public class User {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @NotNull
+    @Column(name = "access_token")
+    private String accessToken;
+
+    @NotNull
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+    public void updateToken(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 
     public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
         this.isAllowFollowNotification = isAllowFollowNotification;
