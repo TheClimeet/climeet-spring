@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import jakarta.persistence.Tuple;
 import java.time.LocalDate;
 import java.util.List;
@@ -10,17 +12,18 @@ import org.springframework.data.repository.query.Param;
 
 public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, Long> {
 
-    List<ClimbingRecord> findByClimbingDateBetween(LocalDate startDate, LocalDate endDate);
+    List<ClimbingRecord> findByClimbingDateBetweenAndUser(LocalDate startDate, LocalDate endDate,
+        User user);
 
     Optional<ClimbingRecord> findById(Long id);
 
     @Query("SELECT " +
-        "   SUM(HOUR(cr.climbingTime) * 3600 + MINUTE(cr.climbingTime) * 60 + SECOND(cr.climbingTime)) as totalTime, " +
+        "   SUM(HOUR(cr.climbingTime) * 3600 + MINUTE(cr.climbingTime) * 60 + SECOND(cr.climbingTime)) as totalTime, "
+        +
         "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
         "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
         "FROM ClimbingRecord cr " +
-        "WHERE cr.climbingDate BETWEEN :startDate AND :endDate")
-    Tuple getStatisticsInfoBetween(@Param("startDate") LocalDate startDate,
+        "WHERE cr.climbingDate BETWEEN :startDate AND :endDate AND cr.user = :user")
+    Tuple getStatisticsInfoBetween(@Param("user") User user, @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
-
 }
