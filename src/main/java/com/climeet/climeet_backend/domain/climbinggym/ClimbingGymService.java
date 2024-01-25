@@ -2,10 +2,12 @@ package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -14,25 +16,33 @@ public class ClimbingGymService {
 
     private final ClimbingGymRepository climbingGymRepository;
 
-    public List<ClimbingGymSimpleResponse> searchClimbingGym(String gymName) {
-        Pageable pageable = PageRequest.of(0, 20);
-        List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContaining(gymName, pageable);
+    public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
+        int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ClimbingGym> climbingGymSlice = climbingGymRepository.findByNameContaining(gymName,
+            pageable);
 
-        return climbingGymList.stream()
+        List<ClimbingGymSimpleResponse> climbingGymList = climbingGymSlice.stream()
             .map(climbingGym -> ClimbingGymSimpleResponse.toDTO(climbingGym))
             .toList();
 
+        return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
+            climbingGymList);
+
     }
 
-    public List<AcceptedClimbingGymSimpleResponse> searchAcceptedClimbingGym(String gymName) {
-        Pageable pageable = PageRequest.of(0, 20);
-        List<ClimbingGym> climbingGymList = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
+    public PageResponseDto<List<AcceptedClimbingGymSimpleResponse>> searchAcceptedClimbingGym(
+        String gymName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ClimbingGym> climbingGymSlice = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
             gymName, pageable);
 
-        return climbingGymList.stream()
+        List<AcceptedClimbingGymSimpleResponse> climbingGymList = climbingGymSlice.stream()
             .map(climbingGym -> AcceptedClimbingGymSimpleResponse.toDTO(climbingGym))
             .toList();
 
+        return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
+            climbingGymList);
 
     }
 }
