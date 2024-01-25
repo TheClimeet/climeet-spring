@@ -13,13 +13,16 @@ public class ShortsResponseDto {
     @AllArgsConstructor
     public static class ShortsSimpleInfo {
 
+        private Long shortsId;
         private String thumbnailImageUrl;
         private String gymName;
         private int difficulty;
 
-        public static ShortsSimpleInfo toDTO(String thumbnailImageUrl, String gymName,
+        public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
+            String gymName,
             int difficulty) {
             return ShortsSimpleInfo.builder()
+                .shortsId(shortsId)
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .gymName(gymName)
                 .difficulty(difficulty)
