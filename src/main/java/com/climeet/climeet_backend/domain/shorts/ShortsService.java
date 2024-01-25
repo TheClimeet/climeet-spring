@@ -7,7 +7,11 @@ import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDetailInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
+import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
+import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -29,6 +33,8 @@ public class ShortsService {
     private final ClimbingGymRepository climbingGymRepository;
     private final SectorRepository sectorRepository;
     private final RouteRepository routeRepository;
+    private final ShortsLikeRepository shortsLikeRepository;
+    private final ShortsBookmarkRepository shortsBookmarkRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -84,5 +90,17 @@ public class ShortsService {
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
+    }
+
+    public ShortsDetailInfo findShorts(User user, Long shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
+
+        shorts.updateViewCountUp();
+
+        boolean isLiked = shortsLikeRepository.existsShortsLikeByUserAndShorts(user, shorts);
+        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user, shorts);
+
+        return ShortsDetailInfo.toDTO(shorts, shorts.getClimbingGym(), shorts.getSector(), isLiked, isBookmarked);
     }
 }

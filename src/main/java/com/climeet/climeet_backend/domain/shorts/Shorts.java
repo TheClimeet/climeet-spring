@@ -76,4 +76,8 @@ public class Shorts extends BaseTimeEntity {
             .description(createShortsRequest.getDescription())
             .build();
     }
+
+    public void updateViewCountUp() {
+        this.viewCount++;
+    }
 }
