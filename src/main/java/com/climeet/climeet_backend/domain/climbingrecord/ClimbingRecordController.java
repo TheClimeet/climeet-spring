@@ -2,7 +2,10 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
@@ -53,10 +56,10 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecords);
     }
 
-    @Operation(summary = "클라이밍 기록 id 조회")
+    @Operation(summary = "클라이밍 기록 id 조회(루트기록들 포함)")
     @GetMapping("/{id}")
-    public ResponseEntity<ClimbingRecordSimpleInfo> addClimbingRecord(@PathVariable Long id) {
-        return ResponseEntity.ok(climbingRecordService.getClimbingRecord(id));
+    public ResponseEntity<ClimbingRecordDetailInfo> addClimbingRecord(@PathVariable Long id) {
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecordById(id));
     }
 
 
@@ -74,5 +77,14 @@ public class ClimbingRecordController {
     public ResponseEntity<String> deleteClimbingRecord(@PathVariable Long id) {
         climbingRecordService.deleteClimbingRecord(id);
         return ResponseEntity.ok("클라이밍 기록을 삭제하였습니다.");
+    }
+
+    @Operation(summary = "월별 운동기록 통계")
+    @GetMapping("/statistics")
+    public ResponseEntity<ClimbingRecordStatisticsInfo> findClimbingStatistics(
+        @RequestParam int year,
+        @RequestParam int month) {
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecordStatistics(year,month));
+
     }
 }

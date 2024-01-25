@@ -14,4 +14,6 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
 
     boolean existsByClimbingGym(ClimbingGym gym);
 
+    Optional<Manager> findByLoginIdAndPassword(String loginId, String password);
+
 }

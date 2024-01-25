@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @AllArgsConstructor
@@ -61,4 +62,12 @@ public class Manager extends User {
         this.climbingGym = gym;
     }
 
+    public Manager hashPassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(this.password);
+        return this;
+    }
+
+    public boolean checkPassword(String plainPassword, PasswordEncoder passwordEncoder){
+        return passwordEncoder.matches(plainPassword, this.password);
+    }
 }

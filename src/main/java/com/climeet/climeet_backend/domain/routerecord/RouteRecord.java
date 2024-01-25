@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -32,6 +33,8 @@ public class RouteRecord extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Route route;
 
+    private LocalDate routeRecordDate;
+
     private int attemptCount;
 
     private Boolean isCompleted = false;
@@ -43,6 +46,7 @@ public class RouteRecord extends BaseTimeEntity {
             .route(route)
             .attemptCount(createRouteRecordReq.getAttemptCount())
             .isCompleted(createRouteRecordReq.getIsCompleted())
+            .routeRecordDate(climbingRecord.getClimbingDate())
             .build();
     }
 
