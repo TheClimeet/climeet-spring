@@ -5,6 +5,7 @@ import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.review.dto.ReviewRequestDto.CreateReviewRequest;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class ReviewService {
     private final ClimberRepository climberRepository;
 
     @Transactional
-    public void createReview(CreateReviewRequest createReviewRequest) {
+    public void createReview(CreateReviewRequest createReviewRequest, User user) {
         // 리뷰 내용 길이 초과 확인
         if (createReviewRequest.getContent().length() > 1000) {
             throw new GeneralException(ErrorStatus._CONTENT_TOO_LARGE);
@@ -42,7 +43,7 @@ public class ReviewService {
             throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
         }
 
-        Climber climber = climberRepository.findById(createReviewRequest.getClimberId())
+        Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         // 이미 작성된 리뷰가 있는지 확인 (1명의 유저는 1개의 암장에 1개의 리뷰만 가능)
@@ -60,7 +61,7 @@ public class ReviewService {
 
 
     @Transactional
-    public void changeReview(CreateReviewRequest changeReviewRequest) {
+    public void changeReview(CreateReviewRequest changeReviewRequest, User user) {
         // 리뷰 rating의 범위 확인
         if (changeReviewRequest.getRating() < 0 || changeReviewRequest.getRating() > 5
             || changeReviewRequest.getRating() % 0.5 != 0) {
@@ -76,7 +77,7 @@ public class ReviewService {
             throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
         }
 
-        Climber climber = climberRepository.findById(changeReviewRequest.getClimberId())
+        Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         // 리뷰 데이터 불러오기
