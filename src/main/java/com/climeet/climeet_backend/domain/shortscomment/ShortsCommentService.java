@@ -50,7 +50,7 @@ public class ShortsCommentService {
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
-            if(parentComment.getChildCommentCount() == 0) {
+            if (parentComment.getChildCommentCount() == 0) {
                 shortsComment.updateIsFirstChildTrue();
             }
             parentComment.updateChildCommentCount();
@@ -128,15 +128,19 @@ public class ShortsCommentService {
 
         CommentLikeStatus commentLikeStatus = determineCommentLikeStatus(isLike, isDislike);
 
-        Optional<ShortsCommentLike> OptionalShortsCommentLike = shortsCommentLikeRepository.findShortsCommentLikeByUserAndShortsComment(
+        Optional<ShortsCommentLike> optionalShortsCommentLike = shortsCommentLikeRepository.findShortsCommentLikeByUserAndShortsComment(
             user, shortsComment);
 
-        if(OptionalShortsCommentLike.isPresent()) {
-            OptionalShortsCommentLike.get().updateCommentLikeStatus(commentLikeStatus);
-        }
-        else {
-            ShortsCommentLike shortsCommentLike = ShortsCommentLike.toEntity(user, shortsComment, commentLikeStatus);
-            shortsCommentLikeRepository.save(shortsCommentLike);
+        if (optionalShortsCommentLike.isPresent()) {
+            ShortsCommentLike existingShortsCommentLike = optionalShortsCommentLike.get();
+            shortsCommentLikeService.updateCountsBasedOnStatusChange(existingShortsCommentLike,
+                commentLikeStatus, shortsComment);
+            optionalShortsCommentLike.get().updateCommentLikeStatus(commentLikeStatus);
+        } else {
+            ShortsCommentLike newShortsCommentLike = ShortsCommentLike.toEntity(user, shortsComment,
+                commentLikeStatus);
+            shortsCommentLikeService.updateCountsForNewLike(newShortsCommentLike, shortsComment);
+            shortsCommentLikeRepository.save(newShortsCommentLike);
         }
     }
 

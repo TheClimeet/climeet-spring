@@ -72,4 +72,17 @@ public class ShortsComment extends BaseTimeEntity {
     public boolean isParentComment() {
         return childCommentCount != 0;
     }
+
+    public void updateLikeCountPlus() {
+        this.likeCount++;
+    }
+    public void updateLikeCountMinus() {
+        this.likeCount--;
+    }
+    public void updateDislikeCountPlus() {
+        this.dislikeCount++;
+    }
+    public void updateDislikeCountMinus() {
+        this.dislikeCount--;
+    }
 }

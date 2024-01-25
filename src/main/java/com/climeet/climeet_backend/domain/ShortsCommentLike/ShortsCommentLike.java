@@ -50,4 +50,12 @@ public class ShortsCommentLike extends BaseTimeEntity {
     public void updateCommentLikeStatus(CommentLikeStatus commentLikeStatus) {
         this.commentLikeStatus = commentLikeStatus;
     }
+
+    public boolean isLiked() {
+        return this.commentLikeStatus == CommentLikeStatus.LIKE;
+    }
+
+    public boolean isDisliked() {
+        return this.commentLikeStatus == CommentLikeStatus.DISLIKE;
+    }
 }
