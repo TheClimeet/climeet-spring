@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_MEMBER(HttpStatus.CONFLICT, "MEMBER_001", "존재하지 않는 사용자입니다."),
     _WRONG_LOGINID_PASSWORD(HttpStatus.CONFLICT, "MEMBER_002", "아이디 또는 비밀번호가 일치하지 않습니다."),
     _DUPLICATE_LOGINID(HttpStatus.CONFLICT, "MEMBER_003", "중복된 ID입니다."),
+    _INVALID_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER_004", "올바르지 않은 사용자입니다."),
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
@@ -49,20 +50,21 @@ public enum ErrorStatus implements BaseErrorCode {
     _FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다."),
 
     //운동 기록 관련
-    _EMPTY_CLIMBING_RECORD(HttpStatus.CONFLICT, "CLIMBING_RECORD_001", "존재하지 않는 암장운동기록입니다."),
+    _EMPTY_CLIMBING_RECORD(HttpStatus.NOT_FOUND, "CLIMBING_RECORD_001", "암장운동기록이 존재하지 않습니다."),
     _INVALID_DATE_RANGE(HttpStatus.CONFLICT, "CLIMBING_RECORD_002",
-        "시점상 시작 날짜는 종료 날짜보다 같거나 앞서야 합니다."),
+        "시점상 시작 날짜는 종료 날짜와 같거나 앞서야 합니다."),
+    _CLIMBING_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "CLIMBING_RECORD_003", "존재하지 않는 암장기록입니다."),
 
     //루트 기록 관련
-    _EMPTY_ROUTE_RECORD(HttpStatus.CONFLICT, "ROUTE_RECORD_001", "존재하지 않는 루트운동기록입니다."),
+    _EMPTY_ROUTE_RECORD(HttpStatus.NOT_FOUND, "ROUTE_RECORD_001", "루트운동기록이 존재하지 않습니다."),
+    _ROUTE_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "ROUTE_RECORD_002", "존재하지 않는 암장기록입니다."),
 
     //숏츠 관련
     _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다."),
 
     //암장 리뷰 관련
-    _CONTENT_TOO_LARGE(HttpStatus.CONFLICT, "REVIEW_001", "리뷰 최대 입력 길이를 초과했습니다."),
-    _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_002", "rating의 범위가 올바르지 않습니다."),
-    _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_003", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다."),
+    _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_001", "rating의 범위가 올바르지 않습니다."),
+    _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_002", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다."),
 
     //유저 관련
     _EMPTY_USER(HttpStatus.CONFLICT, "USER_001", "존재하지 않는 유저입니다."),

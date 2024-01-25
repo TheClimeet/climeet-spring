@@ -77,4 +77,12 @@ public class User {
         this.isAllowAdNotification = isAllowAdNotification;
     }
 
+    public void thisWeekTotalClimbingTimeUp(Long sec){
+        this.thisWeekTotalClimbingTime += sec;
+    }
+
+    public void thisWeekTotalClimbingTimeDown(Long sec){
+        this.thisWeekTotalClimbingTime -= sec;
+    }
+
 }
