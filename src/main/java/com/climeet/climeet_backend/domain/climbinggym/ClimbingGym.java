@@ -9,10 +9,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -56,7 +57,11 @@ public class ClimbingGym extends BaseTimeEntity {
 
     public void averageRatingCalculate() {
         if (this.reviewCount > 0) {
-            this.AverageRating = this.sumRating / this.reviewCount;
+            float averageRating = this.sumRating / this.reviewCount;
+            DecimalFormat decimalFormat = new DecimalFormat("#.#");
+            decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+            String formattedAverageRating = decimalFormat.format(averageRating);
+            this.AverageRating = Float.parseFloat(formattedAverageRating);
         } else {
             this.AverageRating = 0.0F;
         }
