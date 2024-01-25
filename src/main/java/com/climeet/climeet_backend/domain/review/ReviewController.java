@@ -62,6 +62,8 @@ public class ReviewController {
 
 
     @Operation(summary = "암장 리뷰 수정")
+    @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
+        ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._EMPTY_REVIEW})
     @PatchMapping("/")
     public ResponseEntity<String> changeReview(
         @RequestBody CreateReviewRequest changeReviewRequest, @CurrentUser User user) {
