@@ -43,7 +43,7 @@ public class ShortsCommentController {
 
     @Operation(summary = "숏츠 댓글 조회")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
-    @GetMapping("/shorts/{shortsId}")
+    @GetMapping("/shorts/{shortsId}/shortsComments")
     public ResponseEntity<PageResponseDto<List<ShortsCommentParentResponse>>> findShortsCommentList(
         @CurrentUser User user,
         @PathVariable Long shortsId,

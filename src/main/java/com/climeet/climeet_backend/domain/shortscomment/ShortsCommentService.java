@@ -10,7 +10,6 @@ import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRespons
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentParentResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
@@ -40,9 +39,6 @@ public class ShortsCommentService {
 
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
-
-        ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest,
-            shorts);
 
         shorts.updateViewCountUp();
 
