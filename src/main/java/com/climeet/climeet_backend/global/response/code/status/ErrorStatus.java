@@ -67,9 +67,12 @@ public enum ErrorStatus implements BaseErrorCode {
     _REVIEW_EXIST(HttpStatus.CONFLICT, "REVIEW_002", "유저가 이미 해당 암장에 대한 리뷰를 남겼습니다."),
     _EMPTY_REVIEW(HttpStatus.CONFLICT, "REVIEW_003", "리뷰 내용이 없습니다.")
 
+    //유저 관련
+    _EMPTY_USER(HttpStatus.CONFLICT, "USER_001", "존재하지 않는 유저입니다."),
 
+    //숏츠 댓글 관련
+    _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001" , "존재하지 않는 쇼츠 댓글입니다.");
 
-    ;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
