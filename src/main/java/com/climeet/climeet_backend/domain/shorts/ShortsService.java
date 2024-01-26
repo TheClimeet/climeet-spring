@@ -52,13 +52,14 @@ public class ShortsService {
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
 
-        Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl, thumbnailImageUrl,
+        Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl,
+            thumbnailImageUrl,
             createShortsRequest);
 
         shortsRepository.save(shorts);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(
             pageable);
@@ -68,14 +69,15 @@ public class ShortsService {
                 shorts.getId(),
                 shorts.getThumbnailImageUrl(),
                 shorts.getClimbingGym().getName(),
-                shorts.getRoute().getDifficulty()))
+                shorts.getRoute().getDifficulty(),
+                findShorts(user, shorts.getId())))
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
             pageable);
@@ -85,7 +87,8 @@ public class ShortsService {
                 shorts.getId(),
                 shorts.getThumbnailImageUrl(),
                 shorts.getClimbingGym().getName(),
-                shorts.getRoute().getDifficulty()))
+                shorts.getRoute().getDifficulty()
+                , findShorts(user, shorts.getId())))
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
@@ -99,8 +102,10 @@ public class ShortsService {
         shorts.updateViewCountUp();
 
         boolean isLiked = shortsLikeRepository.existsShortsLikeByUserAndShorts(user, shorts);
-        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user, shorts);
+        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user,
+            shorts);
 
-        return ShortsDetailInfo.toDTO(shorts, shorts.getClimbingGym(), shorts.getSector(), isLiked, isBookmarked);
+        return ShortsDetailInfo.toDTO(shorts, shorts.getClimbingGym(), shorts.getSector(), isLiked,
+            isBookmarked);
     }
 }

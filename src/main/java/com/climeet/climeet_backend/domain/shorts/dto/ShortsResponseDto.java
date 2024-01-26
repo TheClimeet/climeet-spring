@@ -20,15 +20,16 @@ public class ShortsResponseDto {
         private String thumbnailImageUrl;
         private String gymName;
         private int difficulty;
+        private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
-            String gymName,
-            int difficulty) {
+            String gymName, int difficulty,  ShortsDetailInfo shortsDetailInfo) {
             return ShortsSimpleInfo.builder()
                 .shortsId(shortsId)
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .gymName(gymName)
                 .difficulty(difficulty)
+                .shortsDetailInfo(shortsDetailInfo)
                 .build();
         }
     }
