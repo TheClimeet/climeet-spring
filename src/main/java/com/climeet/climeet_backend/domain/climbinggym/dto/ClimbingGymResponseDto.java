@@ -30,7 +30,33 @@ public class ClimbingGymResponseDto {
                 .managerId(managerId)
                 .build();
         }
+
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AcceptedClimbingGymSimpleResponse {
+
+        private Long id;
+        private String name;
+        private Long managerId;
+        private Long follower;
+        private String profileImageUrl;
+
+        public static AcceptedClimbingGymSimpleResponse toDTO(ClimbingGym climbingGym,
+            Long managerId, Long follower, String profileImageUrl) {
+
+            return AcceptedClimbingGymSimpleResponse.builder()
+                .id(climbingGym.getId())
+                .name(climbingGym.getName())
+                .managerId(managerId)
+                .follower(follower)
+                .profileImageUrl(profileImageUrl)
+                .build();
+        }
+
+    }
 
 }
