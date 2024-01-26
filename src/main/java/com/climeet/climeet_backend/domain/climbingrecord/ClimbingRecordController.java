@@ -110,18 +110,21 @@ public class ClimbingRecordController {
 
     @Operation(summary = "[완등순] 암장별 클라이머 랭킹")
     @GetMapping("/gym/{gymId}/rank/clear")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<List<BestClearUserSimple>> findUserClearRanking(@PathVariable Long gymId){
         return ResponseEntity.ok(climbingRecordService.findBestClearUserRanking(gymId));
     }
 
     @Operation(summary = "[시간순] 암장별 클라이머 랭킹")
     @GetMapping("/gym/{gymId}/rank/time")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<List<BestTimeUserSimple>> findUserTimeRanking(@PathVariable Long gymId){
         return ResponseEntity.ok(climbingRecordService.findBestTimeUserRanking(gymId));
     }
 
     @Operation(summary = "[높은 레벨순] 암장별 클라이머 랭킹")
     @GetMapping("/gym/{gymId}/rank/level")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<List<BestLevelUserSimple>> findUserLevelRanking(@PathVariable Long gymId){
         return ResponseEntity.ok(climbingRecordService.findBestLevelUserRanking(gymId));
     }
