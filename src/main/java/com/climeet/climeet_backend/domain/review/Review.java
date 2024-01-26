@@ -53,4 +53,9 @@ public class Review extends BaseTimeEntity {
             .rating(requestDto.getRating())
             .build();
     }
+
+    public void changeReview(Float rating, String content){
+        this.rating = rating;
+        this.content = content;
+    }
 }

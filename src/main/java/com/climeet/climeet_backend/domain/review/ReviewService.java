@@ -1,4 +1,5 @@
 package com.climeet.climeet_backend.domain.review;
+
 import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
@@ -27,12 +28,24 @@ public class ReviewService {
     private final ClimbingGymRepository climbingGymRepository;
     private final ClimberRepository climberRepository;
 
+    private static final float MIN_RATING = 0;
+    private static final float MAX_RATING = 5;
+    private static final float STEP_RATING = 0.5f;
+
+
+    private static Boolean IsInvalidRating(Float rating) {
+        if (rating < MIN_RATING || rating > MAX_RATING || rating % STEP_RATING != 0) {
+            return true;
+        }
+        return false;
+    }
+
+
     @Transactional
     public void createReview(CreateReviewRequest createReviewRequest, User user) {
 
         // 리뷰 rating의 범위 확인
-        if (createReviewRequest.getRating() < 0 || createReviewRequest.getRating() > 5
-            || createReviewRequest.getRating() % 0.5 != 0) {
+        if (IsInvalidRating(createReviewRequest.getRating())) {
             throw new GeneralException(ErrorStatus._RATING_OUT_OF_RANGE);
         }
 
@@ -116,8 +129,7 @@ public class ReviewService {
     @Transactional
     public void changeReview(CreateReviewRequest changeReviewRequest, User user) {
         // 리뷰 rating의 범위 확인
-        if (changeReviewRequest.getRating() < 0 || changeReviewRequest.getRating() > 5
-            || changeReviewRequest.getRating() % 0.5 != 0) {
+        if (IsInvalidRating(changeReviewRequest.getRating())) {
             throw new GeneralException(ErrorStatus._RATING_OUT_OF_RANGE);
         }
 
@@ -141,8 +153,7 @@ public class ReviewService {
         // 리뷰 추가로 인한 평균 리뷰 갱신
         climbingGym.reviewChange(review.getRating(), changeReviewRequest.getRating());
 
-        review.setRating(changeReviewRequest.getRating());
-        review.setContent(changeReviewRequest.getContent());
+        review.changeReview(changeReviewRequest.getRating(), changeReviewRequest.getContent());
 
         reviewRepository.save(review);
     }
