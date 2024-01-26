@@ -99,13 +99,19 @@ public class ShortsService {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
-        shorts.updateViewCountUp();
-
         boolean isLiked = shortsLikeRepository.existsShortsLikeByUserAndShorts(user, shorts);
         boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user,
             shorts);
 
         return ShortsDetailInfo.toDTO(shorts, shorts.getClimbingGym(), shorts.getSector(), isLiked,
             isBookmarked);
+    }
+
+    public void updateShortsViewCount(User user, Long shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
+
+        //TODO 조회수 증가 검증 처리 추가
+        shorts.updateViewCountUp();
     }
 }

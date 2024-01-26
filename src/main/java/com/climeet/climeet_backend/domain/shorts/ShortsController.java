@@ -59,6 +59,15 @@ public class ShortsController {
         return ResponseEntity.ok(shortsService.findShortsPopular(user, page, size));
     }
 
+    @PatchMapping("/shorts/{shortsId}/viewCount")
+    @Operation(summary = "숏츠 조회수 증가")
+    public ResponseEntity<String> updateShortsViewCount(
+        @CurrentUser User user,
+        @PathVariable Long shortsId) {
+        shortsService.updateShortsViewCount(user, shortsId);
+        return ResponseEntity.ok("조회수 증가에 성공했습니다.");
+    }
+
     @Hidden
     @GetMapping("/shorts/{shortsId}")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS})
