@@ -31,22 +31,28 @@ public class ShortsController {
     @PostMapping("/shorts")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_SECTOR, ErrorStatus._EMPTY_ROUTE})
     @Operation(summary = "숏츠 업로드")
-    public ResponseEntity<String> uploadShorts(@RequestPart(value = "video") MultipartFile video,
+    public ResponseEntity<String> uploadShorts(
+        @CurrentUser User user,
+        @RequestPart(value = "video") MultipartFile video,
         @RequestPart MultipartFile thumbnailImage, @RequestPart CreateShortsRequest createShortsRequest) {
-        shortsService.uploadShorts(video, thumbnailImage, createShortsRequest);
+        shortsService.uploadShorts(user, video, thumbnailImage, createShortsRequest);
         return ResponseEntity.ok("업로드 성공");
     }
 
     @GetMapping("/shorts/latest")
     @Operation(summary = "숏츠 최신순 조회")
-    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(@RequestParam int page,
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(
+        @CurrentUser User user,
+        @RequestParam int page,
         @RequestParam int size) {
         return ResponseEntity.ok(shortsService.findShortsLatest(page, size));
     }
 
     @GetMapping("/shorts/popular")
     @Operation(summary = "숏츠 인기순 조회")
-    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(@RequestParam int page,
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(
+        @CurrentUser User user,
+        @RequestParam int page,
         @RequestParam int size) {
         return ResponseEntity.ok(shortsService.findShortsPopular(page, size));
     }

@@ -38,7 +38,7 @@ public class ShortsService {
     private final S3Service s3Service;
 
     @Transactional
-    public void uploadShorts(MultipartFile video, MultipartFile thumbnailImage,
+    public void uploadShorts(User user, MultipartFile video, MultipartFile thumbnailImage,
         CreateShortsRequest createShortsRequest) {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(
@@ -52,7 +52,7 @@ public class ShortsService {
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
 
-        Shorts shorts = Shorts.toEntity(climbingGym, sector, route, videoUrl, thumbnailImageUrl,
+        Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl, thumbnailImageUrl,
             createShortsRequest);
 
         shortsRepository.save(shorts);
