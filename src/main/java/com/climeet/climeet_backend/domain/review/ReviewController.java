@@ -6,11 +6,14 @@ import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewSum
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +36,8 @@ public class ReviewController {
         ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._REVIEW_EXIST})
     @PostMapping("/review")
     public ResponseEntity<String> createReview(
-        @RequestBody CreateReviewRequest createReviewRequest) {
-        reviewService.createReview(createReviewRequest);
+        @RequestBody CreateReviewRequest createReviewRequest, @CurrentUser User user) {
+        reviewService.createReview(createReviewRequest, user);
         return ResponseEntity.ok("리뷰를 추가했습니다.");
     }
 
@@ -43,8 +46,8 @@ public class ReviewController {
         ErrorStatus._EMPTY_MEMBER})
     @GetMapping("/{gymId}/review/summary")
     public ResponseEntity<ReviewSummaryDetailResponse> getReviewSummary(
-        @PathVariable Long gymId, @RequestParam Long userId) {
-        return ResponseEntity.ok(reviewService.getReviewSummary(gymId, userId));
+        @PathVariable Long gymId, @CurrentUser User user) {
+        return ResponseEntity.ok(reviewService.getReviewSummary(gymId, user));
     }
 
     @Operation(summary = "특정 암장 리뷰 목록 조회")
@@ -52,8 +55,19 @@ public class ReviewController {
         ErrorStatus._EMPTY_MEMBER})
     @GetMapping("/{gymId}/review")
     public ResponseEntity<PageResponseDto<List<ReviewDetailResponse>>> getReviewList(
-        @PathVariable Long gymId, @RequestParam Long userId, @RequestParam int page,
+        @PathVariable Long gymId, @CurrentUser User user, @RequestParam int page,
         @RequestParam int size) {
-        return ResponseEntity.ok(reviewService.getReviewList(gymId, userId, page, size));
+        return ResponseEntity.ok(reviewService.getReviewList(gymId, user, page, size));
+    }
+
+
+    @Operation(summary = "암장 리뷰 수정")
+    @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
+        ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._EMPTY_REVIEW})
+    @PatchMapping("/")
+    public ResponseEntity<String> changeReview(
+        @RequestBody CreateReviewRequest changeReviewRequest, @CurrentUser User user) {
+        reviewService.changeReview(changeReviewRequest, user);
+        return ResponseEntity.ok("리뷰를 수정했습니다.");
     }
 }

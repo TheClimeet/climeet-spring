@@ -3,9 +3,6 @@ package com.climeet.climeet_backend.domain.review;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.review.dto.ReviewRequestDto.CreateReviewRequest;
-import com.climeet.climeet_backend.domain.route.Route;
-import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
-import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,8 +17,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -53,5 +52,10 @@ public class Review extends BaseTimeEntity {
             .content(requestDto.getContent())
             .rating(requestDto.getRating())
             .build();
+    }
+
+    public void changeReview(Float rating, String content){
+        this.rating = rating;
+        this.content = content;
     }
 }

@@ -54,6 +54,12 @@ public class ClimbingGym extends BaseTimeEntity {
         this.averageRatingCalculate();
     }
 
+    public void reviewChange(Float beforeRating, Float afterRating) {
+        this.sumRating -= beforeRating;
+        this.sumRating += afterRating;
+        this.averageRatingCalculate();
+    }
+
     public void averageRatingCalculate() {
         if (this.reviewCount > 0) {
             float averageRating = this.sumRating / this.reviewCount;
