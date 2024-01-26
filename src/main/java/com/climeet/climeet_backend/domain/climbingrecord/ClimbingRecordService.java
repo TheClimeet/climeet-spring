@@ -4,6 +4,9 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestClearUserSimple;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestLevelUserSimple;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestTimeUserSimple;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
@@ -17,15 +20,20 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
 
@@ -45,7 +53,8 @@ public class ClimbingRecordService {
      * 클라이밍기록 생성(루트기록생성포함)
      */
     @Transactional
-    public ResponseEntity<String> createClimbingRecord(User user, CreateClimbingRecordDto requestDto) {
+    public ResponseEntity<String> createClimbingRecord(User user,
+        CreateClimbingRecordDto requestDto) {
         ClimbingGym climbingGym = gymRepository.findById(requestDto.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
@@ -54,14 +63,15 @@ public class ClimbingRecordService {
 
         //선택받았으니 하나 추가
         climbingGym.thisWeekSelectionCountUp();
-        Long totalTime = requestDto.getTime().toNanoOfDay()/1000000000;
+        Long totalTime = requestDto.getTime().toNanoOfDay() / 1000000000;
         user.thisWeekTotalClimbingTimeUp(totalTime);
 
         List<CreateRouteRecordDto> routeRecords = requestDto.getRouteRecordRequestDtoList();
         // 루트기록 리퀘스트 돌면서 루트 리퀘스트 저장
 
         routeRecords.forEach(
-            routeRecord -> routeRecordService.addRouteRecord(user, routeRecord, savedClimbingRecord));
+            routeRecord -> routeRecordService.addRouteRecord(user, routeRecord,
+                savedClimbingRecord));
 
         return ResponseEntity.ok("클라이밍 기록생성 성공");
     }
@@ -71,7 +81,7 @@ public class ClimbingRecordService {
      */
     public List<ClimbingRecordSimpleInfo> getClimbingRecords() {
         List<ClimbingRecord> recordList = climbingRecordRepository.findAll();
-        if(recordList.isEmpty()){
+        if (recordList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
         }
         return recordList.stream()
@@ -101,7 +111,8 @@ public class ClimbingRecordService {
     /**
      * 클라이밍 간편기록 날짜범위조회
      */
-    public List<ClimbingRecordSimpleInfo> getClimbingRecordsBetweenLocalDates(User user, LocalDate startDate,
+    public List<ClimbingRecordSimpleInfo> getClimbingRecordsBetweenLocalDates(User user,
+        LocalDate startDate,
         LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new GeneralException(ErrorStatus._INVALID_DATE_RANGE);
@@ -110,7 +121,7 @@ public class ClimbingRecordService {
         List<ClimbingRecord> climbingRecordList = climbingRecordRepository.findByClimbingDateBetweenAndUser(
             startDate, endDate, user);
 
-        if(climbingRecordList.isEmpty()){
+        if (climbingRecordList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
         }
 
@@ -123,7 +134,7 @@ public class ClimbingRecordService {
     /**
      * 클라이밍 기록 수정
      */
-    // TODO: 2024/01/21 업데이트 될 때 routeRecordDate도 업데이트
+    // TODO: 2024/01/21 업데이트 될 때 routeRecordDate도 업데이트 -> ㄴㄴ 그냥 루트기록date 삭제하면 될 듯
     @Transactional
     public ClimbingRecordSimpleInfo updateClimbingRecord(User user, Long id,
         UpdateClimbingRecordDto requestDto) {
@@ -131,7 +142,7 @@ public class ClimbingRecordService {
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
-        if(!user.getId().equals(climbingRecord.getUser().getId())){
+        if (!user.getId().equals(climbingRecord.getUser().getId())) {
             throw new GeneralException(ErrorStatus._INVALID_MEMBER);
         }
 
@@ -162,7 +173,7 @@ public class ClimbingRecordService {
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
-        if(!user.getId().equals(climbingRecord.getUser().getId())){
+        if (!user.getId().equals(climbingRecord.getUser().getId())) {
             throw new GeneralException(ErrorStatus._INVALID_MEMBER);
         }
 
@@ -173,7 +184,8 @@ public class ClimbingRecordService {
         return ResponseEntity.ok("클라이밍기록이 삭제되었습니다.");
     }
 
-    public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(User user, int year, int month) {
+    public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(User user, int year,
+        int month) {
 
         LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
@@ -192,8 +204,8 @@ public class ClimbingRecordService {
 
         List<Map<Long, Long>> difficultyList = routeRecordRepository
             .getRouteRecordDifficultyBetween(
-            startDate,
-            endDate
+                startDate,
+                endDate
             );
 
         return ClimbingRecordStatisticsInfo.toDTO(
@@ -204,7 +216,71 @@ public class ClimbingRecordService {
         );
     }
 
-// TODO: 2024/01/21 24시간을 초과했을 때 에러처리
+    public List<BestClearUserSimple> findBestClearUserRanking(Long climbingGymId) {
+        ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Object[] lastWeek = startDayAndLastDayOfLastWeek();
+
+        List<Object[]> bestUserRanking = climbingRecordRepository.findByClearRankingClimbingDateBetweenAndClimbingGym(
+            (LocalDate)lastWeek[0], (LocalDate)lastWeek[1], climbingGym);
+
+        int[] rank = {1};
+        List<BestClearUserSimple> ranking = bestUserRanking.stream()
+            .map(userRankMap -> {
+                User user = (User) userRankMap[0];
+                Long totalCount = (Long) userRankMap[1];
+                return BestClearUserSimple.toDTO(user, rank[0]++, totalCount);
+            })
+            .collect(Collectors.toList());
+
+        return ranking;
+    }
+
+    public List<BestTimeUserSimple> findBestTimeUserRanking(Long climbingGymId) {
+        ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Object[] lastWeek = startDayAndLastDayOfLastWeek();
+
+        List<Object[]> bestUserRanking = climbingRecordRepository.findByTimeRankingClimbingDateBetweenAndClimbingGym(
+            (LocalDate)lastWeek[0], (LocalDate)lastWeek[1], climbingGym);
+
+        int[] rank = {1};
+        List<BestTimeUserSimple> ranking = bestUserRanking.stream()
+            .map(userRankMap -> {
+                User user = (User) userRankMap[0];
+                LocalTime totalTime = convertDoubleToTime((Double) userRankMap[1]);
+                return BestTimeUserSimple.toDTO(user, rank[0]++, totalTime);
+            })
+            .collect(Collectors.toList());
+
+        return ranking;
+    }
+
+    public List<BestLevelUserSimple> findBestLevelUserRanking(Long climbingGymId) {
+        ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Object[] lastWeek = startDayAndLastDayOfLastWeek();
+
+        List<Object[]> bestUserRanking = climbingRecordRepository.findByLevelRankingClimbingDateBetweenAndClimbingGym(
+            (LocalDate)lastWeek[0], (LocalDate)lastWeek[1], climbingGym);
+
+        int[] rank = {1};
+        List<BestLevelUserSimple> ranking = bestUserRanking.stream()
+            .map(userRankMap -> {
+                User user = (User) userRankMap[0];
+                int highDifficulty = (int) userRankMap[1];
+                return BestLevelUserSimple.toDTO(user, rank[0]++, highDifficulty);
+            })
+            .collect(Collectors.toList());
+
+        return ranking;
+    }
+
+
+    // TODO: 2024/01/21 24시간을 초과했을 때 에러처리
     public static LocalTime convertDoubleToTime(double totalSeconds) {
         int seconds = (int) totalSeconds;
         int hours = (seconds / 3600) % 24;
@@ -212,6 +288,26 @@ public class ClimbingRecordService {
         int remainingSeconds = seconds % 60;
 
         return LocalTime.of(hours, minutes, remainingSeconds);
+    }
+
+    public static Object[] startDayAndLastDayOfLastWeek(){
+        // 현재 시점의 날짜 정보 가져오기
+        LocalDate today = LocalDate.now();
+
+        // 현재 주의 월요일
+        LocalDate startOfThisWeek = today.with(
+            TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        // 지난 주의 월요일
+        LocalDate startOfLastWeek = startOfThisWeek.minusDays(7);
+        LocalDate endOfLastWeek = startOfThisWeek.minusDays(1);
+
+        Object[] lastWeek = new Object[2];
+
+        lastWeek[0] = startOfLastWeek;
+        lastWeek[1] = endOfLastWeek;
+
+        return lastWeek;
     }
 
 }
