@@ -47,6 +47,10 @@ public class ClimbingRecordService {
     private final RouteRecordRepository routeRecordRepository;
 
     public static final int START_DAY_OF_MONTH = 1;
+    public static final int MONDAY = 0;
+    public static final int SUNDAY = 1;
+    public static final int RANKING_USER = 0;
+    public static final int RANKING_CONDITION = 1;
 
 
     /**
@@ -134,7 +138,6 @@ public class ClimbingRecordService {
     /**
      * 클라이밍 기록 수정
      */
-    // TODO: 2024/01/21 업데이트 될 때 routeRecordDate도 업데이트 -> ㄴㄴ 그냥 루트기록date 삭제하면 될 듯
     @Transactional
     public ClimbingRecordSimpleInfo updateClimbingRecord(User user, Long id,
         UpdateClimbingRecordDto requestDto) {
@@ -223,13 +226,13 @@ public class ClimbingRecordService {
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
         List<Object[]> bestUserRanking = climbingRecordRepository.findByClearRankingClimbingDateBetweenAndClimbingGym(
-            (LocalDate)lastWeek[0], (LocalDate)lastWeek[1], climbingGym);
+            (LocalDate)lastWeek[MONDAY], (LocalDate)lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
         List<BestClearUserSimple> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
-                User user = (User) userRankMap[0];
-                Long totalCount = (Long) userRankMap[1];
+                User user = (User) userRankMap[RANKING_USER];
+                Long totalCount = (Long) userRankMap[RANKING_CONDITION];
                 return BestClearUserSimple.toDTO(user, rank[0]++, totalCount);
             })
             .collect(Collectors.toList());
@@ -244,13 +247,13 @@ public class ClimbingRecordService {
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
         List<Object[]> bestUserRanking = climbingRecordRepository.findByTimeRankingClimbingDateBetweenAndClimbingGym(
-            (LocalDate)lastWeek[0], (LocalDate)lastWeek[1], climbingGym);
+            (LocalDate)lastWeek[MONDAY], (LocalDate)lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
         List<BestTimeUserSimple> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
-                User user = (User) userRankMap[0];
-                LocalTime totalTime = convertDoubleToTime((Double) userRankMap[1]);
+                User user = (User) userRankMap[RANKING_USER];
+                LocalTime totalTime = convertDoubleToTime((Double) userRankMap[RANKING_CONDITION]);
                 return BestTimeUserSimple.toDTO(user, rank[0]++, totalTime);
             })
             .collect(Collectors.toList());
@@ -265,13 +268,13 @@ public class ClimbingRecordService {
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
         List<Object[]> bestUserRanking = climbingRecordRepository.findByLevelRankingClimbingDateBetweenAndClimbingGym(
-            (LocalDate)lastWeek[0], (LocalDate)lastWeek[1], climbingGym);
+            (LocalDate)lastWeek[MONDAY], (LocalDate)lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
         List<BestLevelUserSimple> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
-                User user = (User) userRankMap[0];
-                int highDifficulty = (int) userRankMap[1];
+                User user = (User) userRankMap[RANKING_USER];
+                int highDifficulty = (int) userRankMap[RANKING_CONDITION];
                 return BestLevelUserSimple.toDTO(user, rank[0]++, highDifficulty);
             })
             .collect(Collectors.toList());
@@ -304,8 +307,8 @@ public class ClimbingRecordService {
 
         Object[] lastWeek = new Object[2];
 
-        lastWeek[0] = startOfLastWeek;
-        lastWeek[1] = endOfLastWeek;
+        lastWeek[MONDAY] = startOfLastWeek;
+        lastWeek[SUNDAY] = endOfLastWeek;
 
         return lastWeek;
     }
