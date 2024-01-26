@@ -38,7 +38,26 @@ public class ClimbingGymService {
             gymName, pageable);
 
         List<AcceptedClimbingGymSimpleResponse> climbingGymList = climbingGymSlice.stream()
-            .map(climbingGym -> AcceptedClimbingGymSimpleResponse.toDTO(climbingGym))
+            .map(climbingGym -> {
+                Long managerId = null;
+                Long follower = 0L;
+                String profileImageUrl = null;
+                // manager 유무 확인
+                if (climbingGym.getManager() != null) {
+                    managerId = climbingGym.getManager().getId();
+                    // manager가 있으면 follower 조회
+                    if (climbingGym.getManager().getFollowerCount() != null) {
+                        follower = climbingGym.getManager().getFollowerCount();
+                    }
+                }
+                // 프로필이 있으면 조회
+                if (climbingGym.getProfileImageUrl() != null) {
+                    profileImageUrl = climbingGym.getProfileImageUrl();
+                }
+
+                return AcceptedClimbingGymSimpleResponse.toDTO(climbingGym, managerId, follower,
+                    profileImageUrl);
+            })
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),

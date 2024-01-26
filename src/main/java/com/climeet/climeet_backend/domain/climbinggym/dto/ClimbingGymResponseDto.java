@@ -45,19 +45,8 @@ public class ClimbingGymResponseDto {
         private Long follower;
         private String profileImageUrl;
 
-        public static AcceptedClimbingGymSimpleResponse toDTO(ClimbingGym climbingGym) {
-            Long managerId = null;
-            Long follower = 0L;
-            String profileImageUrl = null;
-            if(climbingGym.getManager() != null){
-                managerId = climbingGym.getManager().getId();
-                if(climbingGym.getManager().getFollowerCount() != null){
-                    follower = climbingGym.getManager().getFollowerCount();
-                }
-            }
-            if(climbingGym.getProfileImageUrl() != null){
-                profileImageUrl = climbingGym.getProfileImageUrl();
-            }
+        public static AcceptedClimbingGymSimpleResponse toDTO(ClimbingGym climbingGym,
+            Long managerId, Long follower, String profileImageUrl) {
 
             return AcceptedClimbingGymSimpleResponse.builder()
                 .id(climbingGym.getId())
