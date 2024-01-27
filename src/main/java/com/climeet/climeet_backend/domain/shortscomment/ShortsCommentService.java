@@ -2,6 +2,8 @@ package com.climeet.climeet_backend.domain.shortscomment;
 
 import static com.climeet.climeet_backend.global.utils.DateTimeConverter.convertToDisplayTime;
 
+import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLike;
+import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeRepository;
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeService;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
@@ -16,6 +18,7 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +33,7 @@ public class ShortsCommentService {
     private final ShortsRepository shortsRepository;
     private final ShortsCommentRepository shortsCommentRepository;
     private final ShortsCommentLikeService shortsCommentLikeService;
+    private final ShortsCommentLikeRepository shortsCommentLikeRepository;
     private static final int ADJUSTED_CHILD_COUNT = 1;
 
     @Transactional
@@ -46,7 +50,7 @@ public class ShortsCommentService {
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
-            if(parentComment.getChildCommentCount() == 0) {
+            if (parentComment.getChildCommentCount() == 0) {
                 shortsComment.updateIsFirstChildTrue();
             }
             parentComment.updateChildCommentCount();
@@ -117,6 +121,29 @@ public class ShortsCommentService {
             responses);
     }
 
+    public void changeShortsCommentLikeStatus(User user, Long shortsCommentId, boolean isLike,
+        boolean isDislike) {
+        ShortsComment shortsComment = shortsCommentRepository.findById(shortsCommentId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
+
+        CommentLikeStatus commentLikeStatus = determineCommentLikeStatus(isLike, isDislike);
+
+        Optional<ShortsCommentLike> optionalShortsCommentLike = shortsCommentLikeRepository.findShortsCommentLikeByUserAndShortsComment(
+            user, shortsComment);
+
+        if (optionalShortsCommentLike.isPresent()) {
+            ShortsCommentLike existingShortsCommentLike = optionalShortsCommentLike.get();
+            shortsCommentLikeService.updateCountsBasedOnStatusChange(existingShortsCommentLike,
+                commentLikeStatus, shortsComment);
+            optionalShortsCommentLike.get().updateCommentLikeStatus(commentLikeStatus);
+        } else {
+            ShortsCommentLike newShortsCommentLike = ShortsCommentLike.toEntity(user, shortsComment,
+                commentLikeStatus);
+            shortsCommentLikeService.updateCountsForNewLike(newShortsCommentLike, shortsComment);
+            shortsCommentLikeRepository.save(newShortsCommentLike);
+        }
+    }
+
     private List<ShortsComment> fetchParentAndFirstChildComments(
         List<ShortsComment> parentComments) {
         List<ShortsComment> commentListWithChild = new ArrayList<>();
@@ -137,6 +164,16 @@ public class ShortsCommentService {
             return comment.getParentComment().getId();
         } else {
             return null;
+        }
+    }
+
+    private CommentLikeStatus determineCommentLikeStatus(Boolean isLike, Boolean isDislike) {
+        if (Boolean.TRUE.equals(isLike)) {
+            return CommentLikeStatus.LIKE;
+        } else if (Boolean.TRUE.equals(isDislike)) {
+            return CommentLikeStatus.DISLIKE;
+        } else {
+            return CommentLikeStatus.NONE;
         }
     }
 }

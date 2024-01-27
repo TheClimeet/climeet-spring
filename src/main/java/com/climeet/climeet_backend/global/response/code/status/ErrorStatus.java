@@ -73,6 +73,7 @@ public enum ErrorStatus implements BaseErrorCode {
     //숏츠 댓글 관련
     _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001" , "존재하지 않는 쇼츠 댓글입니다.");
 
+    ;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

@@ -14,6 +14,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,5 +65,18 @@ public class ShortsCommentController {
     ) {
         return ResponseEntity.ok(
             shortsCommentService.findShortsChildCommentList(user, shortsId, parentCommentId, page, size));
+    }
+
+    @Operation(summary = "숏츠 댓글 상호작용")
+    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
+    @PatchMapping("/shortsComments/{shortsCommentId}")
+    public ResponseEntity<String> changeShortsCommentLikeStatus(
+        @CurrentUser User user,
+        @PathVariable Long shortsCommentId,
+        @RequestParam Boolean isLike, @RequestParam Boolean isDislike
+    ) {
+        shortsCommentService.changeShortsCommentLikeStatus(user, shortsCommentId, isLike,
+            isDislike);
+        return ResponseEntity.ok("숏츠 댓글 상호작용에 성공했습니다.");
     }
 }
