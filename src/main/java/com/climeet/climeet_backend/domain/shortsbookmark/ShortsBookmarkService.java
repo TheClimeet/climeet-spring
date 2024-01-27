@@ -17,18 +17,17 @@ public class ShortsBookmarkService {
     private final ShortsBookmarkRepository shortsBookmarkRepository;
 
     @Transactional
-    public void changeShortsBookmarked(User user, Long shortsId) {
+    public void createShortsBookmark(User user, Long shortsId) {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
-        System.out.println(user.getAccessToken());
         ShortsBookmark shortsBookmark = ShortsBookmark.toEntity(user, shorts);
 
         shortsBookmarkRepository.save(shortsBookmark);
     }
 
     @Transactional
-    public void changeShortsUnBookmarked(User user, Long shortsId) {
+    public void deleteShortsBookmark(User user, Long shortsId) {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
