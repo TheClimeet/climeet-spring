@@ -7,7 +7,11 @@ import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDetailInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
+import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
+import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -29,13 +33,16 @@ public class ShortsService {
     private final ClimbingGymRepository climbingGymRepository;
     private final SectorRepository sectorRepository;
     private final RouteRepository routeRepository;
+    private final ShortsLikeRepository shortsLikeRepository;
+    private final ShortsBookmarkRepository shortsBookmarkRepository;
     private final S3Service s3Service;
 
     @Transactional
-    public void uploadShorts(MultipartFile video, MultipartFile thumbnailImage,
+    public void uploadShorts(User user, MultipartFile video, MultipartFile thumbnailImage,
         CreateShortsRequest createShortsRequest) {
 
-        ClimbingGym climbingGym = climbingGymRepository.findById(createShortsRequest.getClimbingGymId())
+        ClimbingGym climbingGym = climbingGymRepository.findById(
+                createShortsRequest.getClimbingGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
         Sector sector = sectorRepository.findById(createShortsRequest.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
@@ -45,35 +52,66 @@ public class ShortsService {
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
 
-        Shorts shorts = Shorts.toEntity(climbingGym, sector, route, videoUrl, thumbnailImageUrl,
+        Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl,
+            thumbnailImageUrl,
             createShortsRequest);
 
         shortsRepository.save(shorts);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(
+            pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> ShortsSimpleInfo.toDTO(shorts.getThumbnailImageUrl(),
-                    shorts.getClimbingGym().getName(), shorts.getRoute().getDifficulty()))
+            .map(shorts -> ShortsSimpleInfo.toDTO(
+                shorts.getId(),
+                shorts.getThumbnailImageUrl(),
+                shorts.getClimbingGym().getName(),
+                shorts.getRoute().getDifficulty(),
+                findShorts(user, shorts.getId())))
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
+            pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> ShortsSimpleInfo.toDTO(shorts.getThumbnailImageUrl(),
-                shorts.getClimbingGym().getName(), shorts.getRoute().getDifficulty()))
+            .map(shorts -> ShortsSimpleInfo.toDTO(
+                shorts.getId(),
+                shorts.getThumbnailImageUrl(),
+                shorts.getClimbingGym().getName(),
+                shorts.getRoute().getDifficulty()
+                , findShorts(user, shorts.getId())))
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
+    }
+
+    public ShortsDetailInfo findShorts(User user, Long shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
+
+        boolean isLiked = shortsLikeRepository.existsShortsLikeByUserAndShorts(user, shorts);
+        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user,
+            shorts);
+
+        return ShortsDetailInfo.toDTO(shorts, shorts.getClimbingGym(), shorts.getSector(), isLiked,
+            isBookmarked);
+    }
+
+    public void updateShortsViewCount(User user, Long shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
+
+        //TODO 조회수 증가 검증 처리 추가
+        shorts.updateViewCountUp();
     }
 }

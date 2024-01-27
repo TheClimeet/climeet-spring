@@ -63,9 +63,10 @@ public class Shorts extends BaseTimeEntity {
 
     private Boolean isPublic;
 
-    public static Shorts toEntity(ClimbingGym climbingGym, Sector sector, Route route,
+    public static Shorts toEntity(User user, ClimbingGym climbingGym, Sector sector, Route route,
         String videoUrl, String thumbnailImageUrl, CreateShortsRequest createShortsRequest) {
         return Shorts.builder()
+            .user(user)
             .climbingGym(climbingGym)
             .sector(sector)
             .route(route)
@@ -75,5 +76,9 @@ public class Shorts extends BaseTimeEntity {
             .isPublic(createShortsRequest.isPublic())
             .description(createShortsRequest.getDescription())
             .build();
+    }
+
+    public void updateViewCountUp() {
+        this.viewCount++;
     }
 }

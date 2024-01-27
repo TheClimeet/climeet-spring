@@ -44,8 +44,9 @@ public class ShortsCommentService {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
-        ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest,
-            shorts);
+        shorts.updateViewCountUp();
+
+        ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest, shorts);
 
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
