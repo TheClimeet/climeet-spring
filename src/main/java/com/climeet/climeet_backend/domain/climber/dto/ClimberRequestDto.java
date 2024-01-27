@@ -15,7 +15,7 @@ public class ClimberRequestDto {
         private ClimbingLevel climbingLevel;
         private DiscoveryChannel discoveryChannel;
         private String profileImgUrl;
-        private List<String> gymFollowList;
+        private List<Long> gymFollowList;
         private Boolean isAllowFollowNotification;
         private Boolean isAllowLikeNotification;
         private Boolean isAllowCommentNotification;

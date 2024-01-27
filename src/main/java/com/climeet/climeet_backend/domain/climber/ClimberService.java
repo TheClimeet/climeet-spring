@@ -3,13 +3,14 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberTokenRefreshResponse;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
-import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.domain.user.UserService;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
@@ -20,14 +21,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@PropertySource("classpath:application-dev.yml")
 public class ClimberService {
 
     private final ClimberRepository climberRepository;
@@ -36,6 +45,7 @@ public class ClimberService {
     private final ManagerRepository managerRepository;
     private final FollowRelationshipService followRelationshipService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
@@ -68,7 +78,7 @@ public class ClimberService {
         try {
             String accessToken = jwtTokenProvider.createAccessToken(
                 String.valueOf(climber.getId()));
-            String refreshToken = jwtTokenProvider.createRefreshToken();
+            String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
 
             climber.updateToken(accessToken, refreshToken);
             return climber;
@@ -95,7 +105,7 @@ public class ClimberService {
         climberRepository.save(climber);
 
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
 
         //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
@@ -107,9 +117,9 @@ public class ClimberService {
 
 
         //가입 시 암장 팔로우
-        List<String> gymFollowList = climberRequestDto.getGymFollowList();
-        for(String gymName : gymFollowList){
-            ClimbingGym optionalGym = climbingGymRepository.findByName(gymName)
+        List<Long> gymFollowList = climberRequestDto.getGymFollowList();
+        for(Long gymId : gymFollowList){
+            ClimbingGym optionalGym = climbingGymRepository.findById(gymId)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
             Manager manager = managerRepository.findByClimbingGym(optionalGym)
@@ -186,4 +196,13 @@ public class ClimberService {
         return userInfo;
 
     }
+
+
+    @Transactional
+    public boolean checkNicknameDuplication(String nickName){
+        return userRepository.findByprofileName(nickName).isPresent();
+    }
+
+
+
 }

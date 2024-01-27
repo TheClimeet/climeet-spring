@@ -3,6 +3,8 @@ package com.climeet.climeet_backend.domain.manager;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,45 +25,32 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerController {
     private final ManagerService managerService;
 
-    /**
-     * [POST] 관리자 로그인 API
-     */
     @PostMapping("/login")
     @Operation(summary = "관리자 로그인", description = "관리자 로그인")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._WRONG_LOGINID_PASSWORD})
     public ResponseEntity<ManagerSimpleInfo> login(@RequestBody
         CreateAccessTokenRequest createAccessTokenRequest){
         ManagerSimpleInfo managerSimpleInfo = managerService.login(createAccessTokenRequest);
         return ResponseEntity.ok(managerSimpleInfo);
     }
 
-
-
-    /**
-     * [POST] 관리자 회원가입 API
-     */
     @PostMapping("/signup")
     @Operation(summary = "관리자 회원가입", description = "관리자 회원가입 API")
-    public ResponseEntity<String> signUp(@RequestBody
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._DUPLICATE_LOGINID})
+    public ResponseEntity<ManagerSimpleInfo> signUp(@RequestBody
         CreateManagerRequest createManagerRequest){
-        managerService.signUp(createManagerRequest);
-       return ResponseEntity.ok("관리자 회원가입이 성공적으로 완료되었습니다. ");
+        ManagerSimpleInfo managerSimpleInfo = managerService.signUp(createManagerRequest);
+       return ResponseEntity.ok(managerSimpleInfo);
     }
 
-
-    /**
-     * [GET] 암장 관리자 등록 여부 확인
-     */
     @Operation(summary = "암장 등록 중복 확인", description = "이미 관리자가 등록된 암장인지 확인하는 API \n\n **이미 관리자 등록 되어있음** : false \n\n **관리자 등록 안되어 있음** : true")
     @GetMapping("/isRegistered/{gymName}")
-    public ResponseEntity<Boolean> isRegistered(@PathVariable String gymName){
-        boolean isRegistered = !managerService.checkManagerRegistration(gymName);
+    public ResponseEntity<Boolean> isRegistered(@PathVariable Long gymId){
+        boolean isRegistered = !managerService.checkManagerRegistration(gymId);
         return ResponseEntity.ok(isRegistered);
     }
 
 
-    /**
-     * [GET] 관리자 ID 중복확인
-     */
     @GetMapping("/check-id/{loginId}")
     @Operation(summary = "관리자 ID 중복 확인", description = "**이미 존재하는 ID** : false \n\n **사용 가능한 ID** : true")
     public ResponseEntity<Boolean> checkLoginId(@PathVariable String loginId){

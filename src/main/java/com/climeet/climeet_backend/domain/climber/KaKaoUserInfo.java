@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.climber;
 
 import java.util.Map;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.web.reactive.function.client.WebClient;
 
 public class KaKaoUserInfo extends Oauth2UserInfo{
     public KaKaoUserInfo(Map<String, Object> attributes){
@@ -21,4 +23,6 @@ public class KaKaoUserInfo extends Oauth2UserInfo{
     public String getProvider(){
         return "KAKAO";
     }
+
+
 }

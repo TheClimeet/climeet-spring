@@ -10,7 +10,7 @@ public class ManagerRequestDto {
     @NoArgsConstructor
     public static class CreateManagerRequest {
 
-        private String gymName;
+        private Long gymId;
         private String loginId;
         private String password;
         private String name;
@@ -18,6 +18,7 @@ public class ManagerRequestDto {
         private String email;
         private String backGroundImageUri;
         private List<String> provideServiceList; //구현 후 처리 예정
+        private String businessRegistrationImageUrl;
         private Boolean isAllowFollowNotification;
         private Boolean isAllowLikeNotification;
         private Boolean isAllowCommentNotification;

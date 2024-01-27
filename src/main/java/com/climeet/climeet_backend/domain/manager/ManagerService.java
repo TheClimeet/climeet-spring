@@ -41,15 +41,15 @@ public class ManagerService {
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(IdManager.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);
 
         return new ManagerSimpleInfo(IdManager);
 
     }
     @Transactional
-    public boolean checkManagerRegistration(String gymName){
-        ClimbingGym gym = climbingGymRepository.findByName(gymName)
+    public boolean checkManagerRegistration(Long gymId){
+        ClimbingGym gym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         return managerRepository.existsByClimbingGym(gym);
@@ -57,13 +57,11 @@ public class ManagerService {
 
 
     @Transactional
-    public Manager signUp(@RequestBody CreateManagerRequest createManagerRequest){
-       ClimbingGym gym = climbingGymRepository.findByName(createManagerRequest.getGymName())
+    public ManagerSimpleInfo signUp(@RequestBody CreateManagerRequest createManagerRequest){
+       ClimbingGym gym = climbingGymRepository.findById(createManagerRequest.getGymId())
            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        if(gym.getManager()!=null){
-            throw new GeneralException(ErrorStatus._DUPLICATE_GYM_MANAGER);
-        }
+       //todo : 관리자 중복 매핑 예외 처리
 
         if(managerRepository.findByLoginId(createManagerRequest.getLoginId()).isPresent()){
             throw new GeneralException(ErrorStatus._DUPLICATE_LOGINID);
@@ -79,10 +77,10 @@ public class ManagerService {
         manager.updateClimbingGym(gym);
         manager.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(manager.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String refreshToken = jwtTokenProvider.createRefreshToken(manager.getId());
         manager.updateToken(accessToken, refreshToken);
 
-        return manager;
+        return new ManagerSimpleInfo(manager);
     }
     private void saveClimbingGymBackgroundImage(CreateManagerRequest createManagerRequest, ClimbingGym gym){
         ClimbingGymBackgroundImage climbingGymBackgroundImage = ClimbingGymBackgroundImage.builder()
