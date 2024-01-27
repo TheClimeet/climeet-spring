@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "BestRecordGym", description = "[기록된 순(selected된 순)] 금주 베스트 운동 기록 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/rank/week/gym")
+@RequestMapping("api/rank/week/gym")
 public class BestRecordGymController {
     private final BestRecordGymService bestRecordGymService;
 

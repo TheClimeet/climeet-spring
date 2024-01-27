@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "RouteRecords", description = "루트 운동기록 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/route-record")
+@RequestMapping("api/route-record")
 public class RouteRecordController {
 
     private final RouteRecordService routeRecordService;

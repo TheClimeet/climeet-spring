@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name="Climber Auth", description = "클라이머 인증 관련")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/climber")
+@RequestMapping("api/climber")
 @CrossOrigin
 public class ClimberController {
     private final ClimberService climberService;

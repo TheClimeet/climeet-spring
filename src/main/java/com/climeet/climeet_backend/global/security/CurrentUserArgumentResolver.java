@@ -6,23 +6,19 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@RequiredArgsConstructor
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
 
     private final UserRepository userRepository;
-
-    public CurrentUserArgumentResolver(JwtTokenProvider jwtTokenProvider,
-        UserRepository userRepository) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userRepository = userRepository;
-    }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -39,7 +35,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             String token = authorizationHeader.substring(7); // "Bearer " 이후 문자열
             return loadUserFromToken(token);
         }
-        throw new GeneralException(ErrorStatus._FILE_UPLOAD_ERROR);
+        throw new GeneralException(ErrorStatus._EMPTY_JWT);
     }
 
     public User loadUserFromToken(String token) {
@@ -50,7 +46,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             String userId = claims.getSubject();
 
             return userRepository.findById(Long.valueOf(userId))
-                .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_JWT));
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
         } catch (Exception ex) {
             throw new GeneralException(ErrorStatus._INVALID_JWT);
         }

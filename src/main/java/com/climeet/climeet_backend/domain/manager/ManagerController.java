@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name="Manager", description = "관리자 관련 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/manager")
+@RequestMapping("api/manager")
 @CrossOrigin
 public class ManagerController {
     private final ManagerService managerService;

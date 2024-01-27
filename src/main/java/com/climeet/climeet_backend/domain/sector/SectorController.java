@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "ClimbingSector", description = "클라이밍 섹터 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/gym")
+@RequestMapping("api/gym")
 public class SectorController {
 
     private final SectorService sectorService;

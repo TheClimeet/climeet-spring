@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "BestRoute", description = "[기록된 순(selected된 순)] 금주 베스트 루트 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/rank/week/routes")
+@RequestMapping("api/rank/week/routes")
 public class BestRouteController {
 
     private final BestRouteService bestRouteService;

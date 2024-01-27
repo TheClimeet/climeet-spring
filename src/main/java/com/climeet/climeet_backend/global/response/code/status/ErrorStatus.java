@@ -37,10 +37,9 @@ public enum ErrorStatus implements BaseErrorCode {
     _DUPLICATE_ROUTE_NAME(HttpStatus.CONFLICT, "ROUTE_004", "루트 이름이 중복됩니다."),
 
     //인증 관련
-    _EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AUTH_001", "JWT가 존재하지 않습니다."),
-    _INVALID_JWT(HttpStatus.UNAUTHORIZED, "AUTH_002", "유효하지 않은 JWT입니다."),
-
-    _EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "AUTH_003", "JWT가 만료되었습니다."),
+    _EMPTY_JWT(HttpStatus.PAYMENT_REQUIRED, "AUTH_001", "JWT가 존재하지 않습니다."),
+    _INVALID_JWT(HttpStatus.GONE, "AUTH_002", "유효하지 않은 JWT입니다."),
+    _EXPIRED_JWT(HttpStatus.GONE, "AUTH_003", "JWT가 만료되었습니다."),
 
     //회원가입 중복 관련
     _DUPLICATE_SIGN_IN(HttpStatus.CONFLICT, "AUTH_004", "이미 가입 된 유저입니다."),

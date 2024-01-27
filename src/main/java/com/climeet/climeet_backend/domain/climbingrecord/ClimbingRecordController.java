@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "ClimbingRecords", description = "클라이밍 운동기록 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/climbing-record")
+@RequestMapping("api/climbing-record")
 public class ClimbingRecordController {
 
     private final ClimbingRecordService climbingRecordService;
