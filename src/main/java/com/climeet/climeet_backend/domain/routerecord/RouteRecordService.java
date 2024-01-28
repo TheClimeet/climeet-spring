@@ -158,6 +158,10 @@ public class RouteRecordService {
 
         int difficulty = routeRecord.getRoute().getDifficulty();
 
+        if(climbingRecord.getHighDifficulty() < difficulty){
+            climbingRecord.setHighDifficulty(difficulty);
+        }
+
         //climbingRecord의 평균 업데이트
         climbingRecord.setAvgDifficulty(
             newAvgDifficulty(difficulty, climbingRecord.getAvgDifficulty(),
