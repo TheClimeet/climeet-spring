@@ -21,7 +21,6 @@ import com.climeet.climeet_backend.global.s3.S3Service;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.builder.Diff;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
