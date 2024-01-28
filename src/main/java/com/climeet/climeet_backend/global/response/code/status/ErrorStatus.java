@@ -32,6 +32,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_VERSION(HttpStatus.CONFLICT, "ROUTE_VERSION_002", "암장의 해당 날짜의 버전이 존재하지 않습니다."),
     _MISMATCH_ROUTE_IDS(HttpStatus.CONFLICT, "ROUTE_VERSION_003", "등록된 루트 데이터 중 불러오지 못한 값이 있습니다."),
     _MISMATCH_SECTOR_IDS(HttpStatus.CONFLICT, "ROUTE_VERSION_004", "등록된 섹터 데이터 중 불러오지 못한 값이 있습니다."),
+    _DUPLICATE_ROUTE_VERSION(HttpStatus.CONFLICT, "ROUTE_VERSION_005", "해당일에 이미 등록된 버전이 있습니다."),
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),

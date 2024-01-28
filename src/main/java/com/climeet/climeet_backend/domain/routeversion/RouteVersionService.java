@@ -5,6 +5,7 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
+import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
@@ -12,8 +13,9 @@ import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDet
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +26,40 @@ public class RouteVersionService {
     private final RouteVersionRepository routeVersionRepository;
     private final RouteRepository routeRepository;
     private final SectorRepository sectorRepository;
+
+    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(
+                createRouteVersionRequest.getGymId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Optional<RouteVersion> routeVersionOptional = routeVersionRepository.findByClimbingGymAndTimePoint(
+            climbingGym, createRouteVersionRequest.getTimePoint());
+        if (routeVersionOptional.isPresent()) {
+            throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_VERSION);
+        }
+
+        List<Route> routeList = routeRepository.findByIdIn(
+            createRouteVersionRequest.getRouteIdList());
+        if (routeList.size() != createRouteVersionRequest.getRouteIdList().size()) {
+            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
+        }
+
+        List<Sector> sectorList = sectorRepository.findByIdIn(
+            createRouteVersionRequest.getSectorIdList());
+        if (sectorList.size() != createRouteVersionRequest.getSectorIdList().size()) {
+            throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
+        }
+
+        String routeIdListString = RouteVersionConverter.convertListToString(
+            createRouteVersionRequest.getRouteIdList());
+        String sectorIdListString = RouteVersionConverter.convertListToString(
+            createRouteVersionRequest.getSectorIdList());
+
+        routeVersionRepository.save(
+            RouteVersion.toEntity(climbingGym, createRouteVersionRequest.getTimePoint(),
+                routeIdListString, sectorIdListString));
+
+    }
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)

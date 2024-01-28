@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 public class RouteVersionRequestDto {
 
@@ -14,11 +13,10 @@ public class RouteVersionRequestDto {
     public static class CreateRouteVersionRequest {
 
         private Long gymId;
-        @DateTimeFormat(iso = ISO.DATE)
-        private LocalDate date;
-
-        private List<String> routeList;
-        private List<String> sectorList;
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate timePoint;
+        private List<Long> routeIdList;
+        private List<Long> sectorIdList;
     }
 
 }
