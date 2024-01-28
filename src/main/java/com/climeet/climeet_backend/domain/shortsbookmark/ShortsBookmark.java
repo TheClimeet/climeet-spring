@@ -31,10 +31,16 @@ public class ShortsBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
 
+    private Boolean isBookmarked;
+
     public static ShortsBookmark toEntity(User user, Shorts shorts) {
         return ShortsBookmark.builder()
             .user(user)
             .shorts(shorts)
             .build();
+    }
+
+    public void switchBookmarkStatus() {
+        this.isBookmarked = !this.isBookmarked;
     }
 }

@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +18,20 @@ public class ShortsBookmarkService {
     private final ShortsBookmarkRepository shortsBookmarkRepository;
 
     @Transactional
-    public void createShortsBookmark(User user, Long shortsId) {
+    public void changeShortsBookmarkStatus(User user, Long shortsId) {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
-        ShortsBookmark shortsBookmark = ShortsBookmark.toEntity(user, shorts);
+        Optional<ShortsBookmark> optionalShortsBookmark = shortsBookmarkRepository.findByUserAndShorts(
+            user, shorts);
 
-        shortsBookmarkRepository.save(shortsBookmark);
-    }
-
-    @Transactional
-    public void deleteShortsBookmark(User user, Long shortsId) {
-        Shorts shorts = shortsRepository.findById(shortsId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
-
-        shortsBookmarkRepository.deleteByUserAndShorts(user, shorts);
+        if (optionalShortsBookmark.isEmpty()) {
+            ShortsBookmark shortsBookmark = ShortsBookmark.toEntity(user, shorts);
+            shortsBookmarkRepository.save(shortsBookmark);
+        }
+        if (optionalShortsBookmark.isPresent()) {
+            ShortsBookmark shortsBookmark = optionalShortsBookmark.get();
+            shortsBookmark.switchBookmarkStatus();
+        }
     }
 }

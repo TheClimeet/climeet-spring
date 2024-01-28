@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +18,20 @@ public class ShortsLikeService {
     private final ShortsLikeRepository shortsLikeRepository;
 
     @Transactional
-    public void createShortsLike(User user, Long shortsId) {
+    public void changeShortsLikeStatus(User user, Long shortsId) {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
-        ShortsLike shortsLike = ShortsLike.toEntity(user, shorts);
+        Optional<ShortsLike> optionalShortsLike = shortsLikeRepository.findByUserAndShorts(user,
+            shorts);
 
-        shortsLikeRepository.save(shortsLike);
-    }
-
-    @Transactional
-    public void deleteShortsLike(User user, Long shortsId) {
-        Shorts shorts = shortsRepository.findById(shortsId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
-
-        shortsLikeRepository.deleteByUserAndShorts(user, shorts);
+        if(optionalShortsLike.isEmpty()) {
+            ShortsLike shortsLike = ShortsLike.toEntity(user, shorts);
+            shortsLikeRepository.save(shortsLike);
+        }
+        if(optionalShortsLike.isPresent()) {
+            ShortsLike shortsLike = optionalShortsLike.get();
+            shortsLike.switchLikeStatus();
+        }
     }
 }

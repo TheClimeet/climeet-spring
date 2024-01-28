@@ -31,10 +31,16 @@ public class ShortsLike {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
 
+    private Boolean isLike;
+
     public static ShortsLike toEntity(User user, Shorts shorts) {
         return ShortsLike.builder()
             .user(user)
             .shorts(shorts)
             .build();
+    }
+
+    public void switchLikeStatus() {
+        this.isLike = !this.isLike;
     }
 }
