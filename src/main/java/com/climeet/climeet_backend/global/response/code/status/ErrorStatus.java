@@ -27,9 +27,16 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_MANAGER_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 존재하지 않는 암장입니다"),
     _DUPLICATE_GYM_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_003", "이미 관리자가 등록된 암장입니다."),
 
+    //루트 버전 관련
+    _EMPTY_VERSION_LIST(HttpStatus.CONFLICT, "ROUTE_VERSION_001", "암장의 루트 버전이 존재하지 않습니다."),
+    _EMPTY_VERSION(HttpStatus.CONFLICT, "ROUTE_VERSION_002", "암장의 해당 날짜의 버전이 존재하지 않습니다."),
+    _MISMATCH_ROUTE_IDS(HttpStatus.CONFLICT, "ROUTE_VERSION_003", "등록된 루트 데이터 중 불러오지 못한 값이 있습니다."),
+    _MISMATCH_SECTOR_IDS(HttpStatus.CONFLICT, "ROUTE_VERSION_004", "등록된 섹터 데이터 중 불러오지 못한 값이 있습니다."),
+
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
     _DUPLICATE_SECTOR_NAME(HttpStatus.CONFLICT, "SECTOR_002", "섹터 이름이 중복됩니다."),
+    _EMPTY_SECTOR_LIST(HttpStatus.CONFLICT, "SECTOR_003", "암장의 섹터 정보를 찾을 수 없습니다."),
 
     //루트 관련
     _EMPTY_ROUTE(HttpStatus.CONFLICT, "ROUTE_001", "존재하지 않는 루트입니다."),

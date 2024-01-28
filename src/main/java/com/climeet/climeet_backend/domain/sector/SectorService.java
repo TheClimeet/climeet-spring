@@ -4,13 +4,16 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
+import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorIdSimpleResponse;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -18,9 +21,11 @@ public class SectorService {
 
     private final ClimbingGymRepository climbingGymRepository;
     private final SectorRepository sectorRepository;
+    private final S3Service s3Service;
 
     @Transactional
-    public void createSector(CreateSectorRequest createSectorRequest) {
+    public SectorIdSimpleResponse createSector(CreateSectorRequest createSectorRequest,
+        MultipartFile sectorImage) {
         ClimbingGym climbingGym = climbingGymRepository.findById(createSectorRequest.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -33,14 +38,21 @@ public class SectorService {
             }
         }
 
-        sectorRepository.save(Sector.toEntity(createSectorRequest, climbingGym));
+        String sectorImageUrl = s3Service.uploadFile(sectorImage).getImgUrl();
+
+        sectorRepository.save(Sector.toEntity(createSectorRequest, climbingGym, sectorImageUrl));
+
+        // Sector Id 값을 반환하기 위해 사용
+        Sector sector = sectorRepository.findBySectorImageUrl(sectorImageUrl);
+
+        return SectorIdSimpleResponse.toDto(sector);
     }
 
     public List<SectorDetailResponse> getSectorList(Long gymId) {
         List<Sector> sectorList = sectorRepository.findSectorByClimbingGymId(gymId);
 
         return sectorList.stream()
-            .map(SectorDetailResponse::new)
+            .map(sector -> SectorDetailResponse.toDto(sector))
             .collect(Collectors.toList());
     }
 }

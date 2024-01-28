@@ -34,13 +34,17 @@ public class Sector extends BaseTimeEntity {
     @NotNull
     private String sectorName;
 
+    private String sectorImageUrl;
+
     private int floor = 0;
 
-    public static Sector toEntity(CreateSectorRequest requestDto, ClimbingGym climbingGym){
+    public static Sector toEntity(CreateSectorRequest requestDto, ClimbingGym climbingGym,
+        String sectorImageUrl) {
         return Sector.builder()
             .climbingGym(climbingGym)
             .sectorName(requestDto.getName())
             .floor(requestDto.getFloor())
+            .sectorImageUrl(sectorImageUrl)
             .build();
     }
 }
