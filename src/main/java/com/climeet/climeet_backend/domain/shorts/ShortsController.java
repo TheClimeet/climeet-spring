@@ -69,14 +69,4 @@ public class ShortsController {
         shortsService.updateShortsViewCount(user, shortsId);
         return ResponseEntity.ok("조회수 증가에 성공했습니다.");
     }
-
-    @Hidden
-    @GetMapping("/shorts/{shortsId}")
-    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS})
-    @Operation(summary = "숏츠 상세 조회")
-    public ResponseEntity<ShortsDetailInfo> findShorts(
-        @CurrentUser User user, @PathVariable Long shortsId
-    ) {
-        return ResponseEntity.ok(shortsService.findShorts(user, shortsId));
-    }
 }
