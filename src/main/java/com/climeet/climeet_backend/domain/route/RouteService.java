@@ -1,8 +1,8 @@
 package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteIdSimpleResponse;
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -40,20 +40,20 @@ public class RouteService {
         return RouteIdSimpleResponse.toDto(route);
     }
 
-    public RouteSimpleResponse getRoute(Long routeId) {
+    public RouteDetailResponse getRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-        return RouteSimpleResponse.toDto(route);
+        return RouteDetailResponse.toDto(route);
     }
 
-    public List<RouteSimpleResponse> getRouteList(Long gymId) {
+    public List<RouteDetailResponse> getRouteList(Long gymId) {
         List<Route> routeList = routeRepository.findBySectorClimbingGymId(gymId);
         if (routeList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
         return routeList.stream()
-            .map(route -> RouteSimpleResponse.toDto(route))
+            .map(route -> RouteDetailResponse.toDto(route))
             .collect(Collectors.toList());
     }
 }

@@ -1,8 +1,8 @@
 package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteIdSimpleResponse;
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -36,13 +36,13 @@ public class RouteController {
 
     @Operation(summary = "클라이밍 루트 조회")
     @GetMapping("/route/{routeId}")
-    public ResponseEntity<RouteSimpleResponse> getRoute(@PathVariable Long routeId) {
+    public ResponseEntity<RouteDetailResponse> getRoute(@PathVariable Long routeId) {
         return ResponseEntity.ok(routeService.getRoute(routeId));
     }
 
     @Operation(summary = "클라이밍 암장 루트 목록 조회")
     @GetMapping("/{gymId}/routes")
-    public ResponseEntity<List<RouteSimpleResponse>> getRouteList(@PathVariable Long gymId) {
+    public ResponseEntity<List<RouteDetailResponse>> getRouteList(@PathVariable Long gymId) {
         return ResponseEntity.ok(routeService.getRouteList(gymId));
     }
 }
