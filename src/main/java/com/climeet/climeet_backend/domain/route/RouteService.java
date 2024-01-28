@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteIdSimpleResponse;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
@@ -23,15 +24,8 @@ public class RouteService {
     private final S3Service s3Service;
 
     @Transactional
-    public void createRoute(CreateRouteRequest createRouteRequest, MultipartFile routeImage) {
-
-        // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
-        List<Route> routes = routeRepository.findBySectorId(createRouteRequest.getSectorId());
-        for (Route route : routes) {
-            if (route.getName().equals(createRouteRequest.getName())) {
-                throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_NAME);
-            }
-        }
+    public RouteIdSimpleResponse createRoute(CreateRouteRequest createRouteRequest,
+        MultipartFile routeImage) {
 
         Sector sector = sectorRepository.findById(createRouteRequest.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
@@ -39,13 +33,18 @@ public class RouteService {
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
         routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
+
+        // Route Id 값을 반환하기 위해 사용
+        Route route = routeRepository.findByRouteImageUrl(routeImageUrl);
+
+        return RouteIdSimpleResponse.toDto(route);
     }
 
     public RouteSimpleResponse getRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-        return new RouteSimpleResponse(route);
+        return RouteSimpleResponse.toDto(route);
     }
 
     public List<RouteSimpleResponse> getRouteList(Long gymId) {
@@ -54,7 +53,7 @@ public class RouteService {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
         return routeList.stream()
-            .map(RouteSimpleResponse::new)
+            .map(route -> RouteSimpleResponse.toDto(route))
             .collect(Collectors.toList());
     }
 }

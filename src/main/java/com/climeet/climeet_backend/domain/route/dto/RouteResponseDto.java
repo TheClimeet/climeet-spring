@@ -6,25 +6,41 @@ import lombok.*;
 public class RouteResponseDto {
 
 
+    @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RouteSimpleResponse {
 
+        private Long routeId;
         private Long sectorId;
         private String sectorName;
-        private Long routeId;
-        private String routeName;
         private int difficulty;
         private String routeImageUrl;
 
-        public RouteSimpleResponse(Route route) {
-            this.sectorId = route.getSector().getId();
-            this.sectorName = route.getSector().getSectorName();
-            this.routeId = route.getId();
-            this.routeName = route.getName();
-            this.difficulty = route.getDifficulty();
-            this.routeImageUrl = route.getRouteImageUrl();
+        public static RouteSimpleResponse toDto(Route route) {
+            return RouteSimpleResponse.builder()
+                .routeId(route.getId())
+                .sectorId(route.getSector().getId())
+                .sectorName(route.getSector().getSectorName())
+                .difficulty(route.getDifficulty())
+                .routeImageUrl(route.getRouteImageUrl())
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RouteIdSimpleResponse {
+
+        private Long routeId;
+
+        public static RouteIdSimpleResponse toDto(Route route) {
+            return RouteIdSimpleResponse.builder()
+                .routeId(route.getId())
+                .build();
         }
     }
 }

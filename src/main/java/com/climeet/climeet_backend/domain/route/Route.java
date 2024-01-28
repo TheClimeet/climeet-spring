@@ -33,9 +33,6 @@ public class Route extends BaseTimeEntity {
     Sector sector;
 
     @NotNull
-    private String name;
-
-    @NotNull
     private int difficulty;
 
     private String routeImageUrl;
@@ -52,7 +49,6 @@ public class Route extends BaseTimeEntity {
         String routeImageUrl) {
         return Route.builder()
             .sector(sector)
-            .name(requestDto.getName())
             .difficulty(requestDto.getDifficulty())
             .routeImageUrl(routeImageUrl)
             .build();
