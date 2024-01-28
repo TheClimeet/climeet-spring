@@ -2,6 +2,8 @@ package com.climeet.climeet_backend.domain.shorts;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
@@ -35,6 +37,7 @@ public class ShortsService {
     private final RouteRepository routeRepository;
     private final ShortsLikeRepository shortsLikeRepository;
     private final ShortsBookmarkRepository shortsBookmarkRepository;
+    private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -65,46 +68,60 @@ public class ShortsService {
             pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> ShortsSimpleInfo.toDTO(
-                shorts.getId(),
-                shorts.getThumbnailImageUrl(),
-                shorts.getClimbingGym().getName(),
-                shorts.getRoute().getDifficulty(),
-                findShorts(user, shorts.getId())))
+            .map(shorts -> {
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
+                    shorts.getClimbingGym(), shorts.getRoute().getDifficulty());
+
+                return ShortsSimpleInfo.toDTO(
+                    shorts.getId(),
+                    shorts.getThumbnailImageUrl(),
+                    shorts.getClimbingGym().getName(),
+                    findShorts(user, shorts.getId(), difficultyMapping),
+                    difficultyMapping
+                    );
+            })
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, int page,
+        int size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
             pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> ShortsSimpleInfo.toDTO(
-                shorts.getId(),
-                shorts.getThumbnailImageUrl(),
-                shorts.getClimbingGym().getName(),
-                shorts.getRoute().getDifficulty()
-                , findShorts(user, shorts.getId())))
+            .map(shorts -> {
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
+                    shorts.getClimbingGym(), shorts.getRoute().getDifficulty());
+
+                return ShortsSimpleInfo.toDTO(
+                    shorts.getId(),
+                    shorts.getThumbnailImageUrl(),
+                    shorts.getClimbingGym().getName(),
+                    findShorts(user, shorts.getId(), difficultyMapping),
+                    difficultyMapping
+                );
+            })
             .toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
     }
 
-    public ShortsDetailInfo findShorts(User user, Long shortsId) {
+    public ShortsDetailInfo findShorts(User user, Long shortsId, DifficultyMapping difficultyMapping) {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
         boolean isLiked = shortsLikeRepository.existsShortsLikeByUserAndShorts(user, shorts);
-        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user,
+        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(
+            user,
             shorts);
 
-        return ShortsDetailInfo.toDTO(shorts, shorts.getClimbingGym(), shorts.getSector(), isLiked,
-            isBookmarked);
+        return ShortsDetailInfo.toDTO(shorts.getUser(), shorts, shorts.getClimbingGym(),
+            shorts.getSector(), isLiked, isBookmarked, difficultyMapping);
     }
 
     public void updateShortsViewCount(User user, Long shortsId) {
