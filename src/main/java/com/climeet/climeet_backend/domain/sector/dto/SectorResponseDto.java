@@ -34,12 +34,12 @@ public class SectorResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SectorIdSimpleResponse {
+    public static class SectorSimpleResponse {
 
         private Long sectorId;
 
-        public static SectorIdSimpleResponse toDto(Sector sector) {
-            return SectorIdSimpleResponse.builder()
+        public static SectorSimpleResponse toDto(Sector sector) {
+            return SectorSimpleResponse.builder()
                 .sectorId(sector.getId())
                 .build();
         }

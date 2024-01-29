@@ -2,7 +2,7 @@ package com.climeet.climeet_backend.domain.sector;
 
 import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
-import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorIdSimpleResponse;
+import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorSimpleResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -31,7 +31,7 @@ public class SectorController {
     @Operation(summary = "클라이밍 섹터 생성")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._DUPLICATE_SECTOR_NAME})
     @PostMapping("/sector")
-    public ResponseEntity<SectorIdSimpleResponse> createSector(
+    public ResponseEntity<SectorSimpleResponse> createSector(
         @RequestPart(value = "image") MultipartFile sectorImage,
         @RequestPart CreateSectorRequest createSectorRequest, @CurrentUser User user) {
 

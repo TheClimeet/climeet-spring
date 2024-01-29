@@ -4,7 +4,7 @@ import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
-import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorIdSimpleResponse;
+import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorSimpleResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -25,7 +25,7 @@ public class SectorService {
     private final S3Service s3Service;
 
     @Transactional
-    public SectorIdSimpleResponse createSector(CreateSectorRequest createSectorRequest,
+    public SectorSimpleResponse createSector(CreateSectorRequest createSectorRequest,
         MultipartFile sectorImage, User user) {
 
         Manager manager = managerRepository.findById(user.getId())
@@ -48,7 +48,7 @@ public class SectorService {
         // Sector Id 값을 반환하기 위해 사용
         Sector sector = sectorRepository.findBySectorImageUrl(sectorImageUrl);
 
-        return SectorIdSimpleResponse.toDto(sector);
+        return SectorSimpleResponse.toDto(sector);
     }
 
     public List<SectorDetailResponse> getSectorList(Long gymId) {
@@ -58,7 +58,7 @@ public class SectorService {
         }
 
         return sectorList.stream()
-            .map(sector -> SectorDetailResponse.toDto(sector))
+            .map(SectorDetailResponse::toDto)
             .collect(Collectors.toList());
     }
 }

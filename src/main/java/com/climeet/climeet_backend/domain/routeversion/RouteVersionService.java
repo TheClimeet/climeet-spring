@@ -31,6 +31,19 @@ public class RouteVersionService {
     private final SectorRepository sectorRepository;
     private final ManagerRepository managerRepository;
 
+    public List<LocalDate> getRouteVersionList(Long gymId) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+        List<RouteVersion> routeVersionList = routeVersionRepository.findByClimbingGymOrderByTimePointDesc(
+            climbingGym);
+        if (routeVersionList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
+        }
+        return routeVersionList.stream()
+            .map(routeVersion -> routeVersion.getTimePoint())
+            .toList();
+    }
+
     public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
@@ -64,18 +77,7 @@ public class RouteVersionService {
 
     }
 
-    public List<LocalDate> getRouteVersionList(Long gymId) {
-        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        List<RouteVersion> routeVersionList = routeVersionRepository.findByClimbingGymOrderByTimePointDesc(
-            climbingGym);
-        if (routeVersionList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
-        }
-        return routeVersionList.stream()
-            .map(routeVersion -> routeVersion.getTimePoint())
-            .toList();
-    }
+
 
     public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)

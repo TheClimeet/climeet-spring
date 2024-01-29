@@ -33,12 +33,12 @@ public class RouteResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RouteIdSimpleResponse {
+    public static class RouteSimpleResponse {
 
         private Long routeId;
 
-        public static RouteIdSimpleResponse toDto(Route route) {
-            return RouteIdSimpleResponse.builder()
+        public static RouteSimpleResponse toDto(Route route) {
+            return RouteSimpleResponse.builder()
                 .routeId(route.getId())
                 .build();
         }

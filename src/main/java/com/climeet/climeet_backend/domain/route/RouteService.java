@@ -2,7 +2,7 @@ package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteIdSimpleResponse;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -24,7 +24,7 @@ public class RouteService {
     private final S3Service s3Service;
 
     @Transactional
-    public RouteIdSimpleResponse createRoute(CreateRouteRequest createRouteRequest,
+    public RouteSimpleResponse createRoute(CreateRouteRequest createRouteRequest,
         MultipartFile routeImage) {
 
         Sector sector = sectorRepository.findById(createRouteRequest.getSectorId())
@@ -37,7 +37,7 @@ public class RouteService {
         // Route Id 값을 반환하기 위해 사용
         Route route = routeRepository.findByRouteImageUrl(routeImageUrl);
 
-        return RouteIdSimpleResponse.toDto(route);
+        return RouteSimpleResponse.toDto(route);
     }
 
     public RouteDetailResponse getRoute(Long routeId) {
@@ -53,7 +53,7 @@ public class RouteService {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
         return routeList.stream()
-            .map(route -> RouteDetailResponse.toDto(route))
+            .map(RouteDetailResponse::toDto)
             .collect(Collectors.toList());
     }
 }

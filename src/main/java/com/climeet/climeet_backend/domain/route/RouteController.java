@@ -2,7 +2,7 @@ package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteIdSimpleResponse;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -32,7 +32,7 @@ public class RouteController {
     @Operation(summary = "클라이밍 루트 생성")
     @SwaggerApiError({ErrorStatus._EMPTY_SECTOR})
     @PostMapping("/route")
-    public ResponseEntity<RouteIdSimpleResponse> createRoute(
+    public ResponseEntity<RouteSimpleResponse> createRoute(
         @RequestPart(value = "image") MultipartFile routeImage,
         @RequestPart CreateRouteRequest createRouteRequest, @CurrentUser User user
     ) {
