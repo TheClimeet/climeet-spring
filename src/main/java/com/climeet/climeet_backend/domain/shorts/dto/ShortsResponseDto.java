@@ -35,7 +35,7 @@ public class ShortsResponseDto {
                 .gymName(gymName)
                 .gymDifficulty(difficultyMapping.getGymDifficultyColor())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
-                .climeetDifficulty(difficultyMapping.getClimeetDifficulty())
+                .climeetDifficulty(difficultyMapping.getClimeetDifficulty().getStringValue())
                 .shortsDetailInfo(shortsDetailInfo)
                 .build();
         }

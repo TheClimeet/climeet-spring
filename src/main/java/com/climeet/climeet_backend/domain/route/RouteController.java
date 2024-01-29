@@ -2,6 +2,8 @@ package com.climeet.climeet_backend.domain.route;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -27,10 +29,11 @@ public class RouteController {
     @Operation(summary = "클라이밍 루트 생성")
     @PostMapping("/route")
     public ResponseEntity<String> createRoute(
+        @CurrentUser User user,
         @RequestPart(value = "image") MultipartFile routeImage,
         @RequestPart CreateRouteRequest createRouteRequest
     ) {
-        routeService.createRoute(createRouteRequest, routeImage);
+        routeService.createRoute(createRouteRequest, routeImage, user);
         return ResponseEntity.ok("루트를 추가했습니다.");
     }
 

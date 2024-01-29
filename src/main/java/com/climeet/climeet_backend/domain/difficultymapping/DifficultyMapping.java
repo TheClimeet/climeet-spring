@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.difficultymapping;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.difficultymapping.dto.difficultyMappingRequestDto.CreateDifficultyMappingRequest;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class DifficultyMapping extends BaseTimeEntity {
 
     @Id
@@ -29,7 +33,7 @@ public class DifficultyMapping extends BaseTimeEntity {
     private ClimbingGym climbingGym;
 
     @NotNull
-    private String climeetDifficulty;
+    private ClimeetDifficulty climeetDifficulty;
 
     @NotNull
     private int gymDifficulty;
@@ -41,4 +45,15 @@ public class DifficultyMapping extends BaseTimeEntity {
     @NotNull
     @Column(length = 7)
     private String gymDifficultyColor;
+
+    public static DifficultyMapping toEntity(CreateDifficultyMappingRequest requestDto,
+        ClimbingGym climbingGym, ClimeetDifficulty climeetDifficulty) {
+        return DifficultyMapping.builder()
+            .climbingGym(climbingGym)
+            .climeetDifficulty(climeetDifficulty)
+            .gymDifficulty(requestDto.getGymDifficulty())
+            .gymDifficultyName(requestDto.getGymDifficultyName())
+            .gymDifficultyColor(requestDto.getGymDifficultyColor())
+            .build();
+    }
 }

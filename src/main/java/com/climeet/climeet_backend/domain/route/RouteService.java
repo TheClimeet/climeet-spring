@@ -1,9 +1,17 @@
 package com.climeet.climeet_backend.domain.route;
 
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
+import com.climeet.climeet_backend.domain.manager.Manager;
+import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
@@ -18,12 +26,15 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class RouteService {
 
+    private final ManagerRepository managerRepository;
+    private final DifficultyMappingRepository difficultyMappingRepository;
     private final RouteRepository routeRepository;
     private final SectorRepository sectorRepository;
     private final S3Service s3Service;
 
     @Transactional
-    public void createRoute(CreateRouteRequest createRouteRequest, MultipartFile routeImage) {
+    public void createRoute(CreateRouteRequest createRouteRequest, MultipartFile routeImage,
+        User user) {
 
         // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
         List<Route> routes = routeRepository.findBySectorId(createRouteRequest.getSectorId());
@@ -33,12 +44,18 @@ public class RouteService {
             }
         }
 
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+        DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
+            manager.getClimbingGym(), createRouteRequest.getDifficulty());
+
         Sector sector = sectorRepository.findById(createRouteRequest.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
 
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
-        routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
+        routeRepository.save(
+            Route.toEntity(createRouteRequest, sector, routeImageUrl, difficultyMapping));
     }
 
     public RouteSimpleResponse getRoute(Long routeId) {
