@@ -26,6 +26,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
     _EMPTY_MANAGER_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 존재하지 않는 암장입니다"),
     _DUPLICATE_GYM_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_003", "이미 관리자가 등록된 암장입니다."),
+    _EMPTY_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_004", "해당 관리자가 존재하지 않습니다."),
 
     //루트 버전 관련
     _EMPTY_VERSION_LIST(HttpStatus.CONFLICT, "ROUTE_VERSION_001", "암장의 루트 버전이 존재하지 않습니다."),
@@ -52,7 +53,6 @@ public enum ErrorStatus implements BaseErrorCode {
     //회원가입 중복 관련
     _DUPLICATE_SIGN_IN(HttpStatus.CONFLICT, "AUTH_004", "이미 가입 된 유저입니다."),
 
-
     //파일 업로드 관련
     _FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다."),
 
@@ -78,9 +78,8 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_USER(HttpStatus.CONFLICT, "USER_001", "존재하지 않는 유저입니다."),
 
     //숏츠 댓글 관련
-    _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001" , "존재하지 않는 쇼츠 댓글입니다.");
+    _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001", "존재하지 않는 쇼츠 댓글입니다.");
 
-    ;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

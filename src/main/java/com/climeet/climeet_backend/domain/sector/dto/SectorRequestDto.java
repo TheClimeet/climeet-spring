@@ -8,8 +8,6 @@ public class SectorRequestDto {
     @Getter
     @NoArgsConstructor
     public static class CreateSectorRequest {
-
-        private Long gymId;
         private String name;
         private int floor;
     }
