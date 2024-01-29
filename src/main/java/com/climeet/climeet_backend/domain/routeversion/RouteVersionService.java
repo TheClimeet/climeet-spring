@@ -2,6 +2,8 @@ package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.manager.Manager;
+import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
@@ -10,6 +12,7 @@ import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseD
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import java.util.List;
@@ -26,14 +29,14 @@ public class RouteVersionService {
     private final RouteVersionRepository routeVersionRepository;
     private final RouteRepository routeRepository;
     private final SectorRepository sectorRepository;
+    private final ManagerRepository managerRepository;
 
-    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest) {
-        ClimbingGym climbingGym = climbingGymRepository.findById(
-                createRouteVersionRequest.getGymId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user) {
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
         Optional<RouteVersion> routeVersionOptional = routeVersionRepository.findByClimbingGymAndTimePoint(
-            climbingGym, createRouteVersionRequest.getTimePoint());
+            manager.getClimbingGym(), createRouteVersionRequest.getTimePoint());
         if (routeVersionOptional.isPresent()) {
             throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_VERSION);
         }
@@ -56,7 +59,7 @@ public class RouteVersionService {
             createRouteVersionRequest.getSectorIdList());
 
         routeVersionRepository.save(
-            RouteVersion.toEntity(climbingGym, createRouteVersionRequest.getTimePoint(),
+            RouteVersion.toEntity(manager.getClimbingGym(), createRouteVersionRequest.getTimePoint(),
                 routeIdListString, sectorIdListString));
 
     }

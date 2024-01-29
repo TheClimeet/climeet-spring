@@ -42,8 +42,8 @@ public class RouteVersionController {
         ErrorStatus._MISMATCH_ROUTE_IDS, ErrorStatus._MISMATCH_SECTOR_IDS})
     @PostMapping("/version")
     public ResponseEntity<String> createRouteVersion(
-        @RequestBody CreateRouteVersionRequest createRouteVersionRequest) {
-        routeVersionService.createRouteVersion(createRouteVersionRequest);
+        @RequestBody CreateRouteVersionRequest createRouteVersionRequest, @CurrentUser User user) {
+        routeVersionService.createRouteVersion(createRouteVersionRequest, user);
         return ResponseEntity.ok("루트 버전이 추가되었습니다.");
     }
 

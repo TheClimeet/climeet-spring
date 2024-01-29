@@ -12,7 +12,6 @@ public class RouteVersionRequestDto {
     @NoArgsConstructor
     public static class CreateRouteVersionRequest {
 
-        private Long gymId;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate timePoint;
         private List<Long> routeIdList;
