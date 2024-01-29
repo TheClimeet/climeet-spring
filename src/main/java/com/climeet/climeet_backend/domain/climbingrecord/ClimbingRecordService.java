@@ -10,6 +10,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
@@ -193,7 +194,8 @@ public class ClimbingRecordService {
         LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
-        Tuple crTuple = climbingRecordRepository.getStatisticsInfoBetween(user, startDate, endDate);
+        Tuple crTuple = climbingRecordRepository.getStatisticsInfoBetweenDaysAndUser(user,
+            startDate, endDate);
 
         if (crTuple.get("totalTime") == null) {
             throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
@@ -207,6 +209,7 @@ public class ClimbingRecordService {
 
         List<Map<Long, Long>> difficultyList = routeRecordRepository
             .getRouteRecordDifficultyBetween(
+                user,
                 startDate,
                 endDate
             );
@@ -219,6 +222,29 @@ public class ClimbingRecordService {
         );
     }
 
+    public ClimbingRecordStatisticsSimpleInfo findClimbingRecordStatisticsAndGym(Long gymId) {
+
+        Object[] lastWeek = startDayAndLastDayOfLastWeek();
+
+
+        LocalDate startDate = (LocalDate) lastWeek[MONDAY];
+        LocalDate endDate = (LocalDate) lastWeek[SUNDAY];
+
+        ClimbingGym climbingGym = gymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        List<Map<Long, Long>> difficultyList = routeRecordRepository
+            .getRouteRecordDifficultyBetweenDaysAndGym(
+                climbingGym,
+                startDate,
+                endDate
+            );
+
+        return ClimbingRecordStatisticsSimpleInfo.toDTO(
+            difficultyList
+        );
+    }
+
     public List<BestClearUserSimple> findBestClearUserRanking(Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
@@ -226,7 +252,7 @@ public class ClimbingRecordService {
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
         List<Object[]> bestUserRanking = climbingRecordRepository.findByClearRankingClimbingDateBetweenAndClimbingGym(
-            (LocalDate)lastWeek[MONDAY], (LocalDate)lastWeek[SUNDAY], climbingGym);
+            (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
         List<BestClearUserSimple> ranking = bestUserRanking.stream()
@@ -247,7 +273,7 @@ public class ClimbingRecordService {
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
         List<Object[]> bestUserRanking = climbingRecordRepository.findByTimeRankingClimbingDateBetweenAndClimbingGym(
-            (LocalDate)lastWeek[MONDAY], (LocalDate)lastWeek[SUNDAY], climbingGym);
+            (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
         List<BestTimeUserSimple> ranking = bestUserRanking.stream()
@@ -268,7 +294,7 @@ public class ClimbingRecordService {
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
         List<Object[]> bestUserRanking = climbingRecordRepository.findByLevelRankingClimbingDateBetweenAndClimbingGym(
-            (LocalDate)lastWeek[MONDAY], (LocalDate)lastWeek[SUNDAY], climbingGym);
+            (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
         List<BestLevelUserSimple> ranking = bestUserRanking.stream()
@@ -293,7 +319,7 @@ public class ClimbingRecordService {
         return LocalTime.of(hours, minutes, remainingSeconds);
     }
 
-    public static Object[] startDayAndLastDayOfLastWeek(){
+    public static Object[] startDayAndLastDayOfLastWeek() {
         // 현재 시점의 날짜 정보 가져오기
         LocalDate today = LocalDate.now();
 

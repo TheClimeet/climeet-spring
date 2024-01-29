@@ -102,6 +102,22 @@ public class ClimbingRecordResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class ClimbingRecordStatisticsSimpleInfo {
+
+        private List<Map<Long, Long>> difficulty;
+
+        public static ClimbingRecordStatisticsSimpleInfo toDTO(List<Map<Long, Long>> difficulty) {
+
+            return ClimbingRecordStatisticsSimpleInfo.builder()
+                .difficulty(difficulty)
+                .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class BestClearUserSimple {
 
         private Long totalCompletedCount;
