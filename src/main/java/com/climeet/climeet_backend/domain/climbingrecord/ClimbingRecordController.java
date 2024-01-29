@@ -74,7 +74,7 @@ public class ClimbingRecordController {
     @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.)")
     @GetMapping("/{id}")
     @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
-    public ResponseEntity<ClimbingRecordDetailInfo> addClimbingRecord(
+    public ResponseEntity<ClimbingRecordDetailInfo> findClimbingRecord(
         @PathVariable Long id) {
         return ResponseEntity.ok(climbingRecordService.getClimbingRecordById(id));
     }
