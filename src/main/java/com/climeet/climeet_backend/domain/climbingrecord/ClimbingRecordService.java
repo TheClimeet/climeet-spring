@@ -11,12 +11,14 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.persistence.Tuple;
@@ -46,6 +48,7 @@ public class ClimbingRecordService {
     private final ClimbingGymRepository gymRepository;
     private final RouteRecordService routeRecordService;
     private final RouteRecordRepository routeRecordRepository;
+    private final UserRepository userRepository;
 
     public static final int START_DAY_OF_MONTH = 1;
     public static final int MONDAY = 0;
@@ -226,7 +229,6 @@ public class ClimbingRecordService {
 
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
-
         LocalDate startDate = (LocalDate) lastWeek[MONDAY];
         LocalDate endDate = (LocalDate) lastWeek[SUNDAY];
 
@@ -337,6 +339,29 @@ public class ClimbingRecordService {
         lastWeek[SUNDAY] = endOfLastWeek;
 
         return lastWeek;
+    }
+
+    // TODO: 2024/01/29 기록 생성할 때 유저의 누적 통계도 바뀌어야 한다능..
+    public ClimbingRecordUserStatisticsSimpleInfo findClimberStatistics(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_MEMBER));
+
+        //완등률
+        Tuple crTuple = climbingRecordRepository.findAllClearRateAndUser(user);
+
+        Long totalCompletedCount = (Long) crTuple.get("totalCompletedCount");
+
+        Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
+
+        //기록
+        List<Map<Long, Long>> difficultyList = routeRecordRepository
+            .findAllRouteRecordDifficultyAndUser(user);
+
+        return ClimbingRecordUserStatisticsSimpleInfo.toDTO(
+            totalCompletedCount,
+            attemptRouteCount,
+            difficultyList
+        );
     }
 
 }

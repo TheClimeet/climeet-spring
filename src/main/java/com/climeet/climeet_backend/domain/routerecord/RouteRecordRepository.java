@@ -27,6 +27,15 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         @Param("endDate") LocalDate endDate
     );
 
+    @Query("SELECT " +
+        "   rr.route.difficulty as difficulty, COUNT(*) as count " +
+        "FROM RouteRecord rr " +
+        "WHERE rr.user = :user " +
+        "GROUP BY rr.route.difficulty")
+    List<Map<Long,Long>> findAllRouteRecordDifficultyAndUser(
+        @Param("user") User user
+    );
+
 
     @Query("SELECT " +
         "   rr.route.difficulty as difficulty, COUNT(*) as count " +

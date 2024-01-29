@@ -9,6 +9,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -142,6 +143,14 @@ public class ClimbingRecordController {
     public ResponseEntity<List<BestLevelUserSimple>> findUserLevelRanking(
         @PathVariable Long gymId) {
         return ResponseEntity.ok(climbingRecordService.findBestLevelUserRanking(gymId));
+    }
+
+    @Operation(summary = "유저별 누적 통계")
+    @GetMapping("/user/{userId}/statistics")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
+    public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> findUserStatistics(
+        @PathVariable Long userId) {
+        return ResponseEntity.ok(climbingRecordService.findClimberStatistics(userId));
     }
 
 }

@@ -118,6 +118,27 @@ public class ClimbingRecordResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class ClimbingRecordUserStatisticsSimpleInfo {
+
+        private Long totalCompletedCount;
+        private Long attemptRouteCount;
+        private List<Map<Long, Long>> difficulty;
+
+        public static ClimbingRecordUserStatisticsSimpleInfo toDTO(Long totalCompletedCount,
+            Long attemptRouteCount, List<Map<Long, Long>> difficulty) {
+
+            return ClimbingRecordUserStatisticsSimpleInfo.builder()
+                .totalCompletedCount(totalCompletedCount)
+                .attemptRouteCount(attemptRouteCount)
+                .difficulty(difficulty)
+                .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class BestClearUserSimple {
 
         private Long totalCompletedCount;
@@ -172,6 +193,7 @@ public class ClimbingRecordResponseDto {
         protected String profileName;
         protected String profileImageUrl;
         private int ranking;
+
         public static BestTimeUserSimple toDTO(User user, int ranking, LocalTime totalTime) {
 
             return BestTimeUserSimple.builder()

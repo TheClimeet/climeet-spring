@@ -31,6 +31,13 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
         @Param("endDate") LocalDate endDate);
 
     @Query("SELECT " +
+        "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
+        "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
+        "FROM ClimbingRecord cr " +
+        "WHERE cr.user = :user")
+    Tuple findAllClearRateAndUser(@Param("user") User user);
+
+    @Query("SELECT " +
         "cr.user, SUM(cr.totalCompletedCount) as totalCount " +
         "FROM ClimbingRecord cr " +
         "WHERE cr.climbingDate BETWEEN :startDate AND :endDate " +
