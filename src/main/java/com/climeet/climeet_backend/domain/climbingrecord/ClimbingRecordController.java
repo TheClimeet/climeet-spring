@@ -8,6 +8,8 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -58,7 +60,8 @@ public class ClimbingRecordController {
 
     @Operation(summary = "나의 클라이밍 기록 날짜 조회")
     @GetMapping("/between-dates")
-    @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE, ErrorStatus._EMPTY_CLIMBING_RECORD, ErrorStatus._INVALID_MEMBER})
+    @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE, ErrorStatus._EMPTY_CLIMBING_RECORD,
+        ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
         @CurrentUser User user,
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -71,7 +74,7 @@ public class ClimbingRecordController {
     @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.)")
     @GetMapping("/{id}")
     @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
-    public ResponseEntity<ClimbingRecordDetailInfo> addClimbingRecord(
+    public ResponseEntity<ClimbingRecordDetailInfo> findClimbingRecord(
         @PathVariable Long id) {
         return ResponseEntity.ok(climbingRecordService.getClimbingRecordById(id));
     }
@@ -105,28 +108,49 @@ public class ClimbingRecordController {
         @CurrentUser User user,
         @RequestParam int year,
         @RequestParam int month) {
-        return ResponseEntity.ok(climbingRecordService.getClimbingRecordStatistics(user, year, month));
+        return ResponseEntity.ok(
+            climbingRecordService.getClimbingRecordStatistics(user, year, month));
+    }
+
+    @Operation(summary = "암장별 주간 평균 완등률 통계 ")
+    @GetMapping("/gym/{gymId}/statistics")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
+    public ResponseEntity<ClimbingRecordStatisticsSimpleInfo> findClimbingClearRate(
+        @PathVariable Long gymId
+    ) {
+        return ResponseEntity.ok(
+            climbingRecordService.findClimbingRecordStatisticsAndGym(gymId));
     }
 
     @Operation(summary = "[완등순] 암장별 클라이머 랭킹")
     @GetMapping("/gym/{gymId}/rank/clear")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<List<BestClearUserSimple>> findUserClearRanking(@PathVariable Long gymId){
+    public ResponseEntity<List<BestClearUserSimple>> findUserClearRanking(
+        @PathVariable Long gymId) {
         return ResponseEntity.ok(climbingRecordService.findBestClearUserRanking(gymId));
     }
 
     @Operation(summary = "[시간순] 암장별 클라이머 랭킹")
     @GetMapping("/gym/{gymId}/rank/time")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<List<BestTimeUserSimple>> findUserTimeRanking(@PathVariable Long gymId){
+    public ResponseEntity<List<BestTimeUserSimple>> findUserTimeRanking(@PathVariable Long gymId) {
         return ResponseEntity.ok(climbingRecordService.findBestTimeUserRanking(gymId));
     }
 
     @Operation(summary = "[높은 레벨순] 암장별 클라이머 랭킹")
     @GetMapping("/gym/{gymId}/rank/level")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<List<BestLevelUserSimple>> findUserLevelRanking(@PathVariable Long gymId){
+    public ResponseEntity<List<BestLevelUserSimple>> findUserLevelRanking(
+        @PathVariable Long gymId) {
         return ResponseEntity.ok(climbingRecordService.findBestLevelUserRanking(gymId));
+    }
+
+    @Operation(summary = "유저별 누적 통계")
+    @GetMapping("/user/{userId}/statistics")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
+    public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> findUserStatistics(
+        @PathVariable Long userId) {
+        return ResponseEntity.ok(climbingRecordService.findClimberStatistics(userId));
     }
 
 }
