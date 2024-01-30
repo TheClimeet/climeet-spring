@@ -28,7 +28,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     );
 
     @Query("SELECT " +
-        "   rr.route.difficulty as difficulty, COUNT(*) as count " +
+        "   rr.route.difficultyMapping.gymDifficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.user = :user " +
         "GROUP BY rr.route.difficultyMapping.gymDifficulty")
@@ -37,7 +37,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     );
 
     @Query("SELECT " +
-        "   rr.route.difficulty as difficulty, COUNT(*) as count " +
+        "   rr.route.difficultyMapping.gymDifficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym " +
         "GROUP BY rr.route.difficultyMapping.gymDifficulty")
