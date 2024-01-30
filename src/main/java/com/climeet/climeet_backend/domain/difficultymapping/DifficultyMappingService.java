@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.difficultymapping;
 
-import com.climeet.climeet_backend.domain.difficultymapping.dto.difficultyMappingRequestDto.CreateDifficultyMappingRequest;
+import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingRequestDto.CreateDifficultyMappingRequest;
+import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
 import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
@@ -36,5 +37,20 @@ public class DifficultyMappingService {
                 return difficultyMapping.getId();
             })
             .toList();
+    }
+
+    public List<DifficultyMappingDetailResponse> getDifficultyMapping(User user, Long gymId) {
+
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByGymDifficultyAsc(
+            manager.getClimbingGym());
+
+        if (difficultyMappingList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
+        }
+
+        return difficultyMappingList.stream().map(DifficultyMappingDetailResponse::toDto).toList();
     }
 }

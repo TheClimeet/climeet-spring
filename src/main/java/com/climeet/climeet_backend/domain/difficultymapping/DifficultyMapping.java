@@ -1,8 +1,7 @@
 package com.climeet.climeet_backend.domain.difficultymapping;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.difficultymapping.dto.difficultyMappingRequestDto.CreateDifficultyMappingRequest;
-import com.climeet.climeet_backend.domain.difficultymapping.dto.difficultyMappingRequestDto.DifficultyMappingElement;
+import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingRequestDto.DifficultyMappingElement;
 import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Column;

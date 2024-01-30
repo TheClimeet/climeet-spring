@@ -37,6 +37,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //난이도 매핑 관련
     _INVALID_DIFFICULTY(HttpStatus.CONFLICT, "DIFFICULTY_MAPPING_001", "해당하는 난이도가 없습니다."),
+    _EMPTY_DIFFICULTY_LIST(HttpStatus.CONFLICT, "DIFFICULTY_MAPPING_002", "암장에 등록된 매핑이 없습니다."),
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
