@@ -6,6 +6,7 @@ import lombok.*;
 public class RouteResponseDto {
 
 
+    @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -15,7 +16,7 @@ public class RouteResponseDto {
         private String sectorName;
         private Long routeId;
         private String routeName;
-        private int difficulty;
+        private String difficulty;
         private String routeImageUrl;
 
         public RouteSimpleResponse(Route route) {
@@ -23,7 +24,7 @@ public class RouteResponseDto {
             this.sectorName = route.getSector().getSectorName();
             this.routeId = route.getId();
             this.routeName = route.getName();
-            this.difficulty = route.getDifficulty();
+            this.difficulty = route.getDifficultyMapping().getGymDifficultyName();
             this.routeImageUrl = route.getRouteImageUrl();
         }
     }

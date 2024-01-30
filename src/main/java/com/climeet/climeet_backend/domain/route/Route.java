@@ -1,6 +1,6 @@
 package com.climeet.climeet_backend.domain.route;
 
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
@@ -35,8 +35,8 @@ public class Route extends BaseTimeEntity {
     @NotNull
     private String name;
 
-    @NotNull
-    private int difficulty;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DifficultyMapping difficultyMapping;
 
     private String routeImageUrl;
 
@@ -49,11 +49,11 @@ public class Route extends BaseTimeEntity {
     private int selectionCount;
 
     public static Route toEntity(CreateRouteRequest requestDto, Sector sector,
-        String routeImageUrl) {
+        String routeImageUrl, DifficultyMapping difficultyMapping) {
         return Route.builder()
             .sector(sector)
             .name(requestDto.getName())
-            .difficulty(requestDto.getDifficulty())
+            .difficultyMapping(difficultyMapping)
             .routeImageUrl(routeImageUrl)
             .build();
     }

@@ -26,6 +26,10 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
     _EMPTY_MANAGER_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_002", "관리자가 존재하지 않는 암장입니다"),
     _DUPLICATE_GYM_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_003", "이미 관리자가 등록된 암장입니다."),
+    _EMPTY_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_004", "해당 관리자가 존재하지 않습니다."),
+
+    //난이도 매핑 관련
+    _INVALID_DIFFICULTY(HttpStatus.CONFLICT, "DIFFICULTY_MAPPING_001", "해당하는 난이도가 없습니다."),
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),
