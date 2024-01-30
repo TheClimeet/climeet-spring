@@ -1,8 +1,11 @@
 package com.climeet.climeet_backend.domain.shorts.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserShortsSimpleInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,16 +22,20 @@ public class ShortsResponseDto {
         private Long shortsId;
         private String thumbnailImageUrl;
         private String gymName;
-        private int difficulty;
+        private String gymDifficulty;
+        private String gymDifficultyColor;
+        private String climeetDifficulty;
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
-            String gymName, int difficulty,  ShortsDetailInfo shortsDetailInfo) {
+            String gymName, ShortsDetailInfo shortsDetailInfo, DifficultyMapping difficultyMapping) {
             return ShortsSimpleInfo.builder()
                 .shortsId(shortsId)
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .gymName(gymName)
-                .difficulty(difficulty)
+                .gymDifficulty(difficultyMapping.getGymDifficultyColor())
+                .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
+                .climeetDifficulty(difficultyMapping.getClimeetDifficulty().getStringValue())
                 .shortsDetailInfo(shortsDetailInfo)
                 .build();
         }
@@ -40,6 +47,7 @@ public class ShortsResponseDto {
     @AllArgsConstructor
     public static class ShortsDetailInfo {
 
+        private UserShortsSimpleInfo userShortsSimpleInfo;
         private Long shortsId;
         private String gymName;
         private String sectorName;
@@ -53,11 +61,15 @@ public class ShortsResponseDto {
         private boolean isLiked;
         private boolean isBookmarked;
         private String description;
+        private String routeImageUrl;
+        private String gymDifficulty;
+        private String gymDifficultyColor;
         private Boolean isSoundEnabled;
 
-        public static ShortsDetailInfo toDTO(Shorts shorts, ClimbingGym climbingGym,
-            Sector sector, boolean isLiked, boolean isBookmarked) {
+        public static ShortsDetailInfo toDTO(User user, Shorts shorts, ClimbingGym climbingGym,
+            Sector sector, boolean isLiked, boolean isBookmarked, DifficultyMapping difficultyMapping) {
             return ShortsDetailInfo.builder()
+                .userShortsSimpleInfo(UserShortsSimpleInfo.toDto(user))
                 .shortsId(shorts.getId())
                 .gymName(climbingGym.getName())
                 .sectorName(sector.getSectorName())
@@ -71,6 +83,8 @@ public class ShortsResponseDto {
                 .isLiked(isLiked)
                 .isBookmarked(isBookmarked)
                 .description(shorts.getDescription())
+                .gymDifficulty(difficultyMapping.getGymDifficultyColor())
+                .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
                 .isSoundEnabled(shorts.getIsSoundEnabled())
                 .build();
         }

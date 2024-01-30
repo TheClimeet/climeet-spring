@@ -1,14 +1,12 @@
 package com.climeet.climeet_backend.domain.shorts;
 
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
-import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDetailInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -68,15 +66,5 @@ public class ShortsController {
         @PathVariable Long shortsId) {
         shortsService.updateShortsViewCount(user, shortsId);
         return ResponseEntity.ok("조회수 증가에 성공했습니다.");
-    }
-
-    @Hidden
-    @GetMapping("/shorts/{shortsId}")
-    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS})
-    @Operation(summary = "숏츠 상세 조회")
-    public ResponseEntity<ShortsDetailInfo> findShorts(
-        @CurrentUser User user, @PathVariable Long shortsId
-    ) {
-        return ResponseEntity.ok(shortsService.findShorts(user, shortsId));
     }
 }

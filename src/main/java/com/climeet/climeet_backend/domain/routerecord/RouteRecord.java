@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
@@ -37,6 +38,9 @@ public class RouteRecord extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Route route;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ClimbingGym gym;
+
     private LocalDate routeRecordDate;
 
     private int attemptCount;
@@ -49,6 +53,7 @@ public class RouteRecord extends BaseTimeEntity {
             .user(user)
             .climbingRecord(climbingRecord)
             .route(route)
+            .gym(climbingRecord.getGym())
             .attemptCount(createRouteRecordReq.getAttemptCount())
             .isCompleted(createRouteRecordReq.getIsCompleted())
             .routeRecordDate(climbingRecord.getClimbingDate())

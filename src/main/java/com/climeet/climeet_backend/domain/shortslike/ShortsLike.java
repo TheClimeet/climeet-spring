@@ -10,12 +10,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Entity
 public class ShortsLike {
 
@@ -28,4 +30,17 @@ public class ShortsLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
+
+    private Boolean isLike;
+
+    public static ShortsLike toEntity(User user, Shorts shorts) {
+        return ShortsLike.builder()
+            .user(user)
+            .shorts(shorts)
+            .build();
+    }
+
+    public void switchLikeStatus() {
+        this.isLike = !this.isLike;
+    }
 }

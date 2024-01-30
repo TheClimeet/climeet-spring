@@ -22,10 +22,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-            .allowedOrigins("https://climeet.retool.com")
-            .allowedMethods("GET", "POST", "DELETE", "PATCH")
+        registry.addMapping("/**")
+            .allowedOrigins("*") // 허용할 출처
             .allowedHeaders("*")
-            .allowCredentials(true);
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH")
+            .exposedHeaders("Authorization");
     }
 }
