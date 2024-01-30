@@ -7,6 +7,7 @@ import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,21 @@ public class DifficultyMappingService {
     private final DifficultyMappingRepository difficultyMappingRepository;
 
     @Transactional
-    public void createDifficultyMapping(User user, CreateDifficultyMappingRequest createDifficultyMappingRequest) {
+    public List<Long> createDifficultyMapping(User user,
+        CreateDifficultyMappingRequest createDifficultyMappingRequest) {
 
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        ClimeetDifficulty climeetDifficulty = ClimeetDifficulty.findByString(createDifficultyMappingRequest.getClimeetDifficulty());
-
-        difficultyMappingRepository.save(
-            DifficultyMapping.toEntity(createDifficultyMappingRequest, manager.getClimbingGym(), climeetDifficulty));
+        return createDifficultyMappingRequest.getElements().stream()
+            .map((element) -> {
+                ClimeetDifficulty climeetDifficulty = ClimeetDifficulty.findByString(
+                    element.getClimeetDifficulty());
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.save(
+                    DifficultyMapping.toEntity(element, manager.getClimbingGym(),
+                        climeetDifficulty, climeetDifficulty.getIntValue()));
+                return difficultyMapping.getId();
+            })
+            .toList();
     }
 }

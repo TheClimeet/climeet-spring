@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +27,13 @@ public class DifficultyMappingController {
 
     @Operation(summary = "클밋, 암장 난이도 매핑")
     @PostMapping("/difficulty")
-    public ResponseEntity<String> createDifficultyMapping(
+    public ResponseEntity<List<Long>> createDifficultyMapping(
         @CurrentUser User user,
         @RequestBody CreateDifficultyMappingRequest createDifficultyMappingRequest
     ) {
-        difficultyMappingService.createDifficultyMapping(user, createDifficultyMappingRequest);
-        return ResponseEntity.ok("난이도 매핑을 완료했습니다.");
+
+        return ResponseEntity.ok(
+            difficultyMappingService.createDifficultyMapping(user, createDifficultyMappingRequest));
     }
 
 }
