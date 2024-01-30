@@ -44,7 +44,7 @@ public class ManagerController {
     }
 
     @Operation(summary = "암장 등록 중복 확인", description = "이미 관리자가 등록된 암장인지 확인하는 API \n\n **이미 관리자 등록 되어있음** : false \n\n **관리자 등록 안되어 있음** : true")
-    @GetMapping("/isRegistered/{gymName}")
+    @GetMapping("/isRegistered/{gymId}")
     public ResponseEntity<Boolean> isRegistered(@PathVariable Long gymId){
         boolean isRegistered = !managerService.checkManagerRegistration(gymId);
         return ResponseEntity.ok(isRegistered);
