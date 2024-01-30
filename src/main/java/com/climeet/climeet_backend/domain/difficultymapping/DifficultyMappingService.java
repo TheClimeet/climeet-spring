@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.difficultymapping;
 
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingRequestDto.CreateDifficultyMappingRequest;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
 import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DifficultyMappingService {
 
     private final ManagerRepository managerRepository;
+    private final ClimbingGymRepository climbingGymRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
 
     @Transactional
@@ -39,13 +42,13 @@ public class DifficultyMappingService {
             .toList();
     }
 
-    public List<DifficultyMappingDetailResponse> getDifficultyMapping(User user, Long gymId) {
+    public List<DifficultyMappingDetailResponse> getDifficultyMapping(Long gymId) {
 
-        Manager manager = managerRepository.findById(user.getId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByGymDifficultyAsc(
-            manager.getClimbingGym());
+            climbingGym);
 
         if (difficultyMappingList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
