@@ -10,7 +10,6 @@ public class RouteRequestDto {
     public static class CreateRouteRequest {
 
         private Long sectorId;
-        private String name;
         private int difficulty;
     }
 }

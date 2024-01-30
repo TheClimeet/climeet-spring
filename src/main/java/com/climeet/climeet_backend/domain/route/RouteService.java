@@ -1,13 +1,11 @@
 package com.climeet.climeet_backend.domain.route;
 
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
-import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
+import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteSimpleResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
@@ -33,19 +31,12 @@ public class RouteService {
     private final S3Service s3Service;
 
     @Transactional
-    public void createRoute(CreateRouteRequest createRouteRequest, MultipartFile routeImage,
-        User user) {
-
-        // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
-        List<Route> routes = routeRepository.findBySectorId(createRouteRequest.getSectorId());
-        for (Route route : routes) {
-            if (route.getName().equals(createRouteRequest.getName())) {
-                throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_NAME);
-            }
-        }
+    public RouteSimpleResponse createRoute(CreateRouteRequest createRouteRequest,
+        MultipartFile routeImage, User user) {
 
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
         DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
             manager.getClimbingGym(), createRouteRequest.getDifficulty());
 
@@ -54,24 +45,25 @@ public class RouteService {
 
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
-        routeRepository.save(
-            Route.toEntity(createRouteRequest, sector, routeImageUrl, difficultyMapping));
+        Route route = routeRepository.save(Route.toEntity(sector, routeImageUrl, difficultyMapping));
+
+        return RouteSimpleResponse.toDto(route);
     }
 
-    public RouteSimpleResponse getRoute(Long routeId) {
+    public RouteDetailResponse getRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-        return new RouteSimpleResponse(route);
+        return RouteDetailResponse.toDto(route);
     }
 
-    public List<RouteSimpleResponse> getRouteList(Long gymId) {
+    public List<RouteDetailResponse> getRouteList(Long gymId) {
         List<Route> routeList = routeRepository.findBySectorClimbingGymId(gymId);
         if (routeList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
         return routeList.stream()
-            .map(RouteSimpleResponse::new)
+            .map(RouteDetailResponse::toDto)
             .collect(Collectors.toList());
     }
 }

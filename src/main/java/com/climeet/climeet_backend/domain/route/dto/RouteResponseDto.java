@@ -10,22 +10,43 @@ public class RouteResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RouteSimpleResponse {
+    public static class RouteDetailResponse {
 
+        private Long routeId;
         private Long sectorId;
         private String sectorName;
-        private Long routeId;
-        private String routeName;
-        private String difficulty;
+        private String climeetDifficultyName;
+        private int gymDifficulty;
+        private String gymDifficultyName;
+        private String gymDifficultyColor;
         private String routeImageUrl;
 
-        public RouteSimpleResponse(Route route) {
-            this.sectorId = route.getSector().getId();
-            this.sectorName = route.getSector().getSectorName();
-            this.routeId = route.getId();
-            this.routeName = route.getName();
-            this.difficulty = route.getDifficultyMapping().getGymDifficultyName();
-            this.routeImageUrl = route.getRouteImageUrl();
+        public static RouteDetailResponse toDto(Route route) {
+            return RouteDetailResponse.builder()
+                .routeId(route.getId())
+                .sectorId(route.getSector().getId())
+                .sectorName(route.getSector().getSectorName())
+                .climeetDifficultyName(route.getDifficultyMapping().getClimeetDifficulty().getStringValue())
+                .gymDifficulty(route.getDifficultyMapping().getGymDifficulty())
+                .gymDifficultyName(route.getDifficultyMapping().getGymDifficultyName())
+                .gymDifficultyColor(route.getDifficultyMapping().getGymDifficultyColor())
+                .routeImageUrl(route.getRouteImageUrl())
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RouteSimpleResponse {
+
+        private Long routeId;
+
+        public static RouteSimpleResponse toDto(Route route) {
+            return RouteSimpleResponse.builder()
+                .routeId(route.getId())
+                .build();
         }
     }
 }

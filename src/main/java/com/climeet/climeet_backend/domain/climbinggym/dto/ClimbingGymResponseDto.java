@@ -21,7 +21,7 @@ public class ClimbingGymResponseDto {
 
         public static ClimbingGymSimpleResponse toDTO(ClimbingGym climbingGym) {
             Long managerId = null;
-            if(climbingGym.getManager() != null){
+            if (climbingGym.getManager() != null) {
                 managerId = climbingGym.getManager().getId();
             }
             return ClimbingGymSimpleResponse.builder()
@@ -57,6 +57,21 @@ public class ClimbingGymResponseDto {
                 .build();
         }
 
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LayoutDetailResponse {
+
+        private String layoutImageUrl;
+
+        public static LayoutDetailResponse toDto(String layoutImageUrl) {
+            return LayoutDetailResponse.builder()
+                .layoutImageUrl(layoutImageUrl)
+                .build();
+        }
     }
 
 }
