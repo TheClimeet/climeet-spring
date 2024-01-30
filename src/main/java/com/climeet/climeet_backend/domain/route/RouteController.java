@@ -36,7 +36,7 @@ public class RouteController {
         @RequestPart(value = "image") MultipartFile routeImage,
         @RequestPart CreateRouteRequest createRouteRequest, @CurrentUser User user
     ) {
-        return ResponseEntity.ok(routeService.createRoute(createRouteRequest, routeImage));
+        return ResponseEntity.ok(routeService.createRoute(createRouteRequest, routeImage, user));
     }
 
     @Operation(summary = "클라이밍 루트 조회")

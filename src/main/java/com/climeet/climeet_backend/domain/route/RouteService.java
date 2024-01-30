@@ -1,10 +1,7 @@
 package com.climeet.climeet_backend.domain.route;
 
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
-import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteRequestDto.CreateRouteRequest;
@@ -35,10 +32,11 @@ public class RouteService {
 
     @Transactional
     public RouteSimpleResponse createRoute(CreateRouteRequest createRouteRequest,
-        MultipartFile routeImage) {
+        MultipartFile routeImage, User user) {
 
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
         DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
             manager.getClimbingGym(), createRouteRequest.getDifficulty());
 
@@ -47,7 +45,7 @@ public class RouteService {
 
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
-        Route route = routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
+        Route route = routeRepository.save(Route.toEntity(sector, routeImageUrl, difficultyMapping));
 
         return RouteSimpleResponse.toDto(route);
     }
