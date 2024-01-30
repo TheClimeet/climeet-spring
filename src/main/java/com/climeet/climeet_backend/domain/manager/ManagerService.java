@@ -40,7 +40,7 @@ public class ManagerService {
         if(!IdManager.checkPassword(password, passwordEncoder)){
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(IdManager.getId()));
+        String accessToken = jwtTokenProvider.createAccessToken(IdManager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);
 
@@ -65,6 +65,11 @@ public class ManagerService {
         if(managerRepository.findByLoginId(createManagerRequest.getLoginId()).isPresent()){
             throw new GeneralException(ErrorStatus._DUPLICATE_LOGINID);
         }
+
+        if(checkManagerRegistration(createManagerRequest.getGymId())){
+            throw new GeneralException(ErrorStatus._DUPLICATE_GYM_MANAGER);
+        }
+
 
         Manager manager = Manager.toEntity(createManagerRequest, gym);
         manager.hashPassword(passwordEncoder);
