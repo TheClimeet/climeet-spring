@@ -72,7 +72,9 @@ public class JwtTokenProvider {
 
     public String refreshAccessToken(String refreshToken) {
         if (validateToken(refreshToken)) {
-            return createAccessToken(getPayload(refreshToken));
+            Long climberId = Long.parseLong(getPayload(refreshToken));
+            Climber climber = climberRepository.findById(climberId).orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_MEMBER));
+            return createAccessToken(climber.getPayload());
         } else {
             throw new GeneralException(ErrorStatus._INVALID_JWT);
         }
