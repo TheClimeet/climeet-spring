@@ -14,7 +14,6 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,14 +37,15 @@ public class RouteService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
         DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
-            manager.getClimbingGym(), createRouteRequest.getDifficulty());
+            manager.getClimbingGym(), createRouteRequest.getGymDifficulty());
 
         Sector sector = sectorRepository.findById(createRouteRequest.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
 
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
-        Route route = routeRepository.save(Route.toEntity(sector, routeImageUrl, difficultyMapping));
+        Route route = routeRepository.save(
+            Route.toEntity(sector, routeImageUrl, difficultyMapping));
 
         return RouteSimpleResponse.toDto(route);
     }
@@ -64,6 +64,6 @@ public class RouteService {
         }
         return routeList.stream()
             .map(RouteDetailResponse::toDto)
-            .collect(Collectors.toList());
+            .toList();
     }
 }
