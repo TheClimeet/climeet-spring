@@ -42,11 +42,8 @@ public class SectorService {
 
         String sectorImageUrl = s3Service.uploadFile(sectorImage).getImgUrl();
 
-        sectorRepository.save(
+        Sector sector = sectorRepository.save(
             Sector.toEntity(createSectorRequest, manager.getClimbingGym(), sectorImageUrl));
-
-        // Sector Id 값을 반환하기 위해 사용
-        Sector sector = sectorRepository.findBySectorImageUrl(sectorImageUrl);
 
         return SectorSimpleResponse.toDto(sector);
     }

@@ -32,10 +32,7 @@ public class RouteService {
 
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
-        routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
-
-        // Route Id 값을 반환하기 위해 사용
-        Route route = routeRepository.findByRouteImageUrl(routeImageUrl);
+        Route route = routeRepository.save(Route.toEntity(createRouteRequest, sector, routeImageUrl));
 
         return RouteSimpleResponse.toDto(route);
     }
