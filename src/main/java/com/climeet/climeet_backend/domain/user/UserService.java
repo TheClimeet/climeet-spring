@@ -25,7 +25,6 @@ public class UserService {
     }
     public UserTokenSimpleInfo updateUserToken(String refreshToken){
         Long userId = Long.valueOf(jwtTokenProvider.getPayload(refreshToken));
-        System.out.println(userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._INVALID_JWT));
         String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
