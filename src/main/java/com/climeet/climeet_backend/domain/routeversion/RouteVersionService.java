@@ -20,6 +20,8 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -94,6 +96,10 @@ public class RouteVersionService {
         if (routeIdList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
+        System.out.println(routeIdList);
+
+        routeIdList = routeIdList.stream().sorted(Collections.reverseOrder()).toList();
+        routeIdList = routeIdList.subList(0, Math.min(routeIdList.size(), 10));
 
         List<Long> sectorIdList = RouteVersionConverter.convertStringToList(
             routeVersion.getSectorList());
@@ -162,6 +168,7 @@ public class RouteVersionService {
                         .getGymDifficulty());
             return floorFilter && sectorFilter && gymDifficultyFilter;
         }).toList();
+
         if (filteredRouteList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
