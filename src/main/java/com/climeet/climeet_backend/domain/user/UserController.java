@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name="User")
@@ -17,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-//    @PostMapping("/refresh-token")
-//    @Operation(description = "소셜 Access token, Refresh token 재발급 ")
-//    public ResponseEntity<UserTokenSimpleInfo> refreshToken(String refreshToken){
-//        UserTokenSimpleInfo userTokenSimpleInfo = userService.updateUserToken(refreshToken);
-//        return ResponseEntity.ok(userTokenSimpleInfo);
-//
-//
-//    }
+    @PostMapping("/refresh-token")
+    @Operation(description = "소셜 Access token, Refresh token 재발급 ")
+    public ResponseEntity<UserTokenSimpleInfo> refreshToken(@RequestParam String refreshToken){
+        UserTokenSimpleInfo userTokenSimpleInfo = userService.updateUserToken(refreshToken);
+        return ResponseEntity.ok(userTokenSimpleInfo);
+
+
+    }
 
 }

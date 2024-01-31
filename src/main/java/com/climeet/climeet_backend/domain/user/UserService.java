@@ -23,6 +23,7 @@ public class UserService {
     }
     public UserTokenSimpleInfo updateUserToken(String refreshToken){
         Long userId = Long.valueOf(jwtTokenProvider.getPayload(refreshToken));
+        System.out.println(userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._INVALID_JWT));
         String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
@@ -32,5 +33,5 @@ public class UserService {
         return new UserTokenSimpleInfo(user);
 
     }
-
+//eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxNCIsImlhdCI6MTcwNjY4MDgzMiwiZXhwIjoxNzA2NjgxNDM3fQ.1HFtfxeqiLTinrt0SSrQJaPJt5N5_H8mPwTgxwG4wY8ItrnkaMifOrjz5znqGar1b-jNzXI5sKqp-V0hCcG5KQ
 }
