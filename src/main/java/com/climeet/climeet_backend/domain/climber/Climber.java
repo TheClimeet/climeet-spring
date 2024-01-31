@@ -56,4 +56,8 @@ public class Climber extends User {
     public void updateProfileImageUrl(String profileImgUrl) {
         this.profileImageUrl = profileImgUrl;
     }
+
+    public String getPayload(){
+        return this.getId()+"+climber";
+    }
 }
