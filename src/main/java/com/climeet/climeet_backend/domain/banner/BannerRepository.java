@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface BannerRepository extends JpaRepository<Banner, Long> {
     @Query("SELECT b "
         + "FROM Banner b "
-        + "WHERE :currentDate >= b.bannerStartDate AND :curDate <= b.bannerEndDate")
+        + "WHERE :currentDate >= b.bannerStartDate AND :currentDate <= b.bannerEndDate")
     List<Banner> findByBannerStartDateBeforeAndBannerEndDateAfter(LocalDate currentDate);
 
 }
