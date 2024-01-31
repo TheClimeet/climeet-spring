@@ -43,7 +43,12 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             Claims claims = Jwts.parser().setSigningKey(jwtTokenProvider.getSecretKey())
                 .parseClaimsJws(token).getBody();
 
-            String userId = claims.getSubject();
+            String targetIndex = "+";
+
+            String targetSubject = claims.getSubject();
+
+            int index = targetSubject.indexOf(targetIndex);
+            String userId = targetSubject.substring(0, index);
 
             return userRepository.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));

@@ -1,6 +1,5 @@
 package com.climeet.climeet_backend.global.security;
 
-import static java.lang.Long.parseLong;
 
 import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.ClimberRepository;
@@ -14,17 +13,8 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECPrivateKey;
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Optional;
-import java.util.Random;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

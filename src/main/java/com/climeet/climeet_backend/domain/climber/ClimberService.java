@@ -3,7 +3,6 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
-import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberTokenRefreshResponse;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
