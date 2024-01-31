@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
+import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -64,15 +65,11 @@ public class RouteVersionController {
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_VERSION,
         ErrorStatus._EMPTY_ROUTE_LIST, ErrorStatus._MISMATCH_ROUTE_IDS,
         ErrorStatus._EMPTY_ROUTE_LIST})
-    @GetMapping("/{gymId}/version/filter")
+    @PostMapping("/{gymId}/version/filter")
     public ResponseEntity<List<RouteDetailResponse>> getRouteVersionFiltering(
         @CurrentUser User user, @PathVariable Long gymId,
-        @RequestParam(value = "floor", defaultValue = "") int[] floorList,
-        @RequestParam(value = "sector", defaultValue = "") Long[] sectorIdList,
-        @RequestParam(value = "difficulty", defaultValue = "") int[] gymDifficultyList,
-        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate timePoint) {
+        @RequestBody GetFilteredRouteVersionRequest getFilteredRouteVersionRequest) {
         return ResponseEntity.ok(
-            routeVersionService.getRouteVersionFiltering(gymId, timePoint, floorList, sectorIdList,
-                gymDifficultyList));
+            routeVersionService.getRouteVersionFiltering(gymId, getFilteredRouteVersionRequest));
     }
 }

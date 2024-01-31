@@ -8,6 +8,7 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
+import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
@@ -115,13 +116,13 @@ public class RouteVersionService {
             routeListResponse);
     }
 
-    public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId, LocalDate timePoint,
-        int[] floorList, Long[] sectorIdList, int[] gymDifficultyList) {
+    public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
+        GetFilteredRouteVersionRequest requestDto) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
-                climbingGym, timePoint)
+                climbingGym, requestDto.getTimePoint())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
         List<Long> routeIdList = RouteVersionConverter.convertStringToList(
@@ -136,12 +137,15 @@ public class RouteVersionService {
         }
 
         List<Route> filteredRouteList = routeList.stream().filter(route -> {
-            boolean floorFilter = floorList.length == 0 || Arrays.stream(floorList)
-                .anyMatch(floor -> floor == route.getSector().getFloor());
-            boolean sectorFilter = sectorIdList.length == 0 || Arrays.stream(sectorIdList)
+            boolean floorFilter =
+                requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
+                    .anyMatch(floor -> floor == route.getSector().getFloor());
+            boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
+                    requestDto.getSectorIdList())
                 .anyMatch(sectorId -> sectorId == route.getSector().getId());
             boolean gymDifficultyFilter =
-                gymDifficultyList.length == 0 || Arrays.stream(gymDifficultyList).anyMatch(
+                requestDto.getGymDifficultyList().length == 0 || Arrays.stream(
+                    requestDto.getGymDifficultyList()).anyMatch(
                     gymDifficulty -> gymDifficulty == route.getDifficultyMapping()
                         .getGymDifficulty());
             return floorFilter && sectorFilter && gymDifficultyFilter;

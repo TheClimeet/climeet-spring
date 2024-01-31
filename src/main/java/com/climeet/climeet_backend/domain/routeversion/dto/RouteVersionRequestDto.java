@@ -18,4 +18,21 @@ public class RouteVersionRequestDto {
         private List<Long> sectorIdList;
     }
 
+    @Getter
+    public static class GetFilteredRouteVersionRequest {
+
+        private int[] floorList = null;
+        private Long[] sectorIdList = null;
+        private int[] gymDifficultyList = null;
+
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate timePoint;
+
+        public GetFilteredRouteVersionRequest() {
+            this.floorList = new int[0];
+            this.sectorIdList = new Long[0];
+            this.gymDifficultyList = new int[0];
+        }
+    }
+
 }
