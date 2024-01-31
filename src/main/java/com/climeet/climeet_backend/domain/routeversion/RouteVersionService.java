@@ -96,8 +96,7 @@ public class RouteVersionService {
         if (routeIdList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
-        System.out.println(routeIdList);
-
+        
         routeIdList = routeIdList.stream().sorted(Collections.reverseOrder()).toList();
         routeIdList = routeIdList.subList(0, Math.min(routeIdList.size(), 10));
 
