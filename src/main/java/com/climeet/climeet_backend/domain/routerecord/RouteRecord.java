@@ -3,7 +3,7 @@ package com.climeet.climeet_backend.domain.routerecord;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
 import com.climeet.climeet_backend.domain.route.Route;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecord;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
@@ -47,7 +47,7 @@ public class RouteRecord extends BaseTimeEntity {
 
     private Boolean isCompleted = false;
 
-    public static RouteRecord toEntity(User user, CreateRouteRecordDto createRouteRecordReq,
+    public static RouteRecord toEntity(User user, CreateRouteRecord createRouteRecordReq,
         ClimbingRecord climbingRecord, Route route) {
         return RouteRecord.builder()
             .user(user)

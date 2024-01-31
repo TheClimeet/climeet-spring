@@ -1,6 +1,6 @@
 package com.climeet.climeet_backend.domain.climbingrecord.dto;
 
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecord;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,7 +14,7 @@ public class  ClimbingRecordRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class CreateClimbingRecordDto {
+    public static class CreateClimbingRecord {
         @Schema(example = "1", description = "짐 id")
         private Long gymId;
 
@@ -28,12 +28,12 @@ public class  ClimbingRecordRequestDto {
         private int avgDifficulty;
 
         @Schema(description = "클라이밍 루트 목록")
-        private List<CreateRouteRecordDto> routeRecordRequestDtoList;
+        private List<CreateRouteRecord> routeRecordRequestDtoList;
     }
 
     @Getter
     @NoArgsConstructor
-    public static class UpdateClimbingRecordDto {
+    public static class UpdateClimbingRecord {
         @Schema(example = "LocalDate.of(2024, 1, 4)", description = "날짜입력")
         private LocalDate date;
 

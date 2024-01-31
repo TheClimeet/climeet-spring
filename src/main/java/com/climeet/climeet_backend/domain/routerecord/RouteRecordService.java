@@ -3,8 +3,8 @@ package com.climeet.climeet_backend.domain.routerecord;
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecord;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -28,7 +28,7 @@ public class RouteRecordService {
      * 루트 기록 생성
      */
     @Transactional
-    public ResponseEntity<String> addRouteRecord(User user, CreateRouteRecordDto requestDto,
+    public ResponseEntity<String> addRouteRecord(User user, CreateRouteRecord requestDto,
         ClimbingRecord climbingRecord) {
 
         Route route = routeRepository.findById(requestDto.getRouteId())
@@ -52,7 +52,7 @@ public class RouteRecordService {
     /**
      * 루트 간편기록 전체 조회
      */
-    public List<RouteRecordSimpleInfo> getRouteRecords(User user) {
+    public List<RouteRecordSimpleInfo> getRouteRecordList(User user) {
 
         List<RouteRecord> recordList = routeRecordRepository.findAllByUser(user);
 
@@ -86,7 +86,7 @@ public class RouteRecordService {
      */
     @Transactional
     public RouteRecordSimpleInfo updateRouteRecord(User user, Long id,
-        UpdateRouteRecordDto updateRouteRecordDto) {
+        UpdateRouteRecord updateRouteRecord) {
 
         RouteRecord routeRecord = routeRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._ROUTE_RECORD_NOT_FOUND));
@@ -103,9 +103,9 @@ public class RouteRecordService {
         Boolean oldIsCompleted = routeRecord.getIsCompleted();
 
         //각 필드의 새값들
-        Long newRouteId = updateRouteRecordDto.getRouteId();
-        Integer newAttemptTime = updateRouteRecordDto.getAttemptCount();
-        Boolean newIsComplete = updateRouteRecordDto.getIsComplete();
+        Long newRouteId = updateRouteRecord.getRouteId();
+        Integer newAttemptTime = updateRouteRecord.getAttemptCount();
+        Boolean newIsComplete = updateRouteRecord.getIsComplete();
 
         if (newRouteId != null) {
             oldRouteId = newRouteId;
