@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BannerController {
     private final BannerService bannerService;
 
-    @GetMapping("api/banner")
+    @GetMapping("api/banners")
     public ResponseEntity<List<BannerDetailInfo>> getBannerListBetweenDates(
         @CurrentUser User user
     ){

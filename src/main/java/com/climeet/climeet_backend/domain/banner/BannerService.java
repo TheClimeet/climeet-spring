@@ -11,11 +11,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class BannerService {
+
     private final BannerRepository bannerRepository;
 
-    public List<BannerDetailInfo> getBannerListBetweenDates(){
-        LocalDate curDate = LocalDate.now();
-        List<Banner> bannerList = bannerRepository.findByBannerStartDateBeforeAndBannerEndDateAfter(curDate);
+    public List<BannerDetailInfo> getBannerListBetweenDates() {
+        LocalDate currentDate = LocalDate.now();
+        List<Banner> bannerList = bannerRepository.findByBannerStartDateBeforeAndBannerEndDateAfter(
+            currentDate);
         return bannerList.stream()
             .map(BannerDetailInfo::toDTO)
             .collect(Collectors.toList());
