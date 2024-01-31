@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.bestclimber.clear;
 
-import com.climeet.climeet_backend.domain.bestclimber.clear.dto.BestClearClimberResponseDto.BestClearClimberSimpleResponse;
+import com.climeet.climeet_backend.domain.bestclimber.clear.dto.BestClearClimberResponseDto.BestClearClimberDetailInfo;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "BestClearClimber", description = "[완등순] 금주 베스트 클라이머 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/rank/week/climber")
+@RequestMapping("api/home/rank/weeks/climbers")
 public class BestClearClimberController {
     private final BestClearClimberService bestClearClimberService;
 
     @GetMapping("/clear")
-    public ResponseEntity<List<BestClearClimberSimpleResponse>> findClimberRankingOrderClearCount(){
-        return ResponseEntity.ok(bestClearClimberService.findClimberRankingOrderClearCount());
+    public ResponseEntity<List<BestClearClimberDetailInfo>> getClimberRankingListOrderClearCount(
+        @CurrentUser User user
+    ){
+        return ResponseEntity.ok(bestClearClimberService.getClimberRankingListOrderClearCount());
     }
 }

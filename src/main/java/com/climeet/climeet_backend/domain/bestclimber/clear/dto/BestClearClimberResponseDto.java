@@ -12,7 +12,7 @@ public class BestClearClimberResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class BestClearClimberSimpleResponse{
+    public static class BestClearClimberDetailInfo{
 
         private int ranking;
 
@@ -22,8 +22,8 @@ public class BestClearClimberResponseDto {
 
         private int thisWeekClearCount;
 
-        public static BestClearClimberSimpleResponse toDTO(BestClearClimber bestClearClimber){
-            return BestClearClimberSimpleResponse.builder()
+        public static BestClearClimberDetailInfo toDTO(BestClearClimber bestClearClimber){
+            return BestClearClimberDetailInfo.builder()
                 .ranking(bestClearClimber.getRanking())
                 .profileImageUrl(bestClearClimber.getProfileImageUrl())
                 .thisWeekClearCount(bestClearClimber.getThisWeekClearCount())

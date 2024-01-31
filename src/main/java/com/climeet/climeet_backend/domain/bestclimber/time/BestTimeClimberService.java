@@ -1,6 +1,6 @@
 package com.climeet.climeet_backend.domain.bestclimber.time;
 
-import com.climeet.climeet_backend.domain.bestclimber.time.dto.BestTimeClimberResponseDto.BestTimeClimberSimpleResponse;
+import com.climeet.climeet_backend.domain.bestclimber.time.dto.BestTimeClimberResponseDto.BestTimeClimberDetailInfo;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +12,10 @@ public class BestTimeClimberService {
 
     private final BestTimeClimberRepository bestTimeClimberRepository;
 
-    public List<BestTimeClimberSimpleResponse> findClimberRankingOrderTime(){
+    public List<BestTimeClimberDetailInfo> getClimberRankingListOrderTime(){
         List<BestTimeClimber> ranking = bestTimeClimberRepository.findAllByOrderByRankingAsc();
         return ranking.stream()
-            .map(BestTimeClimberSimpleResponse::toDTO)
+            .map(BestTimeClimberDetailInfo::toDTO)
             .collect(Collectors.toList());
     }
 }

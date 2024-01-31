@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.bestfollowgym.dto;
 
 import com.climeet.climeet_backend.domain.bestfollowgym.BestFollowGym;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +10,9 @@ public class BestFollowGymResponseDto {
 
     @Getter
     @NoArgsConstructor
-    public static class BestFollowGymSimpleDto {
+    @AllArgsConstructor
+    @Builder
+    public static class BestFollowGymDetailInfo {
 
         private int ranking;
         private String profileImageUrl;
@@ -17,13 +21,15 @@ public class BestFollowGymResponseDto {
         private Float rating;
         private int reviewCount;
 
-        public BestFollowGymSimpleDto(BestFollowGym bestFollowGym) {
-            this.ranking = bestFollowGym.getRanking();
-            this.thisWeekFollowerCount = bestFollowGym.getThisWeekFollowCount();
-            this.profileImageUrl = bestFollowGym.getProfileImageUrl();
-            this.gymName = bestFollowGym.getGymName();
-            this.rating = bestFollowGym.getRating();
-            this.reviewCount = bestFollowGym.getReviewCount();
+        public static BestFollowGymDetailInfo toDTO(BestFollowGym bestFollowGym) {
+            return BestFollowGymDetailInfo.builder()
+                .ranking(bestFollowGym.getRanking())
+                .thisWeekFollowerCount(bestFollowGym.getThisWeekFollowCount())
+                .profileImageUrl(bestFollowGym.getProfileImageUrl())
+                .gymName(bestFollowGym.getGymName())
+                .rating(bestFollowGym.getRating())
+                .reviewCount(bestFollowGym.getReviewCount())
+                .build();
         }
     }
 }

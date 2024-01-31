@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.bestrecordgym.dto;
 
 import com.climeet.climeet_backend.domain.bestrecordgym.BestRecordGym;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +10,9 @@ public class BestRecordGymResponseDto {
 
     @Getter
     @NoArgsConstructor
-    public static class BestRecordGymSimpleDto {
+    @AllArgsConstructor
+    @Builder
+    public static class BestRecordGymDetailInfo {
 
         private int ranking;
         private String profileImageUrl;
@@ -17,13 +21,15 @@ public class BestRecordGymResponseDto {
         private Float rating;
         private int reviewCount;
 
-        public BestRecordGymSimpleDto(BestRecordGym bestRecordGym) {
-            this.ranking = bestRecordGym.getRanking();
-            this.thisWeekSelectionCount = bestRecordGym.getThisWeekSelectionCount();
-            this.profileImageUrl = bestRecordGym.getProfileImageUrl();
-            this.gymName = bestRecordGym.getGymName();
-            this.rating = bestRecordGym.getRating();
-            this.reviewCount = bestRecordGym.getReviewCount();
+        public static BestRecordGymDetailInfo toDTO(BestRecordGym bestRecordGym) {
+            return BestRecordGymDetailInfo.builder()
+                .ranking(bestRecordGym.getRanking())
+                .thisWeekSelectionCount(bestRecordGym.getThisWeekSelectionCount())
+                .profileImageUrl(bestRecordGym.getProfileImageUrl())
+                .gymName(bestRecordGym.getGymName())
+                .rating(bestRecordGym.getRating())
+                .reviewCount(bestRecordGym.getReviewCount())
+                .build();
         }
     }
 }

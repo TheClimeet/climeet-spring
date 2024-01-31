@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.bestclimber.level;
 
-import com.climeet.climeet_backend.domain.bestclimber.level.dto.BestLevelClimberResponseDto.BestLevelClimberSimpleResponse;
+import com.climeet.climeet_backend.domain.bestclimber.level.dto.BestLevelClimberResponseDto.BestLevelClimberDetailInfo;
+import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "BestLevelClimber", description = "[레벨순] 금주 베스트 클라이머 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/rank/week/climber")
+@RequestMapping("api/home/rank/weeks/climbers")
 public class BestLevelClimberController {
     private final BestLevelClimberService bestLevelClimberService;
 
     @GetMapping("/level")
-    public ResponseEntity<List<BestLevelClimberSimpleResponse>> findClimberRankingOrderLevel(){
-        return ResponseEntity.ok(bestLevelClimberService.findClimberRankingOrderLevel());
+    public ResponseEntity<List<BestLevelClimberDetailInfo>> getClimberRankingListOrderLevel(
+        @CurrentUser User user
+    ){
+        return ResponseEntity.ok(bestLevelClimberService.getClimberRankingListOrderLevel());
     }
 }

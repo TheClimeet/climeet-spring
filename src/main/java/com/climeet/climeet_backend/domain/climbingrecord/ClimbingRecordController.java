@@ -1,10 +1,10 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestClearUserSimple;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestLevelUserSimple;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestTimeUserSimple;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecord;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecord;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestClearUserSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestLevelUserSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestTimeUserSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "ClimbingRecords", description = "클라이밍 운동기록 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/climbing-record")
+@RequestMapping("api/climbing-records")
 public class ClimbingRecordController {
 
     private final ClimbingRecordService climbingRecordService;
@@ -43,9 +43,9 @@ public class ClimbingRecordController {
     @Operation(summary = "클라이밍 기록 생성")
     @PostMapping
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_ROUTE})
-    public ResponseEntity<String> addClimbingRecord(
+    public ResponseEntity<String> createClimbingRecord(
         @CurrentUser User user,
-        @RequestBody CreateClimbingRecordDto requestDto) {
+        @RequestBody CreateClimbingRecord requestDto) {
         climbingRecordService.createClimbingRecord(user, requestDto);
         return ResponseEntity.ok("클라이밍 기록을 생성하였습니다.");
     }
@@ -53,8 +53,19 @@ public class ClimbingRecordController {
     @Operation(summary = "클라이밍 간편 기록 전체 조회")
     @GetMapping
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD})
-    public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecords() {
-        return ResponseEntity.ok(climbingRecordService.getClimbingRecords());
+    public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordList(
+        @CurrentUser User user
+    ) {
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecordList());
+    }
+
+    @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.)")
+    @GetMapping("/{id}")
+    @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
+    public ResponseEntity<ClimbingRecordDetailInfo> getClimbingRecordById(
+        @CurrentUser User user,
+        @PathVariable Long id) {
+        return ResponseEntity.ok(climbingRecordService.getClimbingRecordById(id));
     }
 
 
@@ -62,21 +73,13 @@ public class ClimbingRecordController {
     @GetMapping("/between-dates")
     @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE, ErrorStatus._EMPTY_CLIMBING_RECORD,
         ErrorStatus._INVALID_MEMBER})
-    public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordsBetweenDates(
+    public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordListBetweenDates(
         @CurrentUser User user,
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         List<ClimbingRecordSimpleInfo> climbingRecords
-            = climbingRecordService.getClimbingRecordsBetweenLocalDates(user, startDate, endDate);
+            = climbingRecordService.getClimbingRecordListBetweenDates(user, startDate, endDate);
         return ResponseEntity.ok(climbingRecords);
-    }
-
-    @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.)")
-    @GetMapping("/{id}")
-    @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
-    public ResponseEntity<ClimbingRecordDetailInfo> findClimbingRecord(
-        @PathVariable Long id) {
-        return ResponseEntity.ok(climbingRecordService.getClimbingRecordById(id));
     }
 
 
@@ -86,9 +89,9 @@ public class ClimbingRecordController {
     public ResponseEntity<ClimbingRecordSimpleInfo> updateClimbingRecord(
         @CurrentUser User user,
         @PathVariable Long id,
-        @RequestBody UpdateClimbingRecordDto updateClimbingRecordDto) {
+        @RequestBody UpdateClimbingRecord updateClimbingRecord) {
         return ResponseEntity.ok(
-            climbingRecordService.updateClimbingRecord(user, id, updateClimbingRecordDto));
+            climbingRecordService.updateClimbingRecord(user, id, updateClimbingRecord));
     }
 
     @Operation(summary = "ClimbingRecord 삭제")
@@ -101,10 +104,10 @@ public class ClimbingRecordController {
         return ResponseEntity.ok("클라이밍 기록을 삭제하였습니다.");
     }
 
-    @Operation(summary = "월별 운동기록 통계")
-    @GetMapping("/statistics")
+    @Operation(summary = "나의 월별 운동기록 통계")
+    @GetMapping("/users/statistics/months")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD, ErrorStatus._INVALID_MEMBER})
-    public ResponseEntity<ClimbingRecordStatisticsInfo> findClimbingStatistics(
+    public ResponseEntity<ClimbingRecordStatisticsInfo> getClimbingStatisticsMonthly(
         @CurrentUser User user,
         @RequestParam int year,
         @RequestParam int month) {
@@ -113,44 +116,49 @@ public class ClimbingRecordController {
     }
 
     @Operation(summary = "암장별 주간 평균 완등률 통계 ")
-    @GetMapping("/gym/{gymId}/statistics")
+    @GetMapping("/gym/{gymId}/statistics/weeks")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<ClimbingRecordStatisticsSimpleInfo> findClimbingClearRate(
+    public ResponseEntity<ClimbingRecordStatisticsSimpleInfo> getGymStatisticsWeekly(
+        @CurrentUser User user,
         @PathVariable Long gymId
     ) {
         return ResponseEntity.ok(
-            climbingRecordService.findClimbingRecordStatisticsAndGym(gymId));
+            climbingRecordService.getGymStatisticsWeekly(gymId));
     }
 
     @Operation(summary = "[완등순] 암장별 클라이머 랭킹")
-    @GetMapping("/gym/{gymId}/rank/clear")
+    @GetMapping("/gyms/{gymId}/rank/weeks/climbers/clear")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<List<BestClearUserSimple>> findUserClearRanking(
+    public ResponseEntity<List<BestClearUserSimpleInfo>> getClimberRankingListOrderClearCountByGym(
+        @CurrentUser User user,
         @PathVariable Long gymId) {
-        return ResponseEntity.ok(climbingRecordService.findBestClearUserRanking(gymId));
+        return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderClearCountByGym(gymId));
     }
 
     @Operation(summary = "[시간순] 암장별 클라이머 랭킹")
-    @GetMapping("/gym/{gymId}/rank/time")
+    @GetMapping("/gyms/{gymId}/rank/weeks/climbers/time")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<List<BestTimeUserSimple>> findUserTimeRanking(@PathVariable Long gymId) {
-        return ResponseEntity.ok(climbingRecordService.findBestTimeUserRanking(gymId));
+    public ResponseEntity<List<BestTimeUserSimpleInfo>> getClimberRankingListOrderTimeByGym(
+        @CurrentUser User user,
+        @PathVariable Long gymId) {
+        return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderTimeByGym(gymId));
     }
 
     @Operation(summary = "[높은 레벨순] 암장별 클라이머 랭킹")
-    @GetMapping("/gym/{gymId}/rank/level")
+    @GetMapping("/gyms/{gymId}/rank/weeks/climbers/level")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<List<BestLevelUserSimple>> findUserLevelRanking(
+    public ResponseEntity<List<BestLevelUserSimpleInfo>> getClimberRankingListOrderLevelByGym(
+        @CurrentUser User user,
         @PathVariable Long gymId) {
-        return ResponseEntity.ok(climbingRecordService.findBestLevelUserRanking(gymId));
+        return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderLevelByGym(gymId));
     }
 
     @Operation(summary = "유저별 누적 통계")
     @GetMapping("/user/{userId}/statistics")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
-    public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> findUserStatistics(
+    public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> getUserStatistics(
+        @CurrentUser User user,
         @PathVariable Long userId) {
-        return ResponseEntity.ok(climbingRecordService.findClimberStatistics(userId));
+        return ResponseEntity.ok(climbingRecordService.getUserStatistics(userId));
     }
-
 }

@@ -3,8 +3,6 @@ package com.climeet.climeet_backend.domain.climbingrecord.dto;
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
-import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -139,7 +137,7 @@ public class ClimbingRecordResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class BestClearUserSimple {
+    public static class BestClearUserSimpleInfo {
 
         private Long totalCompletedCount;
         private Long userId;
@@ -147,8 +145,8 @@ public class ClimbingRecordResponseDto {
         protected String profileImageUrl;
         private int ranking;
 
-        public static BestClearUserSimple toDTO(User user, int ranking, Long totalCompletedCount) {
-            return BestClearUserSimple.builder()
+        public static BestClearUserSimpleInfo toDTO(User user, int ranking, Long totalCompletedCount) {
+            return BestClearUserSimpleInfo.builder()
                 .ranking(ranking)
                 .userId(user.getId())
                 .profileImageUrl(user.getProfileImageUrl())
@@ -162,7 +160,7 @@ public class ClimbingRecordResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class BestLevelUserSimple {
+    public static class BestLevelUserSimpleInfo {
 
         private int highDifficulty;
         private Long userId;
@@ -170,8 +168,8 @@ public class ClimbingRecordResponseDto {
         protected String profileImageUrl;
         private int ranking;
 
-        public static BestLevelUserSimple toDTO(User user, int ranking, int highDifficulty) {
-            return BestLevelUserSimple.builder()
+        public static BestLevelUserSimpleInfo toDTO(User user, int ranking, int highDifficulty) {
+            return BestLevelUserSimpleInfo.builder()
                 .ranking(ranking)
                 .userId(user.getId())
                 .profileImageUrl(user.getProfileImageUrl())
@@ -185,7 +183,7 @@ public class ClimbingRecordResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class BestTimeUserSimple {
+    public static class BestTimeUserSimpleInfo {
 
         private LocalTime totalTime;
 
@@ -194,9 +192,9 @@ public class ClimbingRecordResponseDto {
         protected String profileImageUrl;
         private int ranking;
 
-        public static BestTimeUserSimple toDTO(User user, int ranking, LocalTime totalTime) {
+        public static BestTimeUserSimpleInfo toDTO(User user, int ranking, LocalTime totalTime) {
 
-            return BestTimeUserSimple.builder()
+            return BestTimeUserSimpleInfo.builder()
                 .ranking(ranking)
                 .userId(user.getId())
                 .profileImageUrl(user.getProfileImageUrl())

@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecord;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
@@ -50,7 +50,7 @@ public class ClimbingRecord extends BaseTimeEntity {
 
     private int highDifficulty;
 
-    public static ClimbingRecord toEntity(User user, CreateClimbingRecordDto requestDto,
+    public static ClimbingRecord toEntity(User user, CreateClimbingRecord requestDto,
         ClimbingGym climbingGym) {
         return ClimbingRecord.builder()
             .user(user)
