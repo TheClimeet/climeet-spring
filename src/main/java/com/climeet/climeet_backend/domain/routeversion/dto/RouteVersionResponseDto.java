@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.routeversion.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
 import java.util.List;
@@ -21,14 +22,17 @@ public class RouteVersionResponseDto {
         private String layoutImageUrl;
         private List<SectorDetailResponse> sectorList;
         private List<RouteDetailResponse> routeList;
+        private List<DifficultyMappingDetailResponse> difficultyList;
 
         public static RouteVersionDetailResponse toDto(ClimbingGym climbingGym,
-            List<SectorDetailResponse> sectorList, List<RouteDetailResponse> routeList) {
+            List<SectorDetailResponse> sectorList, List<RouteDetailResponse> routeList,
+            List<DifficultyMappingDetailResponse> difficultyList) {
             return RouteVersionDetailResponse.builder()
                 .gymId(climbingGym.getId())
                 .layoutImageUrl(climbingGym.getLayoutImageUrl())
                 .sectorList(sectorList)
                 .routeList(routeList)
+                .difficultyList(difficultyList)
                 .build();
         }
     }

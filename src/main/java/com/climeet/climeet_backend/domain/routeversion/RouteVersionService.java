@@ -2,6 +2,9 @@ package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.Route;
@@ -32,6 +35,7 @@ public class RouteVersionService {
     private final RouteRepository routeRepository;
     private final SectorRepository sectorRepository;
     private final ManagerRepository managerRepository;
+    private final DifficultyMappingRepository difficultyMappingRepository;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
@@ -107,13 +111,21 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
         }
 
+        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByGymDifficultyAsc(
+            climbingGym);
+        if (difficultyList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
+        }
+
         List<RouteDetailResponse> routeListResponse = routeList.stream()
-            .map(route -> RouteDetailResponse.toDto(route)).toList();
+            .map(RouteDetailResponse::toDto).toList();
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
-            .map(sector -> SectorDetailResponse.toDto(sector)).toList();
+            .map(SectorDetailResponse::toDto).toList();
+        List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
+            .map(DifficultyMappingDetailResponse::toDto).toList();
 
         return RouteVersionDetailResponse.toDto(climbingGym, sectorDetailResponses,
-            routeListResponse);
+            routeListResponse, difficultyMappingDetailResponses);
     }
 
     public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,

@@ -50,7 +50,7 @@ public class RouteVersionController {
         return ResponseEntity.ok("루트 버전이 추가되었습니다.");
     }
 
-    @Operation(summary = "암장 특정 루트 버전 데이터 불러오기")
+    @Operation(summary = "암장 특정 루트버전 데이터 불러오기")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_VERSION,
         ErrorStatus._EMPTY_ROUTE_LIST, ErrorStatus._EMPTY_SECTOR_LIST,
         ErrorStatus._MISMATCH_ROUTE_IDS, ErrorStatus._MISMATCH_SECTOR_IDS})
