@@ -1,7 +1,8 @@
 package com.climeet.climeet_backend.domain.climbinggym.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.route.Route;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,6 +71,28 @@ public class ClimbingGymResponseDto {
         public static LayoutDetailResponse toDto(String layoutImageUrl) {
             return LayoutDetailResponse.builder()
                 .layoutImageUrl(layoutImageUrl)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimbingGymDetailResponse {
+
+        private String name;
+        private String address;
+        private String tel;
+        private Map<String, List<String>> businessHours;
+
+        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym,
+            Map<String, List<String>> businessHours) {
+            return ClimbingGymDetailResponse.builder()
+                .name(climbingGym.getName())
+                .address(climbingGym.getAddress())
+                .tel(climbingGym.getTel())
+                .businessHours(businessHours)
                 .build();
         }
     }
