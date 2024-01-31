@@ -116,7 +116,7 @@ public class ClimbingRecordController {
     }
 
     @Operation(summary = "암장별 주간 평균 완등률 통계 ")
-    @GetMapping("/gym/{gymId}/statistics/weeks")
+    @GetMapping("/gyms/{gymId}/statistics/weeks")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordStatisticsSimpleInfo> getGymStatisticsWeekly(
         @CurrentUser User user,
@@ -154,7 +154,7 @@ public class ClimbingRecordController {
     }
 
     @Operation(summary = "유저별 누적 통계")
-    @GetMapping("/user/{userId}/statistics")
+    @GetMapping("/users/{userId}/statistics")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> getUserStatistics(
         @CurrentUser User user,
