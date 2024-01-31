@@ -8,6 +8,7 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
+import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
@@ -15,6 +16,7 @@ import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDet
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +41,7 @@ public class RouteVersionService {
         if (routeVersionList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
         }
-        return routeVersionList.stream()
-            .map(routeVersion -> routeVersion.getTimePoint())
-            .toList();
+        return routeVersionList.stream().map(routeVersion -> routeVersion.getTimePoint()).toList();
     }
 
     public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user) {
@@ -71,12 +71,10 @@ public class RouteVersionService {
         String sectorIdListString = RouteVersionConverter.convertListToString(
             createRouteVersionRequest.getSectorIdList());
 
-        routeVersionRepository.save(
-            RouteVersion.toEntity(manager.getClimbingGym(), createRouteVersionRequest.getTimePoint(),
-                routeIdListString, sectorIdListString));
+        routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
+            createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString));
 
     }
-
 
 
     public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
@@ -116,6 +114,47 @@ public class RouteVersionService {
 
         return RouteVersionDetailResponse.toDto(climbingGym, sectorDetailResponses,
             routeListResponse);
+    }
+
+    public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
+        GetFilteredRouteVersionRequest requestDto) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
+                climbingGym, requestDto.getTimePoint())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
+
+        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
+            routeVersion.getRouteList());
+        if (routeIdList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        }
+
+        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
+        if (routeList.size() != routeIdList.size()) {
+            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
+        }
+
+        List<Route> filteredRouteList = routeList.stream().filter(route -> {
+            boolean floorFilter =
+                requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
+                    .anyMatch(floor -> floor == route.getSector().getFloor());
+            boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
+                    requestDto.getSectorIdList())
+                .anyMatch(sectorId -> sectorId == route.getSector().getId());
+            boolean gymDifficultyFilter =
+                requestDto.getGymDifficultyList().length == 0 || Arrays.stream(
+                    requestDto.getGymDifficultyList()).anyMatch(
+                    gymDifficulty -> gymDifficulty == route.getDifficultyMapping()
+                        .getGymDifficulty());
+            return floorFilter && sectorFilter && gymDifficultyFilter;
+        }).toList();
+        if (filteredRouteList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        }
+
+        return filteredRouteList.stream().map(RouteDetailResponse::toDto).toList();
     }
 
 }
