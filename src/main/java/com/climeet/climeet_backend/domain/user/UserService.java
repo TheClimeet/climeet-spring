@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user;
 
+import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ClimberRepository climberRepository;
     public User updateNotification(User user, boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
         if(user==null){
             throw new GeneralException(ErrorStatus._EMPTY_MEMBER);

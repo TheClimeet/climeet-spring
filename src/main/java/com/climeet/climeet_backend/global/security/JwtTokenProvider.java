@@ -38,7 +38,7 @@ public class JwtTokenProvider {
     private String SECRET_KEY;
 
     private SecretKey cachedSecretKey;
-    private ClimberRepository climberRepository;
+    private final ClimberRepository climberRepository;
 
     private SecretKey _getSecretKey() {
         String keyBase64Encoded = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
@@ -76,7 +76,9 @@ public class JwtTokenProvider {
     public String createToken(String payload, long expireLength){
         Claims claims = Jwts.claims().setSubject(payload);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + expireLength);
+        long nowMillis = now.getTime();
+        long expireMillis = nowMillis + (expireLength * 1000); // expireLength를 초 단위로 받았다고 가정
+        Date validity = new Date(expireMillis);
         return Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(now)
@@ -88,8 +90,8 @@ public class JwtTokenProvider {
     public String getPayload(String token){
       try{
           return Jwts.parser()
-              .setSigningKey(SECRET_KEY)
-              .parseClaimsJwt(token)
+              .setSigningKey(getSecretKey())
+              .parseClaimsJws(token)
               .getBody()
               .getSubject();
       }catch (ExpiredJwtException e){
@@ -100,7 +102,9 @@ public class JwtTokenProvider {
     }
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token);
+//            Date now = new Date();
+//            long nowMillis = now.getTime();
             if (claimsJws.getBody().getExpiration().before(new Date())) {
                 throw new GeneralException(ErrorStatus._EXPIRED_JWT);
             }
