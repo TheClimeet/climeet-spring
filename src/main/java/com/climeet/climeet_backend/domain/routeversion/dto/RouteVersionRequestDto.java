@@ -16,6 +16,7 @@ public class RouteVersionRequestDto {
         private LocalDate timePoint;
         private List<Long> routeIdList;
         private List<Long> sectorIdList;
+        private String layoutImageUrl;
     }
 
     @Getter

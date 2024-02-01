@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.route.Route;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -57,21 +56,6 @@ public class ClimbingGymResponseDto {
                 .build();
         }
 
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class LayoutDetailResponse {
-
-        private String layoutImageUrl;
-
-        public static LayoutDetailResponse toDto(String layoutImageUrl) {
-            return LayoutDetailResponse.builder()
-                .layoutImageUrl(layoutImageUrl)
-                .build();
-        }
     }
 
 }

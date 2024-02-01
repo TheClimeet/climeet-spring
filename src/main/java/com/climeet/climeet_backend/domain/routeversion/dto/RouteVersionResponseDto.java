@@ -26,10 +26,10 @@ public class RouteVersionResponseDto {
 
         public static RouteVersionDetailResponse toDto(ClimbingGym climbingGym,
             List<SectorDetailResponse> sectorList, List<RouteDetailResponse> routeList,
-            List<DifficultyMappingDetailResponse> difficultyList) {
+            List<DifficultyMappingDetailResponse> difficultyList, String layoutImageUrl) {
             return RouteVersionDetailResponse.builder()
                 .gymId(climbingGym.getId())
-                .layoutImageUrl(climbingGym.getLayoutImageUrl())
+                .layoutImageUrl(layoutImageUrl)
                 .sectorList(sectorList)
                 .routeList(routeList)
                 .difficultyList(difficultyList)
