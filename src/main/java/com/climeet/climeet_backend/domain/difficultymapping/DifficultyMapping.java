@@ -32,6 +32,7 @@ public class DifficultyMapping extends BaseTimeEntity {
     private ClimbingGym climbingGym;
 
     @NotNull
+    @Column(length = 10)
     private String climeetDifficultyName;
 
     @NotNull
