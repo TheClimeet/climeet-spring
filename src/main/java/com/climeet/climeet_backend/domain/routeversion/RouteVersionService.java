@@ -116,7 +116,7 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
         }
 
-        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByClimeetDifficultyAsc(
+        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
             climbingGym);
         if (difficultyList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
