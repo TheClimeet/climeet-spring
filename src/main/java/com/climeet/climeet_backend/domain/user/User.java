@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -41,14 +42,19 @@ public class User {
 
     private Boolean isAllowAdNotification;
 
+    @ColumnDefault("0L")
     private Long followerCount = 0L;
 
+    @ColumnDefault("0L")
     private Long followingCount = 0L;
 
+    @ColumnDefault("0")
     private int thisWeekCompleteCount = 0;
 
+    @ColumnDefault("0L")
     private Long thisWeekTotalClimbingTime = 0L;
 
+    @ColumnDefault("0")
     private int thisWeekHighDifficulty = 0;
 
     @CreatedDate
@@ -83,6 +89,10 @@ public class User {
 
     public void thisWeekTotalClimbingTimeDown(Long sec){
         this.thisWeekTotalClimbingTime -= sec;
+    }
+
+    public void updateFollwerCount(){
+        this.followerCount++;
     }
 
 }
