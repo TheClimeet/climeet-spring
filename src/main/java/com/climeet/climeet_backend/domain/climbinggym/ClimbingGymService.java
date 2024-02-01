@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -28,6 +29,9 @@ public class ClimbingGymService {
 
     private final ClimbingGymRepository climbingGymRepository;
     private final S3Service s3Service;
+
+    @Value("${cloud.aws.lambda.crawling-uri}")
+    private String crawlingUri;
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
         int page, int size) {
@@ -89,6 +93,8 @@ public class ClimbingGymService {
     }
 
     public ClimbingGymDetailResponse updateClimbingGymInfo(
+
+
         UpdateClimbingGymInfoRequest updateClimbingGymInfoRequest) {
         ClimbingGym climbingGym = climbingGymRepository.findById(
                 updateClimbingGymInfoRequest.getGymId())
@@ -96,8 +102,7 @@ public class ClimbingGymService {
 
         RestClient restClient = RestClient.create();
 
-        String callUrl = "https://i9jkabugud.execute-api.ap-northeast-2.amazonaws.com/dev/gym?word="
-            + climbingGym.getName();
+        String callUrl = crawlingUri + "?word="+ climbingGym.getName();
 
         String gymInfoResult = restClient.get().uri(callUrl).retrieve().body(String.class);
 
