@@ -11,5 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface RouteVersionRepository extends JpaRepository<RouteVersion, Long> {
     List<RouteVersion> findByClimbingGymOrderByTimePointDesc(ClimbingGym climbingGym);
 
+    Optional<RouteVersion> findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(ClimbingGym climbingGym, LocalDate timePoint);
+
     Optional<RouteVersion> findByClimbingGymAndTimePoint(ClimbingGym climbingGym, LocalDate timePoint);
 }

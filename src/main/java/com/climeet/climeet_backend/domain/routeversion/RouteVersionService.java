@@ -105,7 +105,7 @@ public class RouteVersionService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
                 climbingGym, timePoint)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
@@ -148,7 +148,7 @@ public class RouteVersionService {
             .map(DifficultyMappingDetailResponse::toDto).toList();
 
         return RouteVersionDetailResponse.toDto(climbingGym, sectorDetailResponses,
-            routeListResponse, difficultyMappingDetailResponses, routeVersion.getLayoutImageUrl());
+            routeListResponse, difficultyMappingDetailResponses, routeVersion);
     }
 
     public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
@@ -156,7 +156,7 @@ public class RouteVersionService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
                 climbingGym, requestDto.getTimePoint())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
