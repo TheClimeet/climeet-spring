@@ -16,15 +16,15 @@ public class DifficultyMappingResponseDto {
 
         private String climeetDifficultyName;
         private String gymDifficultyName;
-        private int gymDifficulty;
+        private int difficulty;
         private String gymDifficultyColor;
 
         public static DifficultyMappingDetailResponse toDto(
             DifficultyMapping difficultyMapping) {
             return DifficultyMappingDetailResponse.builder()
-                .climeetDifficultyName(difficultyMapping.getClimeetDifficulty().getStringValue())
+                .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())
                 .gymDifficultyName(difficultyMapping.getGymDifficultyName())
-                .gymDifficulty(difficultyMapping.getGymDifficulty())
+                .difficulty(difficultyMapping.getDifficulty())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
                 .build();
         }

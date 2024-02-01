@@ -22,9 +22,9 @@ public class ShortsResponseDto {
         private Long shortsId;
         private String thumbnailImageUrl;
         private String gymName;
-        private String gymDifficulty;
+        private String gymDifficultyName;
         private String gymDifficultyColor;
-        private String climeetDifficulty;
+        private String climeetDifficultyName;
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
@@ -33,9 +33,9 @@ public class ShortsResponseDto {
                 .shortsId(shortsId)
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .gymName(gymName)
-                .gymDifficulty(difficultyMapping.getGymDifficultyColor())
+                .gymDifficultyName(difficultyMapping.getGymDifficultyName())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
-                .climeetDifficulty(difficultyMapping.getClimeetDifficulty().getStringValue())
+                .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())
                 .shortsDetailInfo(shortsDetailInfo)
                 .build();
         }
@@ -62,7 +62,7 @@ public class ShortsResponseDto {
         private boolean isBookmarked;
         private String description;
         private String routeImageUrl;
-        private String gymDifficulty;
+        private String gymDifficultyName;
         private String gymDifficultyColor;
         private Boolean isSoundEnabled;
 
@@ -83,7 +83,7 @@ public class ShortsResponseDto {
                 .isLiked(isLiked)
                 .isBookmarked(isBookmarked)
                 .description(shorts.getDescription())
-                .gymDifficulty(difficultyMapping.getGymDifficultyColor())
+                .gymDifficultyName(difficultyMapping.getGymDifficultyName())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
                 .isSoundEnabled(shorts.getIsSoundEnabled())
                 .build();
