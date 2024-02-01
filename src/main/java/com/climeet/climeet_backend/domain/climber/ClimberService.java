@@ -119,6 +119,7 @@ public class ClimberService {
             Manager manager = managerRepository.findByClimbingGym(optionalGym)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
             followRelationshipService.createFollowRelationship(manager, climber);
+            manager.updateFollwerCount();
 
         }
 
