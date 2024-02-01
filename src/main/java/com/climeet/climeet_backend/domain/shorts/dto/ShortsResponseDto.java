@@ -96,12 +96,14 @@ public class ShortsResponseDto {
     @AllArgsConstructor
     public static class ShortsProfileSimpleInfo{
         private Long followingUserId;
+        private String followingUserName;
         private String followingUserProfileUrl;
         private Boolean isUploadRecent;
 
         public static ShortsProfileSimpleInfo toDTO(User user, FollowRelationship followRelationship){
             return ShortsProfileSimpleInfo.builder()
                 .followingUserId(user.getId())
+                .followingUserName(user.getProfileName())
                 .followingUserProfileUrl(user.getProfileImageUrl())
                 .isUploadRecent(followRelationship.getIsUploadShortsRecent())
                 .build();
