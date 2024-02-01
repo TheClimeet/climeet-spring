@@ -1,8 +1,11 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.LayoutDetailResponse;
+import com.climeet.climeet_backend.domain.manager.Manager;
+import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ClimbingGymService {
 
     private final ClimbingGymRepository climbingGymRepository;
+    private final ManagerRepository managerRepository;
     private final S3Service s3Service;
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
@@ -82,4 +86,15 @@ public class ClimbingGymService {
 
         return LayoutDetailResponse.toDto(layoutImageUrl);
     }
+
+    public ClimbingGymDetailResponse getClimbingGymInfo(Long gymId) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Manager manager = managerRepository.findByClimbingGym(climbingGym)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
+        return ClimbingGymDetailResponse.toDto(climbingGym, manager);
+    }
+
 }

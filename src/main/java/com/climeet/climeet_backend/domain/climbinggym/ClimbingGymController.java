@@ -1,15 +1,19 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.LayoutDetailResponse;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,6 +51,13 @@ public class ClimbingGymController {
         @RequestPart Long gymId,
         @RequestPart MultipartFile layoutImage) {
         return ResponseEntity.ok(climbingGymService.changeLayoutImage(layoutImage, gymId));
+    }
+
+    @Operation(summary = "암장 프로필 정보 (상단) 불러오기")
+    @GetMapping("/{gymId}")
+    public ResponseEntity<ClimbingGymDetailResponse> getClimbingGymInfo(
+        @PathVariable Long gymId, @CurrentUser User user) {
+        return ResponseEntity.ok(climbingGymService.getClimbingGymInfo(gymId));
     }
 
 }
