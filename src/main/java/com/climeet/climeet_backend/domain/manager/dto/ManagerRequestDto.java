@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.manager.dto;
 
+import com.climeet.climeet_backend.domain.climbinggym.enums.ServiceBitmask;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class ManagerRequestDto {
         private String phoneNumber;
         private String email;
         private String backGroundImageUri;
-        private List<String> provideServiceList; //구현 후 처리 예정
+        private List<ServiceBitmask> provideServiceList;
         private String businessRegistrationImageUrl;
         private Boolean isAllowFollowNotification;
         private Boolean isAllowLikeNotification;

@@ -81,6 +81,10 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int serviceBitMask = 0;
 
+    public void updateServiceBitMask(int value){
+        this.serviceBitMask = value;
+    }
+
     public void setManager(Manager manager) {
         // 기존 Manager와의 관계를 해제
         if (this.manager != null) {
