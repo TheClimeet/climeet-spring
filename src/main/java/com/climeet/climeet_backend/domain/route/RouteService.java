@@ -36,8 +36,8 @@ public class RouteService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
-            manager.getClimbingGym(), createRouteRequest.getGymDifficulty());
+        DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficultyName(
+            manager.getClimbingGym(), createRouteRequest.getGymDifficultyName());
 
         Sector sector = sectorRepository.findById(createRouteRequest.getSectorId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));

@@ -16,7 +16,7 @@ public class RouteResponseDto {
         private Long sectorId;
         private String sectorName;
         private String climeetDifficultyName;
-        private int gymDifficulty;
+        private int difficulty;
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private String routeImageUrl;
@@ -26,8 +26,8 @@ public class RouteResponseDto {
                 .routeId(route.getId())
                 .sectorId(route.getSector().getId())
                 .sectorName(route.getSector().getSectorName())
-                .climeetDifficultyName(route.getDifficultyMapping().getClimeetDifficulty().getStringValue())
-                .gymDifficulty(route.getDifficultyMapping().getGymDifficulty())
+                .climeetDifficultyName(route.getDifficultyMapping().getClimeetDifficultyName())
+                .difficulty(route.getDifficultyMapping().getDifficulty())
                 .gymDifficultyName(route.getDifficultyMapping().getGymDifficultyName())
                 .gymDifficultyColor(route.getDifficultyMapping().getGymDifficultyColor())
                 .routeImageUrl(route.getRouteImageUrl())
