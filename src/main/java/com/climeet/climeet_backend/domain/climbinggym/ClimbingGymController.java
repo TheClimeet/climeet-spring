@@ -6,7 +6,9 @@ import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.LayoutDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
+import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
+import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -46,14 +48,15 @@ public class ClimbingGymController {
     }
 
     @Operation(summary = "암장 도면 이미지 수정")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     @PostMapping("/layout")
     public ResponseEntity<LayoutDetailResponse> changeLayoutImage(
-        @RequestPart Long gymId,
-        @RequestPart MultipartFile layoutImage) {
-        return ResponseEntity.ok(climbingGymService.changeLayoutImage(layoutImage, gymId));
+        @CurrentUser User user, @RequestPart MultipartFile layoutImage) {
+        return ResponseEntity.ok(climbingGymService.changeLayoutImage(layoutImage, user));
     }
 
     @Operation(summary = "암장 프로필 정보 (상단) 불러오기")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER})
     @GetMapping("/{gymId}")
     public ResponseEntity<ClimbingGymDetailResponse> getClimbingGymInfo(
         @PathVariable Long gymId, @CurrentUser User user) {
