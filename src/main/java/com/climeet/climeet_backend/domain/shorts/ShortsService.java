@@ -69,8 +69,8 @@ public class ShortsService {
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             .map(shorts -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
-                    shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getGymDifficulty());
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndClimeetDifficulty(
+                    shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getClimeetDifficulty());
 
                 return ShortsSimpleInfo.toDTO(
                     shorts.getId(),
@@ -94,8 +94,8 @@ public class ShortsService {
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             .map(shorts -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndGymDifficulty(
-                    shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getGymDifficulty());
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndClimeetDifficulty(
+                    shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getClimeetDifficulty());
 
                 return ShortsSimpleInfo.toDTO(
                     shorts.getId(),

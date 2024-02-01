@@ -117,7 +117,7 @@ public class RouteRecordService {
         }
 
         if (newIsComplete != null && newIsComplete != oldIsCompleted) {
-            int difficulty = routeRecord.getRoute().getDifficultyMapping().getGymDifficulty();
+            int difficulty = routeRecord.getRoute().getDifficultyMapping().getClimeetDifficulty();
             int oldAvgDifficulty = climbingRecord.getAvgDifficulty();
             int oldCount = climbingRecord.getTotalCompletedCount();
 
@@ -156,7 +156,7 @@ public class RouteRecordService {
 
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
-        int difficulty = routeRecord.getRoute().getDifficultyMapping().getGymDifficulty();
+        int difficulty = routeRecord.getRoute().getDifficultyMapping().getClimeetDifficulty();
 
         if(climbingRecord.getHighDifficulty() < difficulty){
             climbingRecord.setHighDifficulty(difficulty);

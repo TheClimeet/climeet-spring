@@ -116,7 +116,7 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
         }
 
-        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByGymDifficultyAsc(
+        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByClimeetDifficultyAsc(
             climbingGym);
         if (difficultyList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
@@ -160,12 +160,12 @@ public class RouteVersionService {
             boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
                     requestDto.getSectorIdList())
                 .anyMatch(sectorId -> sectorId == route.getSector().getId());
-            boolean gymDifficultyFilter =
-                requestDto.getGymDifficultyList().length == 0 || Arrays.stream(
-                    requestDto.getGymDifficultyList()).anyMatch(
-                    gymDifficulty -> gymDifficulty == route.getDifficultyMapping()
-                        .getGymDifficulty());
-            return floorFilter && sectorFilter && gymDifficultyFilter;
+            boolean climeetDifficultyFilter =
+                requestDto.getClimeetDifficultyList().length == 0 || Arrays.stream(
+                    requestDto.getClimeetDifficultyList()).anyMatch(
+                    climeetDifficulty -> climeetDifficulty == route.getDifficultyMapping()
+                        .getClimeetDifficulty());
+            return floorFilter && sectorFilter && climeetDifficultyFilter;
         }).toList();
 
         if (filteredRouteList.isEmpty()) {

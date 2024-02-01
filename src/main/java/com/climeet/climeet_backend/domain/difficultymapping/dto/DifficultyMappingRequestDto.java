@@ -18,7 +18,7 @@ public class DifficultyMappingRequestDto {
     @NoArgsConstructor
     public static class DifficultyMappingElement {
 
-        private String climeetDifficulty;
+        private String climeetDifficultyName;
         private String gymDifficultyName;
         private String gymDifficultyColor;
 

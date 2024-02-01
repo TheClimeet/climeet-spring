@@ -16,10 +16,10 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     List<RouteRecord> findAllByUser(@Param("user") User user);
 
     @Query("SELECT " +
-        "   rr.route.difficultyMapping.gymDifficulty as difficulty, COUNT(*) as count " +
+        "   rr.route.difficultyMapping.climeetDifficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.user = :user " +
-        "GROUP BY rr.route.difficultyMapping.gymDifficulty")
+        "GROUP BY rr.route.difficultyMapping.climeetDifficulty")
     List<Map<Long,Long>> getRouteRecordDifficultyBetween(
         @Param("user") User user,
         @Param("startDate") LocalDate startDate,
@@ -27,19 +27,19 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     );
 
     @Query("SELECT " +
-        "   rr.route.difficultyMapping.gymDifficulty as difficulty, COUNT(*) as count " +
+        "   rr.route.difficultyMapping.climeetDifficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.user = :user " +
-        "GROUP BY rr.route.difficultyMapping.gymDifficulty")
+        "GROUP BY rr.route.difficultyMapping.climeetDifficulty")
     List<Map<Long,Long>> findAllRouteRecordDifficultyAndUser(
         @Param("user") User user
     );
 
     @Query("SELECT " +
-        "   rr.route.difficultyMapping.gymDifficulty as difficulty, COUNT(*) as count " +
+        "   rr.route.difficultyMapping.climeetDifficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym " +
-        "GROUP BY rr.route.difficultyMapping.gymDifficulty")
+        "GROUP BY rr.route.difficultyMapping.climeetDifficulty")
     List<Map<Long,Long>> getRouteRecordDifficultyBetweenDaysAndGym(
         @Param("gym") ClimbingGym gym,
         @Param("startDate") LocalDate startDate,

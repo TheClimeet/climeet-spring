@@ -23,7 +23,7 @@ public class RouteVersionRequestDto {
 
         private int[] floorList = null;
         private Long[] sectorIdList = null;
-        private int[] gymDifficultyList = null;
+        private int[] climeetDifficultyList = null;
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate timePoint;
@@ -31,7 +31,7 @@ public class RouteVersionRequestDto {
         public GetFilteredRouteVersionRequest() {
             this.floorList = new int[0];
             this.sectorIdList = new Long[0];
-            this.gymDifficultyList = new int[0];
+            this.climeetDifficultyList = new int[0];
         }
     }
 
