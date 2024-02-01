@@ -4,12 +4,15 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDetailInfo;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsProfileSimpleInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
@@ -39,6 +42,7 @@ public class ShortsService {
     private final ShortsBookmarkRepository shortsBookmarkRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
+    private final FollowRelationshipRepository followRelationshipRepository;
 
     @Transactional
     public void uploadShorts(User user, MultipartFile video, MultipartFile thumbnailImage,
@@ -130,5 +134,18 @@ public class ShortsService {
 
         //TODO 조회수 증가 검증 처리 추가
         shorts.updateViewCountUp();
+    }
+
+    public List<ShortsProfileSimpleInfo> getShortsProfileList(User user){
+        Long currentUserId = user.getId();
+        List<FollowRelationship> followingUserList = followRelationshipRepository.findByFollowerId(currentUserId);
+        List<ShortsProfileSimpleInfo> shortsProfileSimpleInfos = followingUserList.stream()
+            .map(followRelationship -> {
+                return ShortsProfileSimpleInfo.toDTO(followRelationship.getFollowing(), followRelationship);
+            })
+            .toList();
+
+        return shortsProfileSimpleInfos;
+
     }
 }

@@ -82,7 +82,12 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_USER(HttpStatus.CONFLICT, "USER_001", "존재하지 않는 유저입니다."),
 
     //숏츠 댓글 관련
-    _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001", "존재하지 않는 쇼츠 댓글입니다.");
+    _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001", "존재하지 않는 쇼츠 댓글입니다."),
+
+    //팔로우 관련
+    _EMPTY_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_001", "존재하지 않는 팔로우 관계입니다")
+
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;

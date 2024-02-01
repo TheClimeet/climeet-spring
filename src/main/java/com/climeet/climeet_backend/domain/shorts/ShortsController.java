@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.shorts;
 
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsProfileSimpleInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
@@ -67,4 +68,12 @@ public class ShortsController {
         shortsService.updateShortsViewCount(user, shortsId);
         return ResponseEntity.ok("조회수 증가에 성공했습니다.");
     }
-}
+
+    @GetMapping("/shorts/profile")
+    @Operation(summary = "숏츠 프로필 바 조회", description = "팔로우 하고있는 암장, 프로필 리스트 조회/최근에 영상을 올렸을 시 true")
+    public ResponseEntity<List<ShortsProfileSimpleInfo>> getShortsProfileList(@CurrentUser User user){
+        List<ShortsProfileSimpleInfo> shortsProfileSimpleInfoList = shortsService.getShortsProfileList(user);
+        return ResponseEntity.ok(shortsProfileSimpleInfoList);
+
+    }
+ }
