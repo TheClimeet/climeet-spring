@@ -24,7 +24,7 @@ public class ShortsResponseDto {
         private String gymName;
         private String gymDifficultyName;
         private String gymDifficultyColor;
-        private String climeetDifficulty;
+        private String climeetDifficultyName;
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
@@ -35,7 +35,7 @@ public class ShortsResponseDto {
                 .gymName(gymName)
                 .gymDifficultyName(difficultyMapping.getGymDifficultyName())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
-                .climeetDifficulty(difficultyMapping.getClimeetDifficultyName())
+                .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())
                 .shortsDetailInfo(shortsDetailInfo)
                 .build();
         }

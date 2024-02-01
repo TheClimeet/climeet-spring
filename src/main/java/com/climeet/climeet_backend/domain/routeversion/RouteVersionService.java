@@ -160,12 +160,12 @@ public class RouteVersionService {
             boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
                     requestDto.getSectorIdList())
                 .anyMatch(sectorId -> sectorId == route.getSector().getId());
-            boolean climeetDifficultyFilter =
-                requestDto.getClimeetDifficultyList().length == 0 || Arrays.stream(
-                    requestDto.getClimeetDifficultyList()).anyMatch(
-                    climeetDifficulty -> climeetDifficulty == route.getDifficultyMapping()
-                        .getClimeetDifficulty());
-            return floorFilter && sectorFilter && climeetDifficultyFilter;
+            boolean difficultyFilter =
+                requestDto.getDifficultyList().length == 0 || Arrays.stream(
+                    requestDto.getDifficultyList()).anyMatch(
+                    difficulty -> difficulty == route.getDifficultyMapping()
+                        .getDifficulty());
+            return floorFilter && sectorFilter && difficultyFilter;
         }).toList();
 
         if (filteredRouteList.isEmpty()) {

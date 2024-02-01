@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DifficultyMappingRepository extends JpaRepository<DifficultyMapping, Long> {
 
-    DifficultyMapping findByClimbingGymAndClimeetDifficulty(ClimbingGym climbingGym, int climeetDifficulty);
+    DifficultyMapping findByClimbingGymAndDifficulty(ClimbingGym climbingGym, int difficulty);
 
     DifficultyMapping findByClimbingGymAndGymDifficultyName(ClimbingGym climbingGym, String gymDifficultyName);
 
-    List<DifficultyMapping> findByClimbingGymOrderByClimeetDifficultyAsc(ClimbingGym climbingGym);
+    List<DifficultyMapping> findByClimbingGymOrderByDifficultyAsc(ClimbingGym climbingGym);
 
 }

@@ -35,7 +35,7 @@ public class DifficultyMapping extends BaseTimeEntity {
     private String climeetDifficultyName;
 
     @NotNull
-    private int climeetDifficulty;
+    private int difficulty;
 
     @NotNull
     @Column(length = 10)
@@ -46,11 +46,11 @@ public class DifficultyMapping extends BaseTimeEntity {
     private String gymDifficultyColor;
 
     public static DifficultyMapping toEntity(DifficultyMappingElement requestDto,
-        ClimbingGym climbingGym, String climeetDifficultyName, int climeetDifficulty) {
+        ClimbingGym climbingGym, String climeetDifficultyName, int difficulty) {
         return DifficultyMapping.builder()
             .climbingGym(climbingGym)
             .climeetDifficultyName(climeetDifficultyName)
-            .climeetDifficulty(climeetDifficulty)
+            .difficulty(difficulty)
             .gymDifficultyName(requestDto.getGymDifficultyName())
             .gymDifficultyColor(requestDto.getGymDifficultyColor())
             .build();

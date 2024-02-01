@@ -32,9 +32,9 @@ public enum ClimeetDifficulty {
         return intValue;
     }
 
-    public static ClimeetDifficulty findByString(String stringValue) {
+    public static ClimeetDifficulty findByString(String climeetDifficultyName) {
         for (ClimeetDifficulty difficulty : ClimeetDifficulty.values()) {
-            if (difficulty.getStringValue().equals(stringValue)) {
+            if (difficulty.getStringValue().equals(climeetDifficultyName)) {
                 return difficulty;
             }
         }

@@ -49,7 +49,7 @@ public class DifficultyMappingService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByClimeetDifficultyAsc(
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
             climbingGym);
 
         if (difficultyMappingList.isEmpty()) {
