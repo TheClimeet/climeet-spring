@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.LayoutDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
@@ -67,7 +68,7 @@ public class ClimbingGymController {
 
     @Operation(summary = "암장 크롤링 정보 입력")
     @PostMapping("/info")
-    public ResponseEntity<ClimbingGymDetailResponse> updateClimbingGymInfo(
+    public ResponseEntity<ClimbingGymInfoResponse> updateClimbingGymInfo(
         @RequestBody UpdateClimbingGymInfoRequest updateClimbingGymInfoRequest) {
         return ResponseEntity.ok(climbingGymService.updateClimbingGymInfo(updateClimbingGymInfoRequest));
     }

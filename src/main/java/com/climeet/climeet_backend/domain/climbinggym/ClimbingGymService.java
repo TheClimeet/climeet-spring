@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.LayoutDetailResponse;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -108,7 +109,7 @@ public class ClimbingGymService {
     }
 
 
-    public ClimbingGymDetailResponse updateClimbingGymInfo(
+    public ClimbingGymInfoResponse updateClimbingGymInfo(
 
 
         UpdateClimbingGymInfoRequest updateClimbingGymInfoRequest) {
@@ -131,7 +132,7 @@ public class ClimbingGymService {
             String businessHours = jsonNode.get("businessHours").toString();
             climbingGym.updateGymInfo(tel, address, businessHours);
             Map<String, List<String>> businessHoursMap = objectMapper.readValue(businessHours, new TypeReference<Map<String, List<String>>>() {});
-            return ClimbingGymDetailResponse.toDto(climbingGymRepository.save(climbingGym), businessHoursMap);
+            return ClimbingGymInfoResponse.toDto(climbingGymRepository.save(climbingGym), businessHoursMap);
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
         }

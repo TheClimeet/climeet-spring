@@ -106,16 +106,16 @@ public class ClimbingGymResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ClimbingGymDetailResponse {
+    public static class ClimbingGymInfoResponse {
 
         private String name;
         private String address;
         private String tel;
         private Map<String, List<String>> businessHours;
 
-        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym,
+        public static ClimbingGymInfoResponse toDto(ClimbingGym climbingGym,
             Map<String, List<String>> businessHours) {
-            return ClimbingGymDetailResponse.builder()
+            return ClimbingGymInfoResponse.builder()
                 .name(climbingGym.getName())
                 .address(climbingGym.getAddress())
                 .tel(climbingGym.getTel())
