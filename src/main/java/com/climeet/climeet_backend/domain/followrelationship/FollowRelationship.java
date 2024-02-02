@@ -34,6 +34,8 @@ public class FollowRelationship extends BaseTimeEntity {
     @JoinColumn(name = "following_id")
     private User following;
 
+    private Boolean isUploadShortsRecent = false;
+
     public static FollowRelationship toEntity(User follower, User following){
         return FollowRelationship.builder()
             .follower(follower)
