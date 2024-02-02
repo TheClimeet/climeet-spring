@@ -32,6 +32,7 @@ public class ReviewService {
     private static final float MIN_RATING = 0;
     private static final float MAX_RATING = 5;
     private static final float STEP_RATING = 0.5f;
+    private static final int FIRST_PAGE = 0;
 
 
     private static Boolean IsInvalidRating(Float rating) {
@@ -90,7 +91,7 @@ public class ReviewService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         ReviewSummaryResponse reviewSummaryResponse = null;
-        if (page == 0) {
+        if (page == FIRST_PAGE) {
             // 사용자 리뷰가 있으면 가져오고, 없으면 null을 myReview에 넣음
             Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimber(
                 climbingGym, climber);
