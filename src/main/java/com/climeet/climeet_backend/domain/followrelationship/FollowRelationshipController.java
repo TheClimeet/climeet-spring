@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +21,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class FollowRelationshipController {
     private final FollowRelationshipService followRelationshipService;
     private final UserRepository userRepository;
+    private final FollowRelationshipRepository followRelationshipRepository;
 
     @PostMapping("/follow/{userId}")
-    @Operation(summary = "유저 팔로우 API")
-    @SwaggerApiError({ErrorStatus._EMPTY_USER})
-    public ResponseEntity<String> followUser(@RequestParam Long followerUserID, @CurrentUser User currentUser){
-        User followerUser = userRepository.findById(followerUserID)
+    @Operation(summary = "유저 팔로우")
+    @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
+    public ResponseEntity<String> followUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
+        User followingUser = userRepository.findById(followingUserId)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
-        followRelationshipService.createFollowRelationship(currentUser, followerUser);
+        if(followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), followingUserId).isPresent()) {
+            throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
+        }
+        followRelationshipService.createFollowRelationship(currentUser, followingUser);
         return ResponseEntity.ok("팔로우 완료");
+    }
+
+    @DeleteMapping("/unfollow/{userId}")
+    @Operation(summary = "유저 팔로우 취소")
+    @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
+    public ResponseEntity<String> unfollowUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
+        userRepository.findById(followingUserId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
+        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), followingUserId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
+        followRelationshipService.deleteFollowRelationship(followRelationship);
+        return ResponseEntity.ok("팔로우 취소 완료");
     }
 
 

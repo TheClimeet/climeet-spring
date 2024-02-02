@@ -11,9 +11,13 @@ import org.springframework.stereotype.Service;
 public class FollowRelationshipService {
 
     private final FollowRelationshipRepository followRelationshipRepository;
-    public FollowRelationship createFollowRelationship(User follower, User followee) {
+    public void createFollowRelationship(User follower, User followee) {
         FollowRelationship followRelationship = FollowRelationship.toEntity(follower, followee);
-        return followRelationshipRepository.save(followRelationship);
+        followRelationshipRepository.save(followRelationship);
+    }
+
+    public void deleteFollowRelationship(FollowRelationship followRelationship){
+        followRelationshipRepository.deleteById(followRelationship.getId());
     }
 
 }
