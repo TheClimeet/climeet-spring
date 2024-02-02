@@ -8,12 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ManagerRepository extends JpaRepository<Manager, Long> {
 
-    //Optional<Manager> findByName(String gymName);
     Optional<Manager> findByLoginId(String loginId);
     Optional<Manager> findByClimbingGym(ClimbingGym climbingGym);
 
     boolean existsByClimbingGym(ClimbingGym gym);
 
-    Optional<Manager> findByLoginIdAndPassword(String loginId, String password);
 
 }

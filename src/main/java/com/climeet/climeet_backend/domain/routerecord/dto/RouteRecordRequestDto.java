@@ -10,7 +10,7 @@ public class RouteRecordRequestDto {
     // TODO: 2024/01/07 ClimbingRecord의 avgDifficulty 어떻게 구현 할 지 고민
     @Getter
     @NoArgsConstructor
-    public static class CreateRouteRecordDto {
+    public static class CreateRouteRecord {
 
         @Schema(example = "1", description = "루트 Id")
         private Long routeId;
@@ -24,7 +24,7 @@ public class RouteRecordRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class UpdateRouteRecordDto {
+    public static class UpdateRouteRecord {
 
         @Schema(example = "1", description = "루트 Id")
         private Long routeId;

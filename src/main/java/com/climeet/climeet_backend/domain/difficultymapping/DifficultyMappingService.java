@@ -33,10 +33,12 @@ public class DifficultyMappingService {
         return createDifficultyMappingRequest.getElements().stream()
             .map((element) -> {
                 ClimeetDifficulty climeetDifficulty = ClimeetDifficulty.findByString(
-                    element.getClimeetDifficulty());
+                    element.getClimeetDifficultyName());
+
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.save(
                     DifficultyMapping.toEntity(element, manager.getClimbingGym(),
-                        climeetDifficulty, climeetDifficulty.getIntValue()));
+                        climeetDifficulty.getStringValue(),
+                        climeetDifficulty.getIntValue()));
                 return difficultyMapping.getId();
             })
             .toList();
@@ -47,7 +49,7 @@ public class DifficultyMappingService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByGymDifficultyAsc(
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
             climbingGym);
 
         if (difficultyMappingList.isEmpty()) {

@@ -70,4 +70,8 @@ public class Manager extends User {
     public boolean checkPassword(String plainPassword, PasswordEncoder passwordEncoder){
         return passwordEncoder.matches(plainPassword, this.password);
     }
+
+    public String getPayload(){
+        return this.getId()+"+manager";
+    }
 }

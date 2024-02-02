@@ -12,7 +12,7 @@ public class BestTimeClimberResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class BestTimeClimberSimpleResponse{
+    public static class BestTimeClimberDetailInfo{
 
         private int ranking;
 
@@ -22,9 +22,9 @@ public class BestTimeClimberResponseDto {
 
         private Long thisWeekTotalClimbingTime;
 
-        public static BestTimeClimberSimpleResponse toDTO(
+        public static BestTimeClimberDetailInfo toDTO(
             BestTimeClimber bestTimeClimber){
-            return BestTimeClimberSimpleResponse.builder()
+            return BestTimeClimberDetailInfo.builder()
                 .ranking(bestTimeClimber.getRanking())
                 .profileImageUrl(bestTimeClimber.getProfileImageUrl())
                 .thisWeekTotalClimbingTime(bestTimeClimber.getThisWeekTotalClimbingTime())

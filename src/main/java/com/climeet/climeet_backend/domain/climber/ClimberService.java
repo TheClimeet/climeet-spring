@@ -3,7 +3,6 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
-import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberTokenRefreshResponse;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
@@ -21,18 +20,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
-import reactor.core.publisher.Mono;
+
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +71,7 @@ public class ClimberService {
     public Climber login(Climber climber) {
         try {
             String accessToken = jwtTokenProvider.createAccessToken(
-                String.valueOf(climber.getId()));
+                climber.getPayload());
             String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
 
             climber.updateToken(accessToken, refreshToken);
@@ -104,7 +98,7 @@ public class ClimberService {
             .profileImageUrl(profileImg).build();
         climberRepository.save(climber);
 
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(climber.getId()));
+        String accessToken = jwtTokenProvider.createAccessToken(climber.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
 
         //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
@@ -125,6 +119,7 @@ public class ClimberService {
             Manager manager = managerRepository.findByClimbingGym(optionalGym)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
             followRelationshipService.createFollowRelationship(manager, climber);
+            manager.updateFollwerCount();
 
         }
 

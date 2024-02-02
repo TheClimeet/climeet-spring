@@ -1,7 +1,7 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
 
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.UpdateRouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "RouteRecords", description = "루트 운동기록 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/route-record")
+@RequestMapping("api/route-records")
 public class RouteRecordController {
 
     private final RouteRecordService routeRecordService;
@@ -34,8 +34,8 @@ public class RouteRecordController {
     @Operation(summary = "루트 기록 전체 조회")
     @GetMapping
     @SwaggerApiError({ErrorStatus._EMPTY_ROUTE_RECORD})
-    public ResponseEntity<List<RouteRecordSimpleInfo>> getRouteRecords(@CurrentUser User user) {
-        return ResponseEntity.ok(routeRecordService.getRouteRecords(user));
+    public ResponseEntity<List<RouteRecordSimpleInfo>> getRouteRecordList(@CurrentUser User user) {
+        return ResponseEntity.ok(routeRecordService.getRouteRecordList(user));
     }
 
     @Operation(summary = "루트 기록 id 조회")
@@ -54,9 +54,9 @@ public class RouteRecordController {
     public ResponseEntity<RouteRecordSimpleInfo> updateRouteRecord(
         @CurrentUser User user,
         @PathVariable Long id,
-        @RequestBody UpdateRouteRecordDto updateRouteRecordDto) {
+        @RequestBody UpdateRouteRecord updateRouteRecord) {
         return ResponseEntity.ok(
-            routeRecordService.updateRouteRecord(user, id, updateRouteRecordDto));
+            routeRecordService.updateRouteRecord(user, id, updateRouteRecord));
     }
 
     @Operation(summary = "RouteRecord 삭제")

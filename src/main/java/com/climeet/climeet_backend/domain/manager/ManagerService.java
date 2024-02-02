@@ -8,11 +8,11 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
-import java.util.Optional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,18 +35,19 @@ public class ManagerService {
         String loginId = createAccessTokenRequest.getLoginId();
         String password = createAccessTokenRequest.getPassword();
         Manager IdManager = managerRepository.findByLoginId(loginId)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD));
+            .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD));
 
         if(!IdManager.checkPassword(password, passwordEncoder)){
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(IdManager.getId()));
+        String accessToken = jwtTokenProvider.createAccessToken(IdManager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);
 
         return new ManagerSimpleInfo(IdManager);
 
     }
+
     @Transactional
     public boolean checkManagerRegistration(Long gymId){
         ClimbingGym gym = climbingGymRepository.findById(gymId)
@@ -57,15 +58,18 @@ public class ManagerService {
 
 
     @Transactional
-    public ManagerSimpleInfo signUp(@RequestBody CreateManagerRequest createManagerRequest){
-       ClimbingGym gym = climbingGymRepository.findById(createManagerRequest.getGymId())
-           .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-
-       //todo : 관리자 중복 매핑 예외 처리
+    public ManagerSimpleInfo signUp(@RequestBody CreateManagerRequest createManagerRequest) {
+        ClimbingGym gym = climbingGymRepository.findById(createManagerRequest.getGymId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         if(managerRepository.findByLoginId(createManagerRequest.getLoginId()).isPresent()){
             throw new GeneralException(ErrorStatus._DUPLICATE_LOGINID);
         }
+
+        if(checkManagerRegistration(createManagerRequest.getGymId())){
+            throw new GeneralException(ErrorStatus._DUPLICATE_GYM_MANAGER);
+        }
+
 
         Manager manager = Manager.toEntity(createManagerRequest, gym);
         manager.hashPassword(passwordEncoder);
@@ -75,8 +79,11 @@ public class ManagerService {
         saveClimbingGymBackgroundImage(createManagerRequest, manager.getClimbingGym());
         //관리자 등록
         manager.updateClimbingGym(gym);
-        manager.updateNotification(createManagerRequest.getIsAllowFollowNotification(), createManagerRequest.getIsAllowLikeNotification(), createManagerRequest.getIsAllowCommentNotification(), createManagerRequest.getIsAllowAdNotification());
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(manager.getId()));
+        manager.updateNotification(createManagerRequest.getIsAllowFollowNotification(),
+            createManagerRequest.getIsAllowLikeNotification(),
+            createManagerRequest.getIsAllowCommentNotification(),
+            createManagerRequest.getIsAllowAdNotification());
+        String accessToken = jwtTokenProvider.createAccessToken(manager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(manager.getId());
         manager.updateToken(accessToken, refreshToken);
 

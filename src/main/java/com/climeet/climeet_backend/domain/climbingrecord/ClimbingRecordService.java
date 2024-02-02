@@ -2,11 +2,11 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecordDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecordDto;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestClearUserSimple;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestLevelUserSimple;
-import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestTimeUserSimple;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecord;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.CreateClimbingRecord;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestClearUserSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestLevelUserSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.BestTimeUserSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
@@ -15,7 +15,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.routerecord.RouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
-import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecordDto;
+import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordRequestDto.CreateRouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
@@ -23,7 +23,6 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,12 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
 
 @RequiredArgsConstructor
 @Service
@@ -62,7 +57,7 @@ public class ClimbingRecordService {
      */
     @Transactional
     public ResponseEntity<String> createClimbingRecord(User user,
-        CreateClimbingRecordDto requestDto) {
+        CreateClimbingRecord requestDto) {
         ClimbingGym climbingGym = gymRepository.findById(requestDto.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
 
@@ -74,7 +69,7 @@ public class ClimbingRecordService {
         Long totalTime = requestDto.getTime().toNanoOfDay() / 1000000000;
         user.thisWeekTotalClimbingTimeUp(totalTime);
 
-        List<CreateRouteRecordDto> routeRecords = requestDto.getRouteRecordRequestDtoList();
+        List<CreateRouteRecord> routeRecords = requestDto.getRouteRecordRequestDtoList();
         // 루트기록 리퀘스트 돌면서 루트 리퀘스트 저장
 
         routeRecords.forEach(
@@ -87,7 +82,7 @@ public class ClimbingRecordService {
     /**
      * 클라이밍 간편기록 전체 조회 - ID 상관없이
      */
-    public List<ClimbingRecordSimpleInfo> getClimbingRecords() {
+    public List<ClimbingRecordSimpleInfo> getClimbingRecordList() {
         List<ClimbingRecord> recordList = climbingRecordRepository.findAll();
         if (recordList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
@@ -119,7 +114,7 @@ public class ClimbingRecordService {
     /**
      * 클라이밍 간편기록 날짜범위조회
      */
-    public List<ClimbingRecordSimpleInfo> getClimbingRecordsBetweenLocalDates(User user,
+    public List<ClimbingRecordSimpleInfo> getClimbingRecordListBetweenDates(User user,
         LocalDate startDate,
         LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
@@ -144,7 +139,7 @@ public class ClimbingRecordService {
      */
     @Transactional
     public ClimbingRecordSimpleInfo updateClimbingRecord(User user, Long id,
-        UpdateClimbingRecordDto requestDto) {
+        UpdateClimbingRecord requestDto) {
 
         ClimbingRecord climbingRecord = climbingRecordRepository.findById(id)
             .orElseThrow(() -> new GeneralException(ErrorStatus._CLIMBING_RECORD_NOT_FOUND));
@@ -225,7 +220,7 @@ public class ClimbingRecordService {
         );
     }
 
-    public ClimbingRecordStatisticsSimpleInfo findClimbingRecordStatisticsAndGym(Long gymId) {
+    public ClimbingRecordStatisticsSimpleInfo getGymStatisticsWeekly(Long gymId) {
 
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
 
@@ -247,7 +242,7 @@ public class ClimbingRecordService {
         );
     }
 
-    public List<BestClearUserSimple> findBestClearUserRanking(Long climbingGymId) {
+    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -257,18 +252,18 @@ public class ClimbingRecordService {
             (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
-        List<BestClearUserSimple> ranking = bestUserRanking.stream()
+        List<BestClearUserSimpleInfo> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
                 Long totalCount = (Long) userRankMap[RANKING_CONDITION];
-                return BestClearUserSimple.toDTO(user, rank[0]++, totalCount);
+                return BestClearUserSimpleInfo.toDTO(user, rank[0]++, totalCount);
             })
             .collect(Collectors.toList());
 
         return ranking;
     }
 
-    public List<BestTimeUserSimple> findBestTimeUserRanking(Long climbingGymId) {
+    public List<BestTimeUserSimpleInfo> getClimberRankingListOrderTimeByGym(Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -278,18 +273,18 @@ public class ClimbingRecordService {
             (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
-        List<BestTimeUserSimple> ranking = bestUserRanking.stream()
+        List<BestTimeUserSimpleInfo> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
                 LocalTime totalTime = convertDoubleToTime((Double) userRankMap[RANKING_CONDITION]);
-                return BestTimeUserSimple.toDTO(user, rank[0]++, totalTime);
+                return BestTimeUserSimpleInfo.toDTO(user, rank[0]++, totalTime);
             })
             .collect(Collectors.toList());
 
         return ranking;
     }
 
-    public List<BestLevelUserSimple> findBestLevelUserRanking(Long climbingGymId) {
+    public List<BestLevelUserSimpleInfo> getClimberRankingListOrderLevelByGym(Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -299,11 +294,11 @@ public class ClimbingRecordService {
             (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
         int[] rank = {1};
-        List<BestLevelUserSimple> ranking = bestUserRanking.stream()
+        List<BestLevelUserSimpleInfo> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
                 int highDifficulty = (int) userRankMap[RANKING_CONDITION];
-                return BestLevelUserSimple.toDTO(user, rank[0]++, highDifficulty);
+                return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty);
             })
             .collect(Collectors.toList());
 
@@ -342,7 +337,7 @@ public class ClimbingRecordService {
     }
 
     // TODO: 2024/01/29 기록 생성할 때 유저의 누적 통계도 바뀌어야 한다능..
-    public ClimbingRecordUserStatisticsSimpleInfo findClimberStatistics(Long userId) {
+    public ClimbingRecordUserStatisticsSimpleInfo getUserStatistics(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_MEMBER));
 
