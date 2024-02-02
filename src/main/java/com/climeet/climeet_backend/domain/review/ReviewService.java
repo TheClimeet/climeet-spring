@@ -5,8 +5,9 @@ import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.review.dto.ReviewRequestDto.CreateReviewRequest;
+import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewDetailListResponse;
 import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewDetailResponse;
-import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewSummaryDetailResponse;
+import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewSummaryResponse;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -74,30 +75,7 @@ public class ReviewService {
         reviewRepository.save(Review.toEntity(createReviewRequest, climbingGym, climber));
     }
 
-    public ReviewSummaryDetailResponse getReviewSummary(Long gymId, User user) {
-        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-
-        // 관리자가 등록된 암장인지 확인
-        if (climbingGym.getManager() == null) {
-            throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
-        }
-
-        Climber climber = climberRepository.findById(user.getId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
-
-        // 사용자 리뷰가 있으면 가져오고, 없으면 null을 myReview에 넣음
-        Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimber(
-            climbingGym, climber);
-        ReviewDetailResponse myReview = null;
-        if (optionalReview.isPresent()) {
-            myReview = ReviewDetailResponse.toDTO(optionalReview.get());
-        }
-
-        return ReviewSummaryDetailResponse.toDTO(climbingGym, myReview);
-    }
-
-    public PageResponseDto<List<ReviewDetailResponse>> getReviewList(Long gymId, User user,
+    public PageResponseDto<ReviewDetailListResponse> getReviewList(Long gymId, User user,
         int page, int size) {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
@@ -111,6 +89,19 @@ public class ReviewService {
         Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
+        ReviewSummaryResponse reviewSummaryResponse = null;
+        if (page == 0) {
+            // 사용자 리뷰가 있으면 가져오고, 없으면 null을 myReview에 넣음
+            Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimber(
+                climbingGym, climber);
+            ReviewDetailResponse myReview = null;
+            if (optionalReview.isPresent()) {
+                myReview = ReviewDetailResponse.toDTO(optionalReview.get());
+            }
+
+            reviewSummaryResponse = ReviewSummaryResponse.toDTO(climbingGym, myReview);
+        }
+
         Pageable pageable = PageRequest.of(page, size);
 
         Slice<Review> reviewSlice = reviewRepository.findByClimbingGymAndClimberIsNotOrderByUpdatedAtDesc(
@@ -121,8 +112,11 @@ public class ReviewService {
             .map(review -> ReviewDetailResponse.toDTO(review))
             .toList();
 
+        ReviewDetailListResponse reviewDetailListResponse = ReviewDetailListResponse.toDto(
+            reviewSummaryResponse, reviewList);
+
         return new PageResponseDto<>(pageable.getPageNumber(), reviewSlice.hasNext(),
-            reviewList);
+            reviewDetailListResponse);
     }
 
 

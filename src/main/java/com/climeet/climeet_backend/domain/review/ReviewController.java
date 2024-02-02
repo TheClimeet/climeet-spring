@@ -1,8 +1,7 @@
 package com.climeet.climeet_backend.domain.review;
 
 import com.climeet.climeet_backend.domain.review.dto.ReviewRequestDto.CreateReviewRequest;
-import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewDetailResponse;
-import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewSummaryDetailResponse;
+import com.climeet.climeet_backend.domain.review.dto.ReviewResponseDto.ReviewDetailListResponse;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
@@ -10,7 +9,6 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,20 +39,11 @@ public class ReviewController {
         return ResponseEntity.ok("리뷰를 추가했습니다.");
     }
 
-    @Operation(summary = "특정 암장 리뷰 요약 조회(평균 별점, 리뷰 개수, 본인 리뷰")
-    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER_GYM,
-        ErrorStatus._EMPTY_MEMBER})
-    @GetMapping("/{gymId}/review/summary")
-    public ResponseEntity<ReviewSummaryDetailResponse> getReviewSummary(
-        @PathVariable Long gymId, @CurrentUser User user) {
-        return ResponseEntity.ok(reviewService.getReviewSummary(gymId, user));
-    }
-
     @Operation(summary = "특정 암장 리뷰 목록 조회")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER_GYM,
         ErrorStatus._EMPTY_MEMBER})
     @GetMapping("/{gymId}/review")
-    public ResponseEntity<PageResponseDto<List<ReviewDetailResponse>>> getReviewList(
+    public ResponseEntity<PageResponseDto<ReviewDetailListResponse>> getReviewList(
         @PathVariable Long gymId, @CurrentUser User user, @RequestParam int page,
         @RequestParam int size) {
         return ResponseEntity.ok(reviewService.getReviewList(gymId, user, page, size));
