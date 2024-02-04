@@ -19,14 +19,15 @@ import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDet
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class RouteVersionService {
     private final SectorRepository sectorRepository;
     private final ManagerRepository managerRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
+    private final S3Service s3Service;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
@@ -50,7 +52,8 @@ public class RouteVersionService {
         return routeVersionList.stream().map(routeVersion -> routeVersion.getTimePoint()).toList();
     }
 
-    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user) {
+    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user,
+        MultipartFile layoutImage) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
@@ -77,17 +80,32 @@ public class RouteVersionService {
         String sectorIdListString = RouteVersionConverter.convertListToString(
             createRouteVersionRequest.getSectorIdList());
 
+        // 이미지 url이나 이미지 파일이 들어오지 않았을 때 예외처리
+        if (layoutImage == null && createRouteVersionRequest.getLayoutImageUrl() == null) {
+            throw new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE);
+        }
+
+        String layoutImageUrl;
+        // 이미지 파일이 들어왔으면 s3에 업로드 후 사용
+        if (layoutImage != null) {
+            layoutImageUrl = s3Service.uploadFile(layoutImage).getImgUrl();
+        }
+        // 이미지 파일이 안들어왔으면 기존 url 그대로 사용
+        else {
+            layoutImageUrl = createRouteVersionRequest.getLayoutImageUrl();
+        }
+
         routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
-            createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString));
+            createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString,
+            layoutImageUrl));
 
     }
-
 
     public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
                 climbingGym, timePoint)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
@@ -96,7 +114,7 @@ public class RouteVersionService {
         if (routeIdList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
-        
+
         routeIdList = routeIdList.stream().sorted(Collections.reverseOrder()).toList();
         routeIdList = routeIdList.subList(0, Math.min(routeIdList.size(), 10));
 
@@ -130,7 +148,7 @@ public class RouteVersionService {
             .map(DifficultyMappingDetailResponse::toDto).toList();
 
         return RouteVersionDetailResponse.toDto(climbingGym, sectorDetailResponses,
-            routeListResponse, difficultyMappingDetailResponses);
+            routeListResponse, difficultyMappingDetailResponses, routeVersion);
     }
 
     public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
@@ -138,7 +156,7 @@ public class RouteVersionService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
                 climbingGym, requestDto.getTimePoint())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 

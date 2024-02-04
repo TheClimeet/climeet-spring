@@ -65,21 +65,6 @@ public class ClimbingGymResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LayoutDetailResponse {
-
-        private String layoutImageUrl;
-
-        public static LayoutDetailResponse toDto(String layoutImageUrl) {
-            return LayoutDetailResponse.builder()
-                .layoutImageUrl(layoutImageUrl)
-                .build();
-        }
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ClimbingGymDetailResponse {
         private String gymProfileImageUrl;
         private String managerProfileImageUrl;

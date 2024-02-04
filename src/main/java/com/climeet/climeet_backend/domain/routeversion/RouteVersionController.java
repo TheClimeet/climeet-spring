@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "RouteVersion", description = "암장 루트 버전 API")
 @RestController
@@ -45,8 +47,9 @@ public class RouteVersionController {
         ErrorStatus._MISMATCH_ROUTE_IDS, ErrorStatus._MISMATCH_SECTOR_IDS})
     @PostMapping("/version")
     public ResponseEntity<String> createRouteVersion(
-        @RequestBody CreateRouteVersionRequest createRouteVersionRequest, @CurrentUser User user) {
-        routeVersionService.createRouteVersion(createRouteVersionRequest, user);
+        @RequestPart(value = "request") CreateRouteVersionRequest createRouteVersionRequest,
+        @RequestPart(required = false) MultipartFile layoutImage,@CurrentUser User user) {
+        routeVersionService.createRouteVersion(createRouteVersionRequest, user, layoutImage);
         return ResponseEntity.ok("루트 버전이 추가되었습니다.");
     }
 

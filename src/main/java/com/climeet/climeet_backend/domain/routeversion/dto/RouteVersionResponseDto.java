@@ -3,7 +3,9 @@ package com.climeet.climeet_backend.domain.routeversion.dto;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
+import com.climeet.climeet_backend.domain.routeversion.RouteVersion;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +21,7 @@ public class RouteVersionResponseDto {
     public static class RouteVersionDetailResponse {
 
         private Long gymId;
+        private LocalDate timePoint;
         private String layoutImageUrl;
         private List<SectorDetailResponse> sectorList;
         private List<RouteDetailResponse> routeList;
@@ -26,10 +29,11 @@ public class RouteVersionResponseDto {
 
         public static RouteVersionDetailResponse toDto(ClimbingGym climbingGym,
             List<SectorDetailResponse> sectorList, List<RouteDetailResponse> routeList,
-            List<DifficultyMappingDetailResponse> difficultyList) {
+            List<DifficultyMappingDetailResponse> difficultyList, RouteVersion routeVersion) {
             return RouteVersionDetailResponse.builder()
                 .gymId(climbingGym.getId())
-                .layoutImageUrl(climbingGym.getLayoutImageUrl())
+                .timePoint(routeVersion.getTimePoint())
+                .layoutImageUrl(routeVersion.getLayoutImageUrl())
                 .sectorList(sectorList)
                 .routeList(routeList)
                 .difficultyList(difficultyList)

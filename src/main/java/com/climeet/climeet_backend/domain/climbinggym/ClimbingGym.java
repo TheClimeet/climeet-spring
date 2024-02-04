@@ -41,12 +41,6 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String profileImageUrl;
 
-    private String layoutImageUrl;
-
-    public void changeLayoutImageUrl(String layoutImageUrl) {
-        this.layoutImageUrl = layoutImageUrl;
-    }
-
     private Float AverageRating = 0.0F;
 
     private Float sumRating = 0.0F;

@@ -30,6 +30,8 @@ public class RouteVersion extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ClimbingGym climbingGym;
 
+    private String layoutImageUrl;
+
     @NotNull
     private LocalDate timePoint;
 
@@ -41,10 +43,10 @@ public class RouteVersion extends BaseTimeEntity {
 
 
     public static RouteVersion toEntity(ClimbingGym climbingGym, LocalDate timePoint,
-        String routeList,
-        String sectorList) {
+        String routeList, String sectorList, String layoutImageUrl) {
         return RouteVersion.builder()
             .climbingGym(climbingGym)
+            .layoutImageUrl(layoutImageUrl)
             .timePoint(timePoint)
             .routeList(routeList)
             .sectorList(sectorList)

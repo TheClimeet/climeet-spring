@@ -5,14 +5,11 @@ import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
-import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.LayoutDetailResponse;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
-import com.climeet.climeet_backend.global.s3.S3Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -33,7 +29,6 @@ public class ClimbingGymService {
 
     private final ClimbingGymRepository climbingGymRepository;
     private final ManagerRepository managerRepository;
-    private final S3Service s3Service;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -83,19 +78,6 @@ public class ClimbingGymService {
         return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
             climbingGymList);
 
-    }
-
-    public LayoutDetailResponse changeLayoutImage(MultipartFile layoutImage, User user) {
-
-        Manager manager = managerRepository.findById(user.getId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
-
-        String layoutImageUrl = s3Service.uploadFile(layoutImage).getImgUrl();
-        manager.getClimbingGym().changeLayoutImageUrl(layoutImageUrl);
-
-        climbingGymRepository.save(manager.getClimbingGym());
-
-        return LayoutDetailResponse.toDto(layoutImageUrl);
     }
 
     public ClimbingGymDetailResponse getClimbingGymInfo(Long gymId) {
