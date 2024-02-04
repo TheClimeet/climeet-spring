@@ -33,6 +33,7 @@ public class RouteVersionRequestDto {
             this.floorList = new int[0];
             this.sectorIdList = new Long[0];
             this.difficultyList = new int[0];
+            this.timePoint = LocalDate.now();
         }
     }
 

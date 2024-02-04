@@ -49,7 +49,7 @@ public class RouteVersionService {
         if (routeVersionList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
         }
-        return routeVersionList.stream().map(routeVersion -> routeVersion.getTimePoint()).toList();
+        return routeVersionList.stream().map(RouteVersion::getTimePoint).toList();
     }
 
     public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user,
@@ -102,6 +102,10 @@ public class RouteVersionService {
     }
 
     public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
+        if(timePoint == null){
+            timePoint = LocalDate.now();
+        }
+
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
