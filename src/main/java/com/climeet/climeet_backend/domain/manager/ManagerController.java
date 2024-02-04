@@ -35,7 +35,7 @@ public class ManagerController {
     }
 
     @PostMapping("/signup")
-    @Operation(summary = "관리자 회원가입", description = "관리자 회원가입 API")
+    @Operation(summary = "관리자 회원가입", description = "**Enum 설명**\n\n**ServiceBitmask** :  샤워\\_시설,  샤워\\_용품,  수건\\_제공,  간이\\_세면대,  초크\\_대여,  암벽화\\_대여,  삼각대\\_대여,  운동복\\_대여")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._DUPLICATE_LOGINID})
     public ResponseEntity<ManagerSimpleInfo> signUp(@RequestBody
         CreateManagerRequest createManagerRequest){
