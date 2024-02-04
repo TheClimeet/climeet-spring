@@ -20,7 +20,9 @@ public class BestRouteResponseDto {
         private String routeImageUrl;
         private String gymName;
         private String sectorName;
-        private int level;
+        private String climeetDifficultyName;
+        private String gymDifficultyName;
+        private String gymDifficultyColor;
 
         public static BestRouteDetailInfo toDTO(BestRoute bestRoute) {
             return BestRouteDetailInfo.builder()
@@ -29,7 +31,9 @@ public class BestRouteResponseDto {
                 .routeImageUrl(bestRoute.getRouteImageUrl())
                 .gymName(bestRoute.getGymName())
                 .sectorName(bestRoute.getSectorName())
-                .level(bestRoute.getLevel())
+                .climeetDifficultyName(bestRoute.getClimeetDifficultyName())
+                .gymDifficultyName(bestRoute.getGymDifficultyName())
+                .gymDifficultyColor(bestRoute.getGymDifficultyColor())
                 .build();
         }
     }
