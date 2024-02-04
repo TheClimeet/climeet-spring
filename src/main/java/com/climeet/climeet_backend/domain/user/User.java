@@ -54,9 +54,6 @@ public class User {
     @ColumnDefault("0L")
     private Long thisWeekTotalClimbingTime = 0L;
 
-    @ColumnDefault("0")
-    private int thisWeekHighDifficulty = 0;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
