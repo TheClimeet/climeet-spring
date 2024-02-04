@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord.dto;
 
 import com.climeet.climeet_backend.domain.climbingrecord.ClimbingRecord;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.routerecord.dto.RouteRecordResponseDto.RouteRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import lombok.Builder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 public class ClimbingRecordResponseDto {
 
@@ -95,6 +97,53 @@ public class ClimbingRecordResponseDto {
                 .build();
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ClimbingRecordStatisticsInfoByGym {
+
+        private LocalTime time;
+        private Long totalCompletedCount;
+        private Long attemptRouteCount;
+        private List<GymDifficultyMappingInfo> difficulty;
+
+        public static ClimbingRecordStatisticsInfoByGym toDTO(LocalTime time, Long totalCompletedCount,
+            Long attemptRouteCount, List<GymDifficultyMappingInfo> difficulty) {
+
+            return ClimbingRecordStatisticsInfoByGym.builder()
+                .time(time)
+                .totalCompletedCount(totalCompletedCount)
+                .attemptRouteCount(attemptRouteCount)
+                .difficulty(difficulty)
+                .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @RequiredArgsConstructor
+    @Builder
+    public static class GymDifficultyMappingInfo{
+
+        private String climeetDifficultyName;
+        private String gymDifficultyName;
+        private String gymDifficultyColor;
+        private Long count;
+        public static GymDifficultyMappingInfo toDTO(
+            DifficultyMapping difficultyMapping,
+            Long count
+        ){
+            return GymDifficultyMappingInfo.builder()
+                .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())
+                .gymDifficultyName(difficultyMapping.getGymDifficultyName())
+                .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
+                .count(count)
+                .build();
+        }
+    }
+
 
     @Getter
     @NoArgsConstructor
