@@ -20,7 +20,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         "FROM RouteRecord rr " +
         "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.user = :user " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
-    List<Map<Long,Long>> getRouteRecordDifficultyBetween(
+    List<Object[]> getRouteRecordDifficultyBetween(
         @Param("user") User user,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate

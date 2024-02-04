@@ -82,10 +82,10 @@ public class ClimbingRecordResponseDto {
         private LocalTime time;
         private Long totalCompletedCount;
         private Long attemptRouteCount;
-        private List<Map<Long, Long>> difficulty;
+        private Map<String, Long> difficulty;
 
         public static ClimbingRecordStatisticsInfo toDTO(LocalTime time, Long totalCompletedCount,
-            Long attemptRouteCount, List<Map<Long, Long>> difficulty) {
+            Long attemptRouteCount, Map<String, Long> difficulty) {
 
             return ClimbingRecordStatisticsInfo.builder()
                 .time(time)

@@ -12,6 +12,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
@@ -50,6 +51,9 @@ public class ClimbingRecordService {
     public static final int SUNDAY = 1;
     public static final int RANKING_USER = 0;
     public static final int RANKING_CONDITION = 1;
+
+    public static final int CLIMEET_LEVEL = 0;
+    public static final int LEVEL_COUNT = 1;
 
 
     /**
@@ -186,6 +190,10 @@ public class ClimbingRecordService {
         return ResponseEntity.ok("클라이밍기록이 삭제되었습니다.");
     }
 
+    /**
+     * 내 월별 통계 return 완등시간 & 완등률(시도한 루트와 성공한 루트의 비율) & 레벨당 완등한 횟수
+     * 클밋 기준임.
+     */
     public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(User user, int year,
         int month) {
 
@@ -205,12 +213,22 @@ public class ClimbingRecordService {
 
         Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
 
-        List<Map<Long, Long>> difficultyList = routeRecordRepository
+        //유저가 기록한 레벨 리스트를 뽑아 온다.
+        //여기는 기록한 레벨과 그에 매칭되는 횟수가 나온다.
+        List<Object[]> difficulties = routeRecordRepository
             .getRouteRecordDifficultyBetween(
                 user,
                 startDate,
                 endDate
             );
+
+
+        Map<String, Long> difficultyList;
+        difficultyList = difficulties.stream()
+            .collect(Collectors.toMap(
+                arr -> ClimeetDifficulty.findByInt(((Number) arr[CLIMEET_LEVEL]).intValue()).getStringValue(),
+                arr -> (Long) arr[LEVEL_COUNT]
+            ));
 
         return ClimbingRecordStatisticsInfo.toDTO(
             time,
@@ -242,7 +260,8 @@ public class ClimbingRecordService {
         );
     }
 
-    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(Long climbingGymId) {
+    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(
+        Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
