@@ -17,11 +17,13 @@ import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +104,7 @@ public class RouteVersionService {
     }
 
     public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
-        if(timePoint == null){
+        if (timePoint == null) {
             timePoint = LocalDate.now();
         }
 
@@ -155,7 +157,7 @@ public class RouteVersionService {
             routeListResponse, difficultyMappingDetailResponses, routeVersion);
     }
 
-    public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
+    public PageResponseDto<List<RouteDetailResponse>> getRouteVersionFiltering(Long gymId,
         GetFilteredRouteVersionRequest requestDto) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
@@ -176,25 +178,27 @@ public class RouteVersionService {
         }
 
         List<Route> filteredRouteList = routeList.stream().filter(route -> {
-            boolean floorFilter =
-                requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
-                    .anyMatch(floor -> floor == route.getSector().getFloor());
-            boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
-                    requestDto.getSectorIdList())
-                .anyMatch(sectorId -> sectorId == route.getSector().getId());
-            boolean difficultyFilter =
-                requestDto.getDifficultyList().length == 0 || Arrays.stream(
-                    requestDto.getDifficultyList()).anyMatch(
-                    difficulty -> difficulty == route.getDifficultyMapping()
-                        .getDifficulty());
-            return floorFilter && sectorFilter && difficultyFilter;
-        }).toList();
+                boolean floorFilter =
+                    requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
+                        .anyMatch(floor -> floor == route.getSector().getFloor());
+                boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
+                        requestDto.getSectorIdList())
+                    .anyMatch(sectorId -> sectorId == route.getSector().getId());
+                boolean difficultyFilter =
+                    requestDto.getDifficultyList().length == 0 || Arrays.stream(
+                        requestDto.getDifficultyList()).anyMatch(
+                        difficulty -> difficulty == route.getDifficultyMapping()
+                            .getDifficulty());
+                return floorFilter && sectorFilter && difficultyFilter;
+            }).sorted(Comparator.comparing(Route::getId).reversed())
+            .skip(requestDto.getPage() * requestDto.getSize())
+            .limit(requestDto.getSize())
+            .toList();
 
-        if (filteredRouteList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
-        }
+        boolean hasNextPage = filteredRouteList.size() == requestDto.getSize();
 
-        return filteredRouteList.stream().map(RouteDetailResponse::toDto).toList();
+        return new PageResponseDto<>(requestDto.getPage(), hasNextPage,
+            filteredRouteList.stream().map(RouteDetailResponse::toDto).toList());
     }
 
 }

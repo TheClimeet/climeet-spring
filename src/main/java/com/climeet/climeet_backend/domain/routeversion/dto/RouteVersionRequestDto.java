@@ -22,6 +22,8 @@ public class RouteVersionRequestDto {
     @Getter
     public static class GetFilteredRouteVersionRequest {
 
+        private int page;
+        private int size;
         private int[] floorList = null;
         private Long[] sectorIdList = null;
         private int[] difficultyList = null;

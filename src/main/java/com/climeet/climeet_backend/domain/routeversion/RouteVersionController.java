@@ -5,6 +5,7 @@ import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDt
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
@@ -69,7 +70,7 @@ public class RouteVersionController {
         ErrorStatus._EMPTY_ROUTE_LIST, ErrorStatus._MISMATCH_ROUTE_IDS,
         ErrorStatus._EMPTY_ROUTE_LIST})
     @PostMapping("/{gymId}/version/filter")
-    public ResponseEntity<List<RouteDetailResponse>> getRouteVersionFiltering(
+    public ResponseEntity<PageResponseDto<List<RouteDetailResponse>>> getRouteVersionFiltering(
         @CurrentUser User user, @PathVariable Long gymId,
         @RequestBody GetFilteredRouteVersionRequest getFilteredRouteVersionRequest) {
         return ResponseEntity.ok(
