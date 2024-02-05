@@ -36,9 +36,11 @@ public class BestRoute extends BaseTimeEntity {
 
     private String sectorName;
 
-    private int level;
+    private String climeetDifficultyName;
 
-    private String levelColor;
+    private String gymDifficultyName;
+
+    private String gymDifficultyColor;
 
 
 }
