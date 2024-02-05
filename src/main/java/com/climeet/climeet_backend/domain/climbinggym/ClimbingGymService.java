@@ -5,6 +5,8 @@ import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
+import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
@@ -29,6 +31,7 @@ public class ClimbingGymService {
 
     private final ClimbingGymRepository climbingGymRepository;
     private final ManagerRepository managerRepository;
+    private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -87,12 +90,19 @@ public class ClimbingGymService {
         Manager manager = managerRepository.findByClimbingGym(climbingGym)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        return ClimbingGymDetailResponse.toDto(climbingGym, manager);
+        List<ClimbingGymBackgroundImage> backgroundImageList = climbingGymBackgroundImageRepository.findByClimbingGym(
+            climbingGym);
+        if (backgroundImageList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE_LIST);
+        }
+        List<String> backgroundImageUrlList = backgroundImageList.stream()
+            .map(ClimbingGymBackgroundImage::getImgUrl)
+            .toList();
+        return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImageUrlList);
     }
 
 
     public ClimbingGymInfoResponse updateClimbingGymInfo(
-
 
         UpdateClimbingGymInfoRequest updateClimbingGymInfoRequest) {
         ClimbingGym climbingGym = climbingGymRepository.findById(
@@ -101,7 +111,7 @@ public class ClimbingGymService {
 
         RestClient restClient = RestClient.create();
 
-        String callUrl = crawlingUri + "?word="+ climbingGym.getName();
+        String callUrl = crawlingUri + "?word=" + climbingGym.getName();
 
         String gymInfoResult = restClient.get().uri(callUrl).retrieve().body(String.class);
 
@@ -113,8 +123,11 @@ public class ClimbingGymService {
             String address = jsonNode.get("address").asText();
             String businessHours = jsonNode.get("businessHours").toString();
             climbingGym.updateGymInfo(tel, address, businessHours);
-            Map<String, List<String>> businessHoursMap = objectMapper.readValue(businessHours, new TypeReference<Map<String, List<String>>>() {});
-            return ClimbingGymInfoResponse.toDto(climbingGymRepository.save(climbingGym), businessHoursMap);
+            Map<String, List<String>> businessHoursMap = objectMapper.readValue(businessHours,
+                new TypeReference<Map<String, List<String>>>() {
+                });
+            return ClimbingGymInfoResponse.toDto(climbingGymRepository.save(climbingGym),
+                businessHoursMap);
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
         }

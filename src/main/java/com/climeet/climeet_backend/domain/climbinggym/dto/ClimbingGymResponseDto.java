@@ -66,18 +66,20 @@ public class ClimbingGymResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ClimbingGymDetailResponse {
+
         private String gymProfileImageUrl;
-        private String managerProfileImageUrl;
+        private List<String> gymBackGroundImageUrl;
         private String gymName;
         private Long followerCount;
         private Long followingCount;
         private float averageRating;
         private int reviewCount;
 
-        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager){
+        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager,
+            List<String> gymBackGroundImageUrl) {
             return ClimbingGymDetailResponse.builder()
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
-                .managerProfileImageUrl(manager.getProfileImageUrl())
+                .gymBackGroundImageUrl(gymBackGroundImageUrl)
                 .gymName(climbingGym.getName())
                 .followerCount(manager.getFollowerCount())
                 .followingCount(manager.getFollowingCount())

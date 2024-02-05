@@ -28,6 +28,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _DUPLICATE_GYM_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_003", "이미 관리자가 등록된 암장입니다."),
     _EMPTY_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_004", "해당 관리자가 존재하지 않습니다."),
     _ERROR_JSON_PARSE(HttpStatus.CONFLICT, "CLIMBING_GYM_005", "JSON 파싱을 할 수 없습니다."),
+    _EMPTY_BACKGROUND_IMAGE_LIST(HttpStatus.CONFLICT, "CLIMBING_GYM_006", "암장 배경 이미지가 없습니다."),
 
     //루트 버전 관련
     _EMPTY_VERSION_LIST(HttpStatus.CONFLICT, "ROUTE_VERSION_001", "암장의 루트 버전이 존재하지 않습니다."),
