@@ -67,8 +67,7 @@ public class RouteVersionController {
 
     @Operation(summary = "암장 특정 루트 버전 데이터 필터링해서 루트 불러오기", description = "timePoint 값은 비필수 값이며, 입력되지 않았을 때의 default는 오늘 날짜입니다. \n 각 List 필터링 값 또한 비필수이며, 만약 특정 List에 필터링될 값이 없다면 입력하지 않아도 문제 없습니다.")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_VERSION,
-        ErrorStatus._EMPTY_ROUTE_LIST, ErrorStatus._MISMATCH_ROUTE_IDS,
-        ErrorStatus._EMPTY_ROUTE_LIST})
+        ErrorStatus._EMPTY_ROUTE_LIST, ErrorStatus._MISMATCH_ROUTE_IDS})
     @PostMapping("/{gymId}/version/filter")
     public ResponseEntity<PageResponseDto<List<RouteDetailResponse>>> getRouteVersionFiltering(
         @CurrentUser User user, @PathVariable Long gymId,
