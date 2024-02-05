@@ -22,7 +22,9 @@ public class BestLevelClimber {
 
     private int ranking = 0;
 
-    private int thisWeekHighDifficulty = 0;
+    private int difficulty = 0;
+
+    private Long difficultyCount = 0L;
 
     private String profileImageUrl;
 

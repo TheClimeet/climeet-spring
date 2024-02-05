@@ -2,7 +2,6 @@ package com.climeet.climeet_backend.domain.routeversion.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
-import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.RouteVersion;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
 import java.time.LocalDate;
@@ -18,25 +17,26 @@ public class RouteVersionResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RouteVersionDetailResponse {
+    public static class RouteVersionFilteringKeyResponse {
 
         private Long gymId;
         private LocalDate timePoint;
         private String layoutImageUrl;
         private List<SectorDetailResponse> sectorList;
-        private List<RouteDetailResponse> routeList;
         private List<DifficultyMappingDetailResponse> difficultyList;
+        private List<Integer> floorList;
 
-        public static RouteVersionDetailResponse toDto(ClimbingGym climbingGym,
-            List<SectorDetailResponse> sectorList, List<RouteDetailResponse> routeList,
-            List<DifficultyMappingDetailResponse> difficultyList, RouteVersion routeVersion) {
-            return RouteVersionDetailResponse.builder()
+        public static RouteVersionFilteringKeyResponse toDto(ClimbingGym climbingGym,
+            List<SectorDetailResponse> sectorList,
+            List<DifficultyMappingDetailResponse> difficultyList, List<Integer> floorList,
+            RouteVersion routeVersion) {
+            return RouteVersionFilteringKeyResponse.builder()
                 .gymId(climbingGym.getId())
                 .timePoint(routeVersion.getTimePoint())
                 .layoutImageUrl(routeVersion.getLayoutImageUrl())
                 .sectorList(sectorList)
-                .routeList(routeList)
                 .difficultyList(difficultyList)
+                .floorList(floorList)
                 .build();
         }
     }

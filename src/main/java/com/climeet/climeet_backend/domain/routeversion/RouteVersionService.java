@@ -12,16 +12,17 @@ import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
-import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
+import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionFilteringKeyResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class RouteVersionService {
         if (routeVersionList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
         }
-        return routeVersionList.stream().map(routeVersion -> routeVersion.getTimePoint()).toList();
+        return routeVersionList.stream().map(RouteVersion::getTimePoint).toList();
     }
 
     public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user,
@@ -101,7 +102,12 @@ public class RouteVersionService {
 
     }
 
-    public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
+    public RouteVersionFilteringKeyResponse getRouteVersionFilteringKey(Long gymId,
+        LocalDate timePoint) {
+        if (timePoint == null) {
+            timePoint = LocalDate.now();
+        }
+
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -109,24 +115,10 @@ public class RouteVersionService {
                 climbingGym, timePoint)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
-        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
-            routeVersion.getRouteList());
-        if (routeIdList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
-        }
-
-        routeIdList = routeIdList.stream().sorted(Collections.reverseOrder()).toList();
-        routeIdList = routeIdList.subList(0, Math.min(routeIdList.size(), 10));
-
         List<Long> sectorIdList = RouteVersionConverter.convertStringToList(
             routeVersion.getSectorList());
         if (sectorIdList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_SECTOR_LIST);
-        }
-
-        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
-        if (routeList.size() != routeIdList.size()) {
-            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
         List<Sector> sectorList = sectorRepository.findByIdIn(sectorIdList);
@@ -140,24 +132,25 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
         }
 
-        List<RouteDetailResponse> routeListResponse = routeList.stream()
-            .map(RouteDetailResponse::toDto).toList();
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
             .map(SectorDetailResponse::toDto).toList();
         List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
             .map(DifficultyMappingDetailResponse::toDto).toList();
+        List<Integer> floorList = sectorList.stream()
+            .map(Sector::getFloor).distinct().sorted().toList();
 
-        return RouteVersionDetailResponse.toDto(climbingGym, sectorDetailResponses,
-            routeListResponse, difficultyMappingDetailResponses, routeVersion);
+        return RouteVersionFilteringKeyResponse.toDto(climbingGym, sectorDetailResponses,
+            difficultyMappingDetailResponses, floorList, routeVersion);
     }
 
-    public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
-        GetFilteredRouteVersionRequest requestDto) {
+    public PageResponseDto<List<RouteDetailResponse>> getRouteVersionFilteringRouteList(Long gymId,
+        GetFilteredRouteVersionRequest getFilteredRouteVersionRequest) {
+
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
-                climbingGym, requestDto.getTimePoint())
+                climbingGym, getFilteredRouteVersionRequest.getTimePoint())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
         List<Long> routeIdList = RouteVersionConverter.convertStringToList(
@@ -171,26 +164,44 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
-        List<Route> filteredRouteList = routeList.stream().filter(route -> {
-            boolean floorFilter =
-                requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
-                    .anyMatch(floor -> floor == route.getSector().getFloor());
-            boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
-                    requestDto.getSectorIdList())
-                .anyMatch(sectorId -> sectorId == route.getSector().getId());
-            boolean difficultyFilter =
-                requestDto.getDifficultyList().length == 0 || Arrays.stream(
-                    requestDto.getDifficultyList()).anyMatch(
-                    difficulty -> difficulty == route.getDifficultyMapping()
-                        .getDifficulty());
-            return floorFilter && sectorFilter && difficultyFilter;
-        }).toList();
-
-        if (filteredRouteList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        // floor Filter 적용
+        if (getFilteredRouteVersionRequest.getFloorList().length != 0) {
+            routeList = routeList.stream()
+                .filter(route -> Arrays.stream(getFilteredRouteVersionRequest.getFloorList())
+                    .anyMatch(floor -> floor == route.getSector().getFloor())
+                ).toList();
         }
 
-        return filteredRouteList.stream().map(RouteDetailResponse::toDto).toList();
-    }
+        // sector Filter 적용
+        if (getFilteredRouteVersionRequest.getSectorIdList().length != 0) {
+            routeList = routeList.stream()
+                .filter(route -> Arrays.stream(getFilteredRouteVersionRequest.getSectorIdList())
+                    .anyMatch(sectorId -> sectorId == route.getSector().getId())
+                ).toList();
+        }
 
+        // difficulty Filter 적용
+        if (getFilteredRouteVersionRequest.getDifficultyList().length != 0) {
+            routeList = routeList.stream()
+                .filter(route -> Arrays.stream(getFilteredRouteVersionRequest.getDifficultyList())
+                    .anyMatch(
+                        difficulty -> difficulty == route.getDifficultyMapping().getDifficulty())
+                ).toList();
+        }
+
+        List<RouteDetailResponse> routeDetailResponseList = routeList.stream()
+            .sorted(Comparator.comparing(Route::getId).reversed())
+            .skip(
+                getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
+            .limit(getFilteredRouteVersionRequest.getSize())
+            .map(RouteDetailResponse::toDto)
+            .toList();
+
+        boolean hasNextPage = (getFilteredRouteVersionRequest.getPage() + 1)
+            * getFilteredRouteVersionRequest.getSize() < routeList.size();
+
+        return new PageResponseDto<>(getFilteredRouteVersionRequest.getPage(), hasNextPage,
+            routeDetailResponseList);
+    }
 }
+
