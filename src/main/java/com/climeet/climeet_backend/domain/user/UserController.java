@@ -36,7 +36,8 @@ public class UserController {
 
     }
     @GetMapping("/get-follower")
-    @Operation(summary = "특정 유저 암장 팔로워 조회")
+    @Operation(summary = "특정 유저 암장 팔로워 조회", description = "**userCategory** : Manager OR Climber")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollower(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
         List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollower(userId, currentUser, userCategory);
         return ResponseEntity.ok(userFollowDetailResponseList);
@@ -44,7 +45,8 @@ public class UserController {
     }
 
     @GetMapping("/get-following")
-    @Operation(summary = "특정 유저 암장 팔로잉 조회")
+    @Operation(summary = "특정 유저 암장 팔로잉 조회", description = "**userCategory** : Manager OR Climber")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollowing(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
         List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollowing(userId, currentUser, userCategory);
         return ResponseEntity.ok(userFollowDetailResponseList);

@@ -1,9 +1,7 @@
 package com.climeet.climeet_backend.domain.user;
 
-import static java.util.stream.Collectors.toList;
 
 import com.climeet.climeet_backend.domain.climber.Climber;
-import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -13,9 +11,7 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
