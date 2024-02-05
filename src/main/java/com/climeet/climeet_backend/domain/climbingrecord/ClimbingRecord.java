@@ -48,7 +48,7 @@ public class ClimbingRecord extends BaseTimeEntity {
     //도전횟수가 아닌 시도한 루트의 개수
     private int attemptRouteCount = 0;
 
-    private int highDifficulty;
+    private int highDifficulty = 0;
 
     public static ClimbingRecord toEntity(User user, CreateClimbingRecord requestDto,
         ClimbingGym climbingGym) {

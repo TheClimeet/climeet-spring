@@ -12,6 +12,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
@@ -44,12 +45,14 @@ public class ClimbingRecordService {
     private final RouteRecordService routeRecordService;
     private final RouteRecordRepository routeRecordRepository;
     private final UserRepository userRepository;
+    private final DifficultyMappingRepository difficultyMappingRepository;
 
     public static final int START_DAY_OF_MONTH = 1;
     public static final int MONDAY = 0;
     public static final int SUNDAY = 1;
     public static final int RANKING_USER = 0;
     public static final int RANKING_CONDITION = 1;
+    public static final int RANKING_COUNT = 2;
 
 
     /**
@@ -242,7 +245,8 @@ public class ClimbingRecordService {
         );
     }
 
-    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(Long climbingGymId) {
+    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(
+        Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -298,7 +302,11 @@ public class ClimbingRecordService {
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
                 int highDifficulty = (int) userRankMap[RANKING_CONDITION];
-                return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty);
+                Number count = (Number) userRankMap[RANKING_COUNT];
+                int highDifficultyCount = count.intValue();
+
+                return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty,
+                    highDifficultyCount);
             })
             .collect(Collectors.toList());
 

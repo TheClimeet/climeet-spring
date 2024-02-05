@@ -162,19 +162,24 @@ public class ClimbingRecordResponseDto {
     @Builder
     public static class BestLevelUserSimpleInfo {
 
-        private int highDifficulty;
         private Long userId;
         protected String profileName;
         protected String profileImageUrl;
         private int ranking;
+        private int highDifficulty;
+        private int highDifficultyCount;
 
-        public static BestLevelUserSimpleInfo toDTO(User user, int ranking, int highDifficulty) {
+
+        public static BestLevelUserSimpleInfo toDTO(User user, int ranking,
+            int highDifficulty, int highDifficultyCount
+            ) {
             return BestLevelUserSimpleInfo.builder()
                 .ranking(ranking)
                 .userId(user.getId())
                 .profileImageUrl(user.getProfileImageUrl())
                 .profileName(user.getProfileName())
                 .highDifficulty(highDifficulty)
+                .highDifficultyCount(highDifficultyCount)
                 .build();
         }
     }
