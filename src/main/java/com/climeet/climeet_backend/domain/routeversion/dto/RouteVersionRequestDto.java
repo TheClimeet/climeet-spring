@@ -22,6 +22,8 @@ public class RouteVersionRequestDto {
     @Getter
     public static class GetFilteredRouteVersionRequest {
 
+        private int page;
+        private int size;
         private int[] floorList = null;
         private Long[] sectorIdList = null;
         private int[] difficultyList = null;
@@ -33,6 +35,7 @@ public class RouteVersionRequestDto {
             this.floorList = new int[0];
             this.sectorIdList = new Long[0];
             this.difficultyList = new int[0];
+            this.timePoint = LocalDate.now();
         }
     }
 
