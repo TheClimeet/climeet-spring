@@ -158,12 +158,12 @@ public class RouteVersionService {
     }
 
     public PageResponseDto<List<RouteDetailResponse>> getRouteVersionFiltering(Long gymId,
-        GetFilteredRouteVersionRequest requestDto) {
+        GetFilteredRouteVersionRequest getFilteredRouteVersionRequest) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
-                climbingGym, requestDto.getTimePoint())
+                climbingGym, getFilteredRouteVersionRequest.getTimePoint())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
         List<Long> routeIdList = RouteVersionConverter.convertStringToList(
@@ -179,25 +179,25 @@ public class RouteVersionService {
 
         List<Route> filteredRouteList = routeList.stream().filter(route -> {
                 boolean floorFilter =
-                    requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
+                    getFilteredRouteVersionRequest.getFloorList().length == 0 || Arrays.stream(getFilteredRouteVersionRequest.getFloorList())
                         .anyMatch(floor -> floor == route.getSector().getFloor());
-                boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
-                        requestDto.getSectorIdList())
+                boolean sectorFilter = getFilteredRouteVersionRequest.getSectorIdList().length == 0 || Arrays.stream(
+                        getFilteredRouteVersionRequest.getSectorIdList())
                     .anyMatch(sectorId -> sectorId == route.getSector().getId());
                 boolean difficultyFilter =
-                    requestDto.getDifficultyList().length == 0 || Arrays.stream(
-                        requestDto.getDifficultyList()).anyMatch(
+                    getFilteredRouteVersionRequest.getDifficultyList().length == 0 || Arrays.stream(
+                        getFilteredRouteVersionRequest.getDifficultyList()).anyMatch(
                         difficulty -> difficulty == route.getDifficultyMapping()
                             .getDifficulty());
                 return floorFilter && sectorFilter && difficultyFilter;
             }).sorted(Comparator.comparing(Route::getId).reversed())
-            .skip(requestDto.getPage() * requestDto.getSize())
-            .limit(requestDto.getSize())
+            .skip(getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
+            .limit(getFilteredRouteVersionRequest.getSize())
             .toList();
 
-        boolean hasNextPage = filteredRouteList.size() == requestDto.getSize();
+        boolean hasNextPage = filteredRouteList.size() == getFilteredRouteVersionRequest.getSize();
 
-        return new PageResponseDto<>(requestDto.getPage(), hasNextPage,
+        return new PageResponseDto<>(getFilteredRouteVersionRequest.getPage(), hasNextPage,
             filteredRouteList.stream().map(RouteDetailResponse::toDto).toList());
     }
 
