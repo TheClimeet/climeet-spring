@@ -76,7 +76,7 @@ public class ClimbingGym extends BaseTimeEntity {
     public void averageRatingCalculate() {
         if (this.reviewCount > 0) {
             float averageRating = this.sumRating / this.reviewCount;
-            DecimalFormat decimalFormat = new DecimalFormat("#.#");
+            DecimalFormat decimalFormat = new DecimalFormat("#.0");
             decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
             String formattedAverageRating = decimalFormat.format(averageRating);
             this.AverageRating = Float.parseFloat(formattedAverageRating);

@@ -8,8 +8,6 @@ public class ReviewRequestDto {
     @Getter
     @NoArgsConstructor
     public static class CreateReviewRequest {
-
-        private Long climbingGymId;
         private String content;
         private Float rating;
     }
