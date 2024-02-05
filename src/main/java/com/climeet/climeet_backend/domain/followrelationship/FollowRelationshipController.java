@@ -23,28 +23,21 @@ public class FollowRelationshipController {
     private final UserRepository userRepository;
     private final FollowRelationshipRepository followRelationshipRepository;
 
-    @PostMapping("/follow/{userId}")
+    @PostMapping("/follow-relationship/{userId}")
     @Operation(summary = "유저 팔로우")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> followUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
-        User followingUser = userRepository.findById(followingUserId)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
-        if(followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), followingUserId).isPresent()) {
-            throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
-        }
-        followRelationshipService.createFollowRelationship(currentUser, followingUser);
+        User following = followRelationshipService.findByUserId(followingUserId);
+        followRelationshipService.createFollowRelationship(currentUser, following);
         return ResponseEntity.ok("팔로우 완료");
     }
 
-    @DeleteMapping("/unfollow/{userId}")
+    @DeleteMapping("/follow-relationship/{userId}")
     @Operation(summary = "유저 팔로우 취소")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> unfollowUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
-        userRepository.findById(followingUserId)
-            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
-        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), followingUserId)
-            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
-        followRelationshipService.deleteFollowRelationship(followRelationship);
+        User following = followRelationshipService.findByUserId(followingUserId);
+        followRelationshipService.deleteFollowRelationship(following, currentUser);
         return ResponseEntity.ok("팔로우 취소 완료");
     }
 
