@@ -24,11 +24,11 @@ public class RouteVersionResponseDto {
         private String layoutImageUrl;
         private List<SectorDetailResponse> sectorList;
         private List<DifficultyMappingDetailResponse> difficultyList;
-        private List<Integer> floorList;
+        private int maxFloor;
 
         public static RouteVersionFilteringKeyResponse toDto(ClimbingGym climbingGym,
             List<SectorDetailResponse> sectorList,
-            List<DifficultyMappingDetailResponse> difficultyList, List<Integer> floorList,
+            List<DifficultyMappingDetailResponse> difficultyList, int maxFloor,
             RouteVersion routeVersion) {
             return RouteVersionFilteringKeyResponse.builder()
                 .gymId(climbingGym.getId())
@@ -36,7 +36,7 @@ public class RouteVersionResponseDto {
                 .layoutImageUrl(routeVersion.getLayoutImageUrl())
                 .sectorList(sectorList)
                 .difficultyList(difficultyList)
-                .floorList(floorList)
+                .maxFloor(maxFloor)
                 .build();
         }
     }
