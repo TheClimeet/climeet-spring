@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.shorts;
 
+import static java.util.stream.Collectors.toList;
+
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
@@ -22,11 +24,15 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,6 +70,12 @@ public class ShortsService {
             createShortsRequest);
 
         shortsRepository.save(shorts);
+
+        //팔로워 관계 isUploadShortsRecent update
+        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowerId(user.getId());
+        for(FollowRelationship f : followRelationshipList){
+            f.updateUploadStatus(true);
+        }
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, int page, int size) {
@@ -146,6 +158,22 @@ public class ShortsService {
             .toList();
 
         return shortsProfileSimpleInfos;
+
+    }
+
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24) //24시간마다 실행
+    public void updateVideoStatus(){
+        Date threeDaysAgo = new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 3);
+        List<Shorts> shortsList = shortsRepository.findByCreatedAtBefore(threeDaysAgo);
+        for(Shorts shorts : shortsList) {
+            List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowerId(
+                shorts.getUser().getId());
+
+            for(FollowRelationship relationship : followRelationship){
+                relationship.updateUploadStatus(false);
+            }
+        }
+
 
     }
 }

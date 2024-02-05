@@ -43,4 +43,8 @@ public class FollowRelationship extends BaseTimeEntity {
             .build();
     }
 
+    public void updateUploadStatus(boolean status){
+        this.isUploadShortsRecent = status;
+    }
+
 }
