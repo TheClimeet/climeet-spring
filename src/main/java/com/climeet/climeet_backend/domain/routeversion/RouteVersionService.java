@@ -21,7 +21,6 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -165,28 +164,27 @@ public class RouteVersionService {
         }
 
         // floor Filter 적용
-        if (getFilteredRouteVersionRequest.getFloorList().length != 0) {
+        if (getFilteredRouteVersionRequest.getFloor() != null) {
             routeList = routeList.stream()
-                .filter(route -> Arrays.stream(getFilteredRouteVersionRequest.getFloorList())
-                    .anyMatch(floor -> floor == route.getSector().getFloor())
-                ).toList();
+                .filter(route -> route.getSector().getFloor()
+                    == getFilteredRouteVersionRequest.getFloor())
+                .toList();
         }
 
         // sector Filter 적용
-        if (getFilteredRouteVersionRequest.getSectorIdList().length != 0) {
+        if (getFilteredRouteVersionRequest.getSectorId() != null) {
             routeList = routeList.stream()
-                .filter(route -> Arrays.stream(getFilteredRouteVersionRequest.getSectorIdList())
-                    .anyMatch(sectorId -> sectorId == route.getSector().getId())
-                ).toList();
+                .filter(route -> route.getSector().getId()
+                    == getFilteredRouteVersionRequest.getSectorId())
+                .toList();
         }
 
         // difficulty Filter 적용
-        if (getFilteredRouteVersionRequest.getDifficultyList().length != 0) {
+        if (getFilteredRouteVersionRequest.getDifficulty() != null) {
             routeList = routeList.stream()
-                .filter(route -> Arrays.stream(getFilteredRouteVersionRequest.getDifficultyList())
-                    .anyMatch(
-                        difficulty -> difficulty == route.getDifficultyMapping().getDifficulty())
-                ).toList();
+                .filter(route -> route.getDifficultyMapping().getDifficulty()
+                    == getFilteredRouteVersionRequest.getDifficulty())
+                .toList();
         }
 
         List<RouteDetailResponse> routeDetailResponseList = routeList.stream()

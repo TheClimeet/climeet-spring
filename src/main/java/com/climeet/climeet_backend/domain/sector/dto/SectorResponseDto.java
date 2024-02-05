@@ -16,12 +16,14 @@ public class SectorResponseDto {
     @AllArgsConstructor
     public static class SectorDetailResponse {
 
+        private Long sectorId;
         private String name;
         private int floor;
         private String sectorImageUrl;
 
         public static SectorDetailResponse toDto(Sector sector) {
             return SectorDetailResponse.builder()
+                .sectorId(sector.getId())
                 .name(sector.getSectorName())
                 .floor(sector.getFloor())
                 .sectorImageUrl(sector.getSectorImageUrl())

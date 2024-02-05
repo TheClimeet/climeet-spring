@@ -24,17 +24,17 @@ public class RouteVersionRequestDto {
 
         private int page;
         private int size;
-        private int[] floorList = null;
-        private Long[] sectorIdList = null;
-        private int[] difficultyList = null;
+        private Integer floor;
+        private Long sectorId;
+        private Integer difficulty;
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate timePoint;
 
         public GetFilteredRouteVersionRequest() {
-            this.floorList = new int[0];
-            this.sectorIdList = new Long[0];
-            this.difficultyList = new int[0];
+            this.floor = null;
+            this.sectorId = null;
+            this.difficulty = null;
             this.timePoint = LocalDate.now();
         }
     }
