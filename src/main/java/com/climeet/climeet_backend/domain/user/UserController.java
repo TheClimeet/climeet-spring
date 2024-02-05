@@ -43,10 +43,11 @@ public class UserController {
 
     }
 
-//    @GetMapping("/get-following")
-//    @Operation(summary = "특정 유저 암장 팔로잉 조회")
-//    public ResponseEntity<List<UserFollowDetailInfo>> getFollower(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
-//        List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollowing(userId, currentUser);
-//
-//    }
+    @GetMapping("/get-following")
+    @Operation(summary = "특정 유저 암장 팔로잉 조회")
+    public ResponseEntity<List<UserFollowDetailInfo>> getFollowing(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
+        List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollowing(userId, currentUser, userCategory);
+        return ResponseEntity.ok(userFollowDetailResponseList);
+
+    }
 }

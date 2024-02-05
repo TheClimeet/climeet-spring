@@ -50,31 +50,32 @@ public class UserService {
 
     }
 
-    public List<UserFollowDetailInfo> getFollower(Long targetUserId, User currentUser, String userCategory){
+    public List<UserFollowDetailInfo> getFollower(Long targetUserId, User currentUser,
+        String userCategory) {
         userRepository.findById(targetUserId)
-            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
-        List<FollowRelationship> targetUserFollowerList = followRelationshipRepository.findByFollowingId(targetUserId);
-        if(!userCategory.equals("Climber")&& !userCategory.equals("Manager")){
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+        List<FollowRelationship> targetUserFollowerList = followRelationshipRepository.findByFollowingId(
+            targetUserId);
+        if (!userCategory.equals("Climber") && !userCategory.equals("Manager")) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
         List<UserFollowDetailInfo> userFollowDetailResponseList = null;
-        if(userCategory.equals("Climber")) {
-             userFollowDetailResponseList = targetUserFollowerList.stream()
-                 //.filter(followRelationship -> followRelationship.getFollower() instanceof Climber)
+        if (userCategory.equals("Climber")) {
+            userFollowDetailResponseList = targetUserFollowerList.stream()
+                .filter(followRelationship -> followRelationship.getFollower() instanceof Climber)
                 .map(followRelationship -> {
-                    System.out.println("ssㄴㄴ");
-                        Boolean currentUserRelation = false;
-                        if (followRelationshipRepository.findByFollowerIdAndFollowingId(
-                            currentUser.getId(),
-                            followRelationship.getFollower().getId()).isPresent()) {
-                            currentUserRelation = true;
-                        }
+                    Boolean currentUserRelation = false;
+                    if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+                        currentUser.getId(),
+                        followRelationship.getFollower().getId()).isPresent()) {
+                        currentUserRelation = true;
+                    }
                     return UserFollowDetailInfo.toDTO(followRelationship.getFollower(),
                         currentUserRelation);
                 }).toList();
 
         }
-        if(userCategory.equals("Manager")){
+        if (userCategory.equals("Manager")) {
             userFollowDetailResponseList = targetUserFollowerList.stream()
                 .filter(followRelationship -> followRelationship.getFollower() instanceof Manager)
                 .map(followRelationship -> {
@@ -89,18 +90,51 @@ public class UserService {
                 }).toList();
         }
 
-            return userFollowDetailResponseList;
-        }
-    //암장 팔로워 조회
-//    public List<UserFollowDetailInfo> getGymFollower(Long targetUserId, User currentUser){
-//        List<UserFollowDetailInfo> allFollowerList = getFollower(targetUserId, currentUser);
-//        List<UserFollowDetailInfo> gymFollwerDetailInfoList = allFollowerList.stream()
-//            .map(allFollower -> {
-//                if(allFollower.)
-//            })
-//    }
-    //클라이머 팔로워 조회
+        return userFollowDetailResponseList;
+    }
 
-    //암장 팔로잉 조회
-    //클라이머 팔로잉 조회
+    public List<UserFollowDetailInfo> getFollowing(Long targetUserId, User currentUser, String userCategory){
+        userRepository.findById(targetUserId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
+        List<FollowRelationship> targetUserFollowerList = followRelationshipRepository.findByFollowerId(targetUserId);
+        if(!userCategory.equals("Climber")&& !userCategory.equals("Manager")){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+        List<UserFollowDetailInfo> userFollowDetailResponseList = null;
+        if(userCategory.equals("Climber")) {
+            userFollowDetailResponseList = targetUserFollowerList.stream()
+                .filter(followRelationship -> followRelationship.getFollowing() instanceof Climber)
+                .map(followRelationship -> {
+                    Boolean currentUserRelation = false;
+                    if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+                        currentUser.getId(),
+                        followRelationship.getFollowing().getId()).isPresent()) {
+                        currentUserRelation = true;
+                    }
+                    return UserFollowDetailInfo.toDTO(followRelationship.getFollowing(),
+                        currentUserRelation);
+                }).toList();
+
+        }
+        if(userCategory.equals("Manager")){
+            userFollowDetailResponseList = targetUserFollowerList.stream()
+                .filter(followRelationship -> followRelationship.getFollowing() instanceof Manager)
+                .map(followRelationship -> {
+                    Boolean currentUserRelation = false;
+                    if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+                        currentUser.getId(),
+                        followRelationship.getFollowing().getId()).isPresent()) {
+                        currentUserRelation = true;
+                    }
+                    return UserFollowDetailInfo.toDTO(followRelationship.getFollowing(),
+                        currentUserRelation);
+                }).toList();
+        }
+
+        return userFollowDetailResponseList;
+    }
+
+
+
+
 }
