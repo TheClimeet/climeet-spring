@@ -35,7 +35,7 @@ public class UserController {
 
 
     }
-    @GetMapping("/follower")
+    @GetMapping("/followers")
     @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollower(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
@@ -44,7 +44,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/following")
+    @GetMapping("/followees")
     @Operation(summary = "특정 유저 팔로잉 조회", description = "**userCategory** : Manager OR Climber")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollowing(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
