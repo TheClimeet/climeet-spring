@@ -10,8 +10,13 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfoByGym;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.GymDifficultyMappingInfo;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecord;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
@@ -44,12 +49,16 @@ public class ClimbingRecordService {
     private final RouteRecordService routeRecordService;
     private final RouteRecordRepository routeRecordRepository;
     private final UserRepository userRepository;
+    private final DifficultyMappingRepository difficultyMappingRepository;
 
     public static final int START_DAY_OF_MONTH = 1;
     public static final int MONDAY = 0;
     public static final int SUNDAY = 1;
     public static final int RANKING_USER = 0;
     public static final int RANKING_CONDITION = 1;
+
+    public static final int CLIMEET_LEVEL = 0;
+    public static final int LEVEL_COUNT = 1;
 
 
     /**
@@ -186,6 +195,9 @@ public class ClimbingRecordService {
         return ResponseEntity.ok("클라이밍기록이 삭제되었습니다.");
     }
 
+    /**
+     * 내 월별 통계 return 완등시간 & 완등률(시도한 루트와 성공한 루트의 비율) & 레벨당 완등한 횟수 클밋 기준임.
+     */
     public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(User user, int year,
         int month) {
 
@@ -205,14 +217,83 @@ public class ClimbingRecordService {
 
         Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
 
-        List<Map<Long, Long>> difficultyList = routeRecordRepository
+        //유저가 기록한 레벨 리스트를 뽑아 온다.
+        //여기는 기록한 레벨과 그에 매칭되는 횟수가 나온다.
+        List<Object[]> difficulties = routeRecordRepository
             .getRouteRecordDifficultyBetween(
                 user,
                 startDate,
                 endDate
             );
 
+        Map<String, Long> difficultyList;
+        difficultyList = difficulties.stream()
+            .collect(Collectors.toMap(
+                arr -> ClimeetDifficulty.findByInt(((int) arr[CLIMEET_LEVEL]))
+                    .getStringValue(),
+                arr -> (Long) arr[LEVEL_COUNT]
+            ));
+
         return ClimbingRecordStatisticsInfo.toDTO(
+            time,
+            totalCompletedCount,
+            attemptRouteCount,
+            difficultyList
+        );
+    }
+
+    /**
+     * 나의 월별 그리고 암장별 통계기록
+     */
+    public ClimbingRecordStatisticsInfoByGym getClimbingRecordStatisticsByGymId(User user,
+        Long gymId,
+        int year,
+        int month) {
+
+        LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
+        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
+
+        ClimbingGym gym = gymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        Tuple crTuple = climbingRecordRepository.getStatisticsInfoBetweenDaysAndUserAndGym(user,
+            gym,
+            startDate, endDate
+        );
+
+        if (crTuple.get("totalTime") == null) {
+            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
+        }
+
+        Double totalTime = (Double) crTuple.get("totalTime");
+
+        LocalTime time = convertDoubleToTime(totalTime);
+
+        Long totalCompletedCount = (Long) crTuple.get("totalCompletedCount");
+
+        Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
+
+        //유저가 기록한 레벨 리스트를 뽑아 온다.
+        //여기는 기록한 레벨과 그에 매칭되는 횟수가 나온다.
+        List<Object[]> difficulties = routeRecordRepository
+            .getRouteRecordDifficultyBetweenDatesAndGym(
+                user,
+                gym,
+                startDate,
+                endDate
+            );
+
+        List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
+            .map(arr -> {
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                    gym, ((int) arr[CLIMEET_LEVEL]));
+                Long levelCount = (Long) arr[LEVEL_COUNT];
+
+                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount );
+            })
+            .collect(Collectors.toList());
+
+        return ClimbingRecordStatisticsInfoByGym.toDTO(
             time,
             totalCompletedCount,
             attemptRouteCount,
@@ -242,7 +323,8 @@ public class ClimbingRecordService {
         );
     }
 
-    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(Long climbingGymId) {
+    public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(
+        Long climbingGymId) {
         ClimbingGym climbingGym = gymRepository.findById(climbingGymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 

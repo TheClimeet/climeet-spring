@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.difficultymapping.enums;
 
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import java.util.Arrays;
 
 public enum ClimeetDifficulty {
     VB("VB", 0),
@@ -39,5 +40,12 @@ public enum ClimeetDifficulty {
             }
         }
         throw new GeneralException(ErrorStatus._INVALID_DIFFICULTY);
+    }
+
+    public static ClimeetDifficulty findByInt(int climeetDifficulty){
+        return Arrays.stream(ClimeetDifficulty.values())
+            .filter(difficulty -> difficulty.getIntValue() == climeetDifficulty)
+            .findFirst()
+            .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_DIFFICULTY));
     }
 }

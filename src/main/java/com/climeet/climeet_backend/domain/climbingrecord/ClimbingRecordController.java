@@ -8,6 +8,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfoByGym;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
@@ -113,6 +114,18 @@ public class ClimbingRecordController {
         @RequestParam int month) {
         return ResponseEntity.ok(
             climbingRecordService.getClimbingRecordStatistics(user, year, month));
+    }
+
+    @Operation(summary = "나의 월별 & 암장별 운동기록 통계")
+    @GetMapping("/users/gyms/{gymId}/statistics/months")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD, ErrorStatus._INVALID_MEMBER})
+    public ResponseEntity<ClimbingRecordStatisticsInfoByGym> getClimbingStatisticsByGymMonthly(
+        @CurrentUser User user,
+        @PathVariable Long gymId,
+        @RequestParam int year,
+        @RequestParam int month) {
+        return ResponseEntity.ok(
+            climbingRecordService.getClimbingRecordStatisticsByGymId(user, gymId, year, month));
     }
 
     @Operation(summary = "암장별 주간 평균 완등률 통계 ")
