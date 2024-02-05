@@ -33,7 +33,7 @@ public class RouteVersionResponseDto {
             return RouteVersionFilteringKeyResponse.builder()
                 .gymId(climbingGym.getId())
                 .timePoint(routeVersion.getTimePoint())
-                .layoutImageUrl(routeVersion.getLayoutImageUrl())
+                .layoutImageUrl(routeVersion.getClimbingGymLayoutImage().getImgUrl())
                 .sectorList(sectorList)
                 .difficultyList(difficultyList)
                 .floorList(floorList)

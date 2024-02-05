@@ -2,6 +2,8 @@ package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImage;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImageRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
@@ -40,6 +42,7 @@ public class RouteVersionService {
     private final SectorRepository sectorRepository;
     private final ManagerRepository managerRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
+    private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
     private final S3Service s3Service;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
@@ -82,23 +85,27 @@ public class RouteVersionService {
             createRouteVersionRequest.getSectorIdList());
 
         // 이미지 url이나 이미지 파일이 들어오지 않았을 때 예외처리
-        if (layoutImage == null && createRouteVersionRequest.getLayoutImageUrl() == null) {
+        if (layoutImage == null && createRouteVersionRequest.getLayoutImageId() == null) {
             throw new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE);
         }
 
-        String layoutImageUrl;
+        ClimbingGymLayoutImage climbingGymLayoutImage = null;
         // 이미지 파일이 들어왔으면 s3에 업로드 후 사용
         if (layoutImage != null) {
-            layoutImageUrl = s3Service.uploadFile(layoutImage).getImgUrl();
+            String layoutImageUrl = s3Service.uploadFile(layoutImage).getImgUrl();
+            climbingGymLayoutImage = climbingGymLayoutImageRepository.save(
+                ClimbingGymLayoutImage.toEntity(layoutImageUrl));
         }
         // 이미지 파일이 안들어왔으면 기존 url 그대로 사용
         else {
-            layoutImageUrl = createRouteVersionRequest.getLayoutImageUrl();
+            climbingGymLayoutImage = climbingGymLayoutImageRepository.findById(
+                    createRouteVersionRequest.getLayoutImageId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE));
         }
 
         routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
             createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString,
-            layoutImageUrl));
+            climbingGymLayoutImage));
 
     }
 
