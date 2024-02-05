@@ -376,6 +376,9 @@ public class ClimbingRecordService {
         List<Object[]> bestUserRanking = climbingRecordRepository.findByLevelRankingClimbingDateBetweenAndClimbingGym(
             (LocalDate) lastWeek[MONDAY], (LocalDate) lastWeek[SUNDAY], climbingGym);
 
+        List<DifficultyMapping> difficultyMappingList
+            = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(climbingGym);
+
         int[] rank = {1};
         List<BestLevelUserSimpleInfo> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
@@ -384,8 +387,17 @@ public class ClimbingRecordService {
                 Number count = (Number) userRankMap[RANKING_COUNT];
                 int highDifficultyCount = count.intValue();
 
+
+                DifficultyMapping difficultyMapping = difficultyMappingList.stream()
+                    .filter(iter -> iter.getDifficulty() == highDifficulty )
+                    .findAny().get();
+
+                String climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+                String gymDifficultyName = difficultyMapping.getGymDifficultyName();
+                String gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+
                 return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty,
-                    highDifficultyCount);
+                    highDifficultyCount, climeetDifficultyName, gymDifficultyName, gymDifficultyColor);
             })
             .collect(Collectors.toList());
 

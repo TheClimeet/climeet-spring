@@ -217,10 +217,14 @@ public class ClimbingRecordResponseDto {
         private int ranking;
         private int highDifficulty;
         private int highDifficultyCount;
+        private String climeetDifficultyName;
+        private String gymDifficultyName;
+        private String gymDifficultyColor;
 
 
         public static BestLevelUserSimpleInfo toDTO(User user, int ranking,
-            int highDifficulty, int highDifficultyCount
+            int highDifficulty, int highDifficultyCount,
+            String climeetDifficultyName, String gymDifficultyName, String gymDifficultyColor
             ) {
             return BestLevelUserSimpleInfo.builder()
                 .ranking(ranking)
@@ -229,6 +233,9 @@ public class ClimbingRecordResponseDto {
                 .profileName(user.getProfileName())
                 .highDifficulty(highDifficulty)
                 .highDifficultyCount(highDifficultyCount)
+                .climeetDifficultyName(climeetDifficultyName)
+                .gymDifficultyName(gymDifficultyName)
+                .gymDifficultyColor(gymDifficultyColor)
                 .build();
         }
     }
