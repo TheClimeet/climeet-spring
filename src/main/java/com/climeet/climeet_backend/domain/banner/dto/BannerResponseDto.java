@@ -37,7 +37,6 @@ public class BannerResponseDto {
                 .bannerStartDate(banner.getBannerStartDate())
                 .bannerEndDate(banner.getBannerEndDate())
                 .isPopup(banner.getIsPopup())
-                .linkUrl(banner.getLinkUrl())
                 .build();
         }
     }
