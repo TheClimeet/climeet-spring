@@ -5,6 +5,8 @@ import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymTabInfoResponse;
+import com.climeet.climeet_backend.domain.climbinggym.enums.ServiceBitmask;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -32,6 +34,7 @@ public class ClimbingGymService {
     private final ClimbingGymRepository climbingGymRepository;
     private final ManagerRepository managerRepository;
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
+    private final BitmaskConverter bitmaskConverter;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -99,6 +102,26 @@ public class ClimbingGymService {
             .map(ClimbingGymBackgroundImage::getImgUrl)
             .toList();
         return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImageUrlList);
+    }
+
+    public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        List<String> serviceList = bitmaskConverter.convertBitmaskToServiceList(
+            climbingGym.getServiceBitMask()).stream().map(ServiceBitmask::name).toList();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map<String, List<String>> businessHoursMap = objectMapper.readValue(
+                climbingGym.getBusinessHours(),
+                new TypeReference<Map<String, List<String>>>() {
+                });
+            return ClimbingGymTabInfoResponse.toDto(climbingGymRepository.save(climbingGym),
+                businessHoursMap, serviceList);
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
+        }
     }
 
 

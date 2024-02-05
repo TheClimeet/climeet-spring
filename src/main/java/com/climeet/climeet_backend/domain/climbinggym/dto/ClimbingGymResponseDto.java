@@ -93,6 +93,30 @@ public class ClimbingGymResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ClimbingGymTabInfoResponse {
+
+        private Long gymId;
+        private String address;
+        private String tel;
+        private Map<String, List<String>> businessHours;
+        private List<String> serviceList;
+
+        public static ClimbingGymTabInfoResponse toDto(ClimbingGym climbingGym,
+            Map<String, List<String>> businessHours, List<String> serviceList) {
+            return ClimbingGymTabInfoResponse.builder()
+                .gymId(climbingGym.getId())
+                .address(climbingGym.getAddress())
+                .tel(climbingGym.getTel())
+                .businessHours(businessHours)
+                .serviceList(serviceList)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ClimbingGymInfoResponse {
 
         private String name;
