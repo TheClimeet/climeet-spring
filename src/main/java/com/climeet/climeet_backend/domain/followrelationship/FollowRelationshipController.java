@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class FollowRelationshipController {
     private final FollowRelationshipService followRelationshipService;
-    private final UserRepository userRepository;
-    private final FollowRelationshipRepository followRelationshipRepository;
 
     @PostMapping("/follow-relationship/{userId}")
     @Operation(summary = "유저 팔로우")
