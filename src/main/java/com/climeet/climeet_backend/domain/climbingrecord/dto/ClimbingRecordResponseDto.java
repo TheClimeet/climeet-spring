@@ -167,14 +167,39 @@ public class ClimbingRecordResponseDto {
     @Builder
     public static class ClimbingRecordUserStatisticsSimpleInfo {
 
+        private Long userId;
         private Long totalCompletedCount;
         private Long attemptRouteCount;
-        private List<Map<Long, Long>> difficulty;
+        private Map<String, Long> difficulty;
 
-        public static ClimbingRecordUserStatisticsSimpleInfo toDTO(Long totalCompletedCount,
-            Long attemptRouteCount, List<Map<Long, Long>> difficulty) {
+        public static ClimbingRecordUserStatisticsSimpleInfo toDTO(Long userId, Long totalCompletedCount,
+            Long attemptRouteCount, Map<String, Long> difficulty) {
 
             return ClimbingRecordUserStatisticsSimpleInfo.builder()
+                .userId(userId)
+                .totalCompletedCount(totalCompletedCount)
+                .attemptRouteCount(attemptRouteCount)
+                .difficulty(difficulty)
+                .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ClimbingRecordUserAndGymStatisticsDetailInfo {
+
+        private Long userId;
+        private Long totalCompletedCount;
+        private Long attemptRouteCount;
+        private List<GymDifficultyMappingInfo> difficulty;
+
+        public static ClimbingRecordUserAndGymStatisticsDetailInfo toDTO(Long userId, Long totalCompletedCount,
+            Long attemptRouteCount, List<GymDifficultyMappingInfo> difficulty) {
+
+            return ClimbingRecordUserAndGymStatisticsDetailInfo.builder()
+                .userId(userId)
                 .totalCompletedCount(totalCompletedCount)
                 .attemptRouteCount(attemptRouteCount)
                 .difficulty(difficulty)

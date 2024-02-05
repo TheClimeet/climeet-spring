@@ -12,6 +12,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfoByGym;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserAndGymStatisticsDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.GymDifficultyMappingInfo;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
@@ -448,14 +449,59 @@ public class ClimbingRecordService {
         Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
 
         //기록
-        List<Map<Long, Long>> difficultyList = routeRecordRepository
+        List<Object[]> difficulties = routeRecordRepository
             .findAllRouteRecordDifficultyAndUser(user);
 
+        Map<String, Long> difficultyList = difficulties.stream()
+            .collect(Collectors.toMap(
+                arr -> ClimeetDifficulty.findByInt(((int) arr[CLIMEET_LEVEL]))
+                    .getStringValue(),
+                arr -> (Long) arr[LEVEL_COUNT]
+            ));
+
         return ClimbingRecordUserStatisticsSimpleInfo.toDTO(
+            userId,
             totalCompletedCount,
             attemptRouteCount,
             difficultyList
         );
     }
 
+
+    public ClimbingRecordUserAndGymStatisticsDetailInfo getUserStatisticsByGym(Long userId, Long gymId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_MEMBER));
+
+        ClimbingGym gym = gymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        //완등률
+        Tuple crTuple = climbingRecordRepository.findAllClearRateAndUserAndGym(user, gym);
+
+        Long totalCompletedCount = (Long) crTuple.get("totalCompletedCount");
+
+        Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
+
+        //기록
+        List<Object[]> difficulties = routeRecordRepository
+            .findAllRouteRecordDifficultyAndUserAndGym(user, gym);
+
+
+        List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
+            .map(arr -> {
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                    gym, ((int) arr[CLIMEET_LEVEL]));
+                Long levelCount = (Long) arr[LEVEL_COUNT];
+
+                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount );
+            })
+            .collect(Collectors.toList());
+
+        return ClimbingRecordUserAndGymStatisticsDetailInfo.toDTO(
+            userId,
+            totalCompletedCount,
+            attemptRouteCount,
+            difficultyList
+        );
+    }
 }
