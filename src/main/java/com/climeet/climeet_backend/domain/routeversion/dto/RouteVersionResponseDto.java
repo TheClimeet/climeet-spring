@@ -5,6 +5,7 @@ import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappin
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.RouteVersion;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -18,24 +19,22 @@ public class RouteVersionResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RouteVersionDetailResponse {
+    public static class RouteVersionFilteringKeyResponse {
 
         private Long gymId;
         private LocalDate timePoint;
         private String layoutImageUrl;
         private List<SectorDetailResponse> sectorList;
-        private List<RouteDetailResponse> routeList;
         private List<DifficultyMappingDetailResponse> difficultyList;
 
-        public static RouteVersionDetailResponse toDto(ClimbingGym climbingGym,
-            List<SectorDetailResponse> sectorList, List<RouteDetailResponse> routeList,
+        public static RouteVersionFilteringKeyResponse toDto(ClimbingGym climbingGym,
+            List<SectorDetailResponse> sectorList,
             List<DifficultyMappingDetailResponse> difficultyList, RouteVersion routeVersion) {
-            return RouteVersionDetailResponse.builder()
+            return RouteVersionFilteringKeyResponse.builder()
                 .gymId(climbingGym.getId())
                 .timePoint(routeVersion.getTimePoint())
                 .layoutImageUrl(routeVersion.getLayoutImageUrl())
                 .sectorList(sectorList)
-                .routeList(routeList)
                 .difficultyList(difficultyList)
                 .build();
         }
