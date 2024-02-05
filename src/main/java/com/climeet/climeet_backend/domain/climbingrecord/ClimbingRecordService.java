@@ -309,19 +309,27 @@ public class ClimbingRecordService {
         LocalDate startDate = (LocalDate) lastWeek[MONDAY];
         LocalDate endDate = (LocalDate) lastWeek[SUNDAY];
 
-        ClimbingGym climbingGym = gymRepository.findById(gymId)
+        ClimbingGym gym = gymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<Map<Long, Long>> difficultyList = routeRecordRepository
+        List<Object[]> difficulties = routeRecordRepository
             .getRouteRecordDifficultyBetweenDaysAndGym(
-                climbingGym,
+                gym,
                 startDate,
                 endDate
             );
 
-        return ClimbingRecordStatisticsSimpleInfo.toDTO(
-            difficultyList
-        );
+        List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
+            .map(arr -> {
+                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                    gym, ((int) arr[CLIMEET_LEVEL]));
+                Long levelCount = (Long) arr[LEVEL_COUNT];
+
+                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount );
+            })
+            .collect(Collectors.toList());
+
+        return ClimbingRecordStatisticsSimpleInfo.toDTO(difficultyList);
     }
 
     public List<BestClearUserSimpleInfo> getClimberRankingListOrderClearCountByGym(
