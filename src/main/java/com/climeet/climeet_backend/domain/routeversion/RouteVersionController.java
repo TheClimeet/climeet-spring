@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "RouteVersion", description = "암장 루트 버전 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/gym")
+@RequestMapping("api/gyms")
 public class RouteVersionController {
 
     private final RouteVersionService routeVersionService;
