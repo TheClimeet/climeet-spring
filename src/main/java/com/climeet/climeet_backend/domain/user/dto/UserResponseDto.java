@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user.dto;
 
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,5 +38,30 @@ public class UserResponseDto {
                 .userId(user.getId())
                 .build();
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserFollowDetailInfo{
+        private Long userId;
+        private String userName;
+        private String userProfileUrl;
+        private Long followerCount;
+        private Long followingCount;
+        private Boolean isFollower;
+
+        public static UserFollowDetailInfo toDTO(User follower, Boolean followStatus){
+            return UserFollowDetailInfo.builder()
+                .userId(follower.getId())
+                .userName(follower.getProfileName())
+                .userProfileUrl(follower.getProfileImageUrl())
+                .followerCount(follower.getFollowerCount())
+                .followingCount(follower.getFollowingCount())
+                .isFollower(followStatus)
+                .build();
+        }
+
     }
 }

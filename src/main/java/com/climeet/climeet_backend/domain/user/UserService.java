@@ -1,12 +1,21 @@
 package com.climeet.climeet_backend.domain.user;
 
+import static java.util.stream.Collectors.toList;
+
+import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.ClimberRepository;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
+import com.climeet.climeet_backend.domain.manager.Manager;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -15,7 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ClimberRepository climberRepository;
+    private final FollowRelationshipRepository followRelationshipRepository;
 
     public User updateNotification(User user, boolean isAllowFollowNotification,
         boolean isAllowLikeNotification, boolean isAllowCommentNotification,
@@ -40,4 +49,58 @@ public class UserService {
         return new UserTokenSimpleInfo(user);
 
     }
+
+    public List<UserFollowDetailInfo> getFollower(Long targetUserId, User currentUser, String userCategory){
+        userRepository.findById(targetUserId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
+        List<FollowRelationship> targetUserFollowerList = followRelationshipRepository.findByFollowingId(targetUserId);
+        if(!userCategory.equals("Climber")&& !userCategory.equals("Manager")){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+        List<UserFollowDetailInfo> userFollowDetailResponseList = null;
+        if(userCategory.equals("Climber")) {
+             userFollowDetailResponseList = targetUserFollowerList.stream()
+                 //.filter(followRelationship -> followRelationship.getFollower() instanceof Climber)
+                .map(followRelationship -> {
+                    System.out.println("ssㄴㄴ");
+                        Boolean currentUserRelation = false;
+                        if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+                            currentUser.getId(),
+                            followRelationship.getFollower().getId()).isPresent()) {
+                            currentUserRelation = true;
+                        }
+                    return UserFollowDetailInfo.toDTO(followRelationship.getFollower(),
+                        currentUserRelation);
+                }).toList();
+
+        }
+        if(userCategory.equals("Manager")){
+            userFollowDetailResponseList = targetUserFollowerList.stream()
+                .filter(followRelationship -> followRelationship.getFollower() instanceof Manager)
+                .map(followRelationship -> {
+                    Boolean currentUserRelation = false;
+                    if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+                        currentUser.getId(),
+                        followRelationship.getFollower().getId()).isPresent()) {
+                        currentUserRelation = true;
+                    }
+                    return UserFollowDetailInfo.toDTO(followRelationship.getFollower(),
+                        currentUserRelation);
+                }).toList();
+        }
+
+            return userFollowDetailResponseList;
+        }
+    //암장 팔로워 조회
+//    public List<UserFollowDetailInfo> getGymFollower(Long targetUserId, User currentUser){
+//        List<UserFollowDetailInfo> allFollowerList = getFollower(targetUserId, currentUser);
+//        List<UserFollowDetailInfo> gymFollwerDetailInfoList = allFollowerList.stream()
+//            .map(allFollower -> {
+//                if(allFollower.)
+//            })
+//    }
+    //클라이머 팔로워 조회
+
+    //암장 팔로잉 조회
+    //클라이머 팔로잉 조회
 }
