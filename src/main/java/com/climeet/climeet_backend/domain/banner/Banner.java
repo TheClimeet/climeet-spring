@@ -32,6 +32,4 @@ public class Banner extends BaseTimeEntity {
     private LocalDate bannerEndDate;
 
     private Boolean isPopup;
-
-    private String linkUrl;
 }

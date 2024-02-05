@@ -22,7 +22,7 @@ public class BannerController {
         return ResponseEntity.ok(bannerService.getBannerListBetweenDates());
     }
 
-    @GetMapping("admin/banners")
+    @GetMapping("retool/banners")
     public ResponseEntity<List<BannerSimpleInfo>> getBannerList() {
         return ResponseEntity.ok(bannerService.getBannerList());
     }
