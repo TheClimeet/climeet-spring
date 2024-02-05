@@ -56,6 +56,7 @@ public class ClimbingRecordService {
     public static final int SUNDAY = 1;
     public static final int RANKING_USER = 0;
     public static final int RANKING_CONDITION = 1;
+    public static final int RANKING_COUNT = 2;
 
     public static final int CLIMEET_LEVEL = 0;
     public static final int LEVEL_COUNT = 1;
@@ -380,7 +381,11 @@ public class ClimbingRecordService {
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
                 int highDifficulty = (int) userRankMap[RANKING_CONDITION];
-                return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty);
+                Number count = (Number) userRankMap[RANKING_COUNT];
+                int highDifficultyCount = count.intValue();
+
+                return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty,
+                    highDifficultyCount);
             })
             .collect(Collectors.toList());
 
