@@ -136,9 +136,11 @@ public class RouteVersionService {
             .map(SectorDetailResponse::toDto).toList();
         List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
             .map(DifficultyMappingDetailResponse::toDto).toList();
+        List<Integer> floorList = sectorList.stream()
+            .map(Sector::getFloor).distinct().sorted().toList();
 
         return RouteVersionFilteringKeyResponse.toDto(climbingGym, sectorDetailResponses,
-            difficultyMappingDetailResponses, routeVersion);
+            difficultyMappingDetailResponses, floorList, routeVersion);
     }
 
     public PageResponseDto<List<RouteDetailResponse>> getRouteVersionFilteringRouteList(Long gymId,
