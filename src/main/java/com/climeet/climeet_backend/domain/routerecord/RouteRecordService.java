@@ -103,17 +103,16 @@ public class RouteRecordService {
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
         //각 필드의 기존값들
-        Long routeId = routeRecord.getRoute().getId();
-        int oldAttemptTime = routeRecord.getAttemptCount();
+        int oldAttemptCount = routeRecord.getAttemptCount();
         Boolean oldIsCompleted = routeRecord.getIsCompleted();
 
         //각 필드의 새값들
-        Integer newAttemptTime = updateRouteRecord.getAttemptCount();
+        Integer attemptCount = updateRouteRecord.getAttemptCount();
         Boolean newIsComplete = updateRouteRecord.getIsComplete();
 
-        if (newAttemptTime != null) {
-            climbingRecord.setAttemptCount(newAttemptTime - oldAttemptTime);
-            oldAttemptTime = newAttemptTime;
+        if (attemptCount != null) {
+            climbingRecord.setAttemptCount(attemptCount - oldAttemptCount);
+            oldAttemptCount = attemptCount;
         }
 
         if (newIsComplete != null && newIsComplete != oldIsCompleted) {
@@ -135,7 +134,7 @@ public class RouteRecordService {
 
         climbingRecord.attemptRouteCountUp();
 
-        routeRecord.update(oldAttemptTime, oldIsCompleted);
+        routeRecord.update(oldAttemptCount, oldIsCompleted);
 
         return new RouteRecordSimpleInfo(routeRecord);
     }

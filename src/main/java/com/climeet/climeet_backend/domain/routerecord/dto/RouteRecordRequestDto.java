@@ -28,7 +28,7 @@ public class RouteRecordRequestDto {
         @Schema(example = "10", description = "해당 루트 도전 횟수")
         private Integer attemptCount;
 
-        @Schema(example = "1", description = "해당 루트 완등 여부")
+        @Schema(example = "true", description = "해당 루트 완등 여부")
         private Boolean isComplete;
     }
 }
