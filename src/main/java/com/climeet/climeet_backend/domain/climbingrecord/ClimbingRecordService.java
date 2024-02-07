@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.climbingrecord;
 
+import static com.climeet.climeet_backend.global.utils.DateTimeConverter.convertDoubleToStringTime;
+
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRequestDto.UpdateClimbingRecord;
@@ -213,7 +215,7 @@ public class ClimbingRecordService {
             throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
         }
         Double totalTime = (Double) crTuple.get("totalTime");
-        LocalTime time = convertDoubleToTime(totalTime);
+        String time = convertDoubleToStringTime(totalTime);
 
         Long totalCompletedCount = (Long) crTuple.get("totalCompletedCount");
 
@@ -269,7 +271,7 @@ public class ClimbingRecordService {
 
         Double totalTime = (Double) crTuple.get("totalTime");
 
-        LocalTime time = convertDoubleToTime(totalTime);
+        String time = convertDoubleToStringTime(totalTime);
 
         Long totalCompletedCount = (Long) crTuple.get("totalCompletedCount");
 
@@ -368,7 +370,7 @@ public class ClimbingRecordService {
         List<BestTimeUserSimpleInfo> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
-                LocalTime totalTime = convertDoubleToTime((Double) userRankMap[RANKING_CONDITION]);
+                String totalTime = convertDoubleToStringTime((Double) userRankMap[RANKING_CONDITION]);
                 return BestTimeUserSimpleInfo.toDTO(user, rank[0]++, totalTime);
             })
             .collect(Collectors.toList());
@@ -411,17 +413,6 @@ public class ClimbingRecordService {
             .collect(Collectors.toList());
 
         return ranking;
-    }
-
-
-    // TODO: 2024/01/21 24시간을 초과했을 때 에러처리
-    public static LocalTime convertDoubleToTime(double totalSeconds) {
-        int seconds = (int) totalSeconds;
-        int hours = (seconds / 3600) % 24;
-        int minutes = (seconds % 3600) / 60;
-        int remainingSeconds = seconds % 60;
-
-        return LocalTime.of(hours, minutes, remainingSeconds);
     }
 
     public static Object[] startDayAndLastDayOfLastWeek() {

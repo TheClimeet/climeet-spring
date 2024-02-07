@@ -18,4 +18,16 @@ public class DateTimeConverter {
         } else
             return dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
     }
+
+    public static String convertDoubleToStringTime(double totalSeconds) {
+        int seconds = (int) totalSeconds;
+        int hours = (seconds / 3600);
+        int minutes = (seconds % 3600) / 60;
+        int remainingSeconds = seconds % 60;
+
+        String hoursString = (hours < 100) ? String.format("%02d", hours) : String.format("%03d", hours);
+        String totalTime = String.format("%s:%02d:%02d", hoursString, minutes, remainingSeconds);
+
+        return totalTime;
+    }
 }
