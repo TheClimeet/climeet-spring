@@ -60,8 +60,7 @@ public class RouteRecord extends BaseTimeEntity {
             .build();
     }
 
-    public void update(int attemptCount, Boolean isCompleted, Route route) {
-        this.route = route;
+    public void update(int attemptCount, Boolean isCompleted) {
         this.attemptCount = attemptCount;
         this.isCompleted = isCompleted;
     }
