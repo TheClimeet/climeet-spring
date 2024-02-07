@@ -45,6 +45,10 @@ public class RouteRecordService {
         if (requestDto.getIsCompleted()) {
             climbingRecord.totalCompletedCountUp();
         }
+
+        climbingRecord.setHighDifficulty(Math.max(route.getDifficultyMapping().getDifficulty(),
+            climbingRecord.getHighDifficulty()));
+
         return ResponseEntity.ok("루트 기록 성공");
 
     }
