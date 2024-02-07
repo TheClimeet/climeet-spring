@@ -10,6 +10,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsInfoByGym;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserAndGymStatisticsDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -166,12 +167,23 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderLevelByGym(gymId));
     }
 
-    @Operation(summary = "유저별 누적 통계")
+    @Operation(summary = "유저별 전체 암장에 대한 누적 통계")
     @GetMapping("/users/{userId}/statistics")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> getUserStatistics(
         @CurrentUser User user,
         @PathVariable Long userId) {
         return ResponseEntity.ok(climbingRecordService.getUserStatistics(userId));
+    }
+
+    @Operation(summary = "유저별 특정 암장에 대한 누적 통계")
+    @GetMapping("/users/{userId}/gyms/{gymId}/statistics")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
+    public ResponseEntity<ClimbingRecordUserAndGymStatisticsDetailInfo> getUserStatistics(
+        @CurrentUser User user,
+        @PathVariable Long userId,
+        @PathVariable Long gymId
+    ) {
+        return ResponseEntity.ok(climbingRecordService.getUserStatisticsByGym(userId, gymId));
     }
 }
