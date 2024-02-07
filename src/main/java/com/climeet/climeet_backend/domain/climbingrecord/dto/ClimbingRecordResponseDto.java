@@ -151,9 +151,9 @@ public class ClimbingRecordResponseDto {
     @Builder
     public static class ClimbingRecordStatisticsSimpleInfo {
 
-        private List<Map<Long, Long>> difficulty;
+        private List<GymDifficultyMappingInfo> difficulty;
 
-        public static ClimbingRecordStatisticsSimpleInfo toDTO(List<Map<Long, Long>> difficulty) {
+        public static ClimbingRecordStatisticsSimpleInfo toDTO(List<GymDifficultyMappingInfo> difficulty) {
 
             return ClimbingRecordStatisticsSimpleInfo.builder()
                 .difficulty(difficulty)

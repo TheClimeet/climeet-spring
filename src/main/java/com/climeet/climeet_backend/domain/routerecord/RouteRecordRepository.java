@@ -61,9 +61,9 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     @Query("SELECT " +
         "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
-        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym " +
+        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym AND rr.isCompleted = true " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
-    List<Map<Long,Long>> getRouteRecordDifficultyBetweenDaysAndGym(
+    List<Object[]> getRouteRecordDifficultyBetweenDaysAndGym(
         @Param("gym") ClimbingGym gym,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
