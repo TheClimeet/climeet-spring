@@ -19,7 +19,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     @Query("SELECT " +
         "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
-        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.user = :user " +
+        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.user = :user AND rr.isCompleted = true " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
     List<Object[]> getRouteRecordDifficultyBetween(
         @Param("user") User user,
@@ -30,7 +30,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     @Query("SELECT " +
         "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
-        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym AND rr.user = :user " +
+        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym AND rr.user = :user AND rr.isCompleted = true " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
     List<Object[]> getRouteRecordDifficultyBetweenDatesAndGym(
         @Param("user") User user,

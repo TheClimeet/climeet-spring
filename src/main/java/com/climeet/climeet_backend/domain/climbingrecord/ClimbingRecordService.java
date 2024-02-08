@@ -206,10 +206,13 @@ public class ClimbingRecordService {
         int month) {
 
         LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
+        System.out.println("startDate = " + startDate);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
+        System.out.println("endDate = " + endDate);
 
         Tuple crTuple = climbingRecordRepository.getStatisticsInfoBetweenDaysAndUser(user,
             startDate, endDate);
+        System.out.println("crTuple = " + crTuple);
 
         if (crTuple.get("totalTime") == null) {
             throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
