@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,6 +56,11 @@ public class Manager extends User {
             .email(createManagerRequest.getEmail())
             .isRegistered(true)
             .climbingGym(gym)
+            .followerCount(0L)
+            .followingCount(0L)
+            .thisWeekCompleteCount(0)
+            .thisWeekTotalClimbingTime(0L)
+            .createdAt(LocalDateTime.now())
             .build();
     }
 
