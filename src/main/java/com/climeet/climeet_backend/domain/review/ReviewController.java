@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "ClimbingReview", description = "암장 리뷰 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/gym")
+@RequestMapping("api/gyms")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -32,10 +32,10 @@ public class ReviewController {
     @Operation(summary = "암장 리뷰 작성")
     @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
         ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._REVIEW_EXIST})
-    @PostMapping("/review")
+    @PostMapping("/{gymId}/review")
     public ResponseEntity<String> createReview(
-        @RequestBody CreateReviewRequest createReviewRequest, @CurrentUser User user) {
-        reviewService.createReview(createReviewRequest, user);
+        @RequestBody CreateReviewRequest createReviewRequest, @CurrentUser User user, @PathVariable Long gymId) {
+        reviewService.createReview(createReviewRequest, user, gymId);
         return ResponseEntity.ok("리뷰를 추가했습니다.");
     }
 
@@ -53,10 +53,10 @@ public class ReviewController {
     @Operation(summary = "암장 리뷰 수정")
     @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
         ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._EMPTY_REVIEW})
-    @PatchMapping("/")
+    @PatchMapping("/{gymId}/review")
     public ResponseEntity<String> changeReview(
-        @RequestBody CreateReviewRequest changeReviewRequest, @CurrentUser User user) {
-        reviewService.changeReview(changeReviewRequest, user);
+        @RequestBody CreateReviewRequest changeReviewRequest, @CurrentUser User user, @PathVariable Long gymId) {
+        reviewService.changeReview(changeReviewRequest, user, gymId);
         return ResponseEntity.ok("리뷰를 수정했습니다.");
     }
 }
