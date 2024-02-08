@@ -116,7 +116,7 @@ public class RouteRecordService {
         }
 
         if (newIsComplete != null && newIsComplete != oldIsCompleted) {
-            int difficulty = routeRecord.getRoute().getDifficultyMapping().getDifficulty();
+            int difficulty = routeRecord.getDifficulty();
             int oldAvgDifficulty = climbingRecord.getAvgDifficulty();
             int oldCount = climbingRecord.getTotalCompletedCount();
 
@@ -153,7 +153,7 @@ public class RouteRecordService {
 
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
-        int difficulty = routeRecord.getRoute().getDifficultyMapping().getDifficulty();
+        int difficulty = routeRecord.getDifficulty();
 
         List<RouteRecord> routeRecordList = routeRecordRepository.findAllByClimbingRecordId(
             climbingRecord.getId());
@@ -162,8 +162,7 @@ public class RouteRecordService {
         List<Integer> difficulties = routeRecordList.stream()
             .filter(record -> !record.getRoute().getId()
                 .equals(routeRecord.getRoute().getId()))
-            .map(record -> record.getRoute()
-                .getDifficultyMapping().getDifficulty())
+            .map(RouteRecord::getDifficulty)
             .toList();
 
         // difficulties 리스트에 difficulty 이상인 값이 있는지 확인
