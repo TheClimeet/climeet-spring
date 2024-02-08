@@ -21,6 +21,7 @@ public class RouteVersionResponseDto {
 
         private Long gymId;
         private LocalDate timePoint;
+        private Long layoutImageUrlId;
         private String layoutImageUrl;
         private List<SectorDetailResponse> sectorList;
         private List<DifficultyMappingDetailResponse> difficultyList;
@@ -33,7 +34,8 @@ public class RouteVersionResponseDto {
             return RouteVersionFilteringKeyResponse.builder()
                 .gymId(climbingGym.getId())
                 .timePoint(routeVersion.getTimePoint())
-                .layoutImageUrl(routeVersion.getLayoutImageUrl())
+                .layoutImageUrlId(routeVersion.getClimbingGymLayoutImage().getId())
+                .layoutImageUrl(routeVersion.getClimbingGymLayoutImage().getImgUrl())
                 .sectorList(sectorList)
                 .difficultyList(difficultyList)
                 .maxFloor(maxFloor)
