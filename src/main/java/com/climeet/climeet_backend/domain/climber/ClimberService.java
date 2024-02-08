@@ -92,10 +92,7 @@ public class ClimberService {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
 
-        Climber climber = Climber.builder()
-            .socialId(socialId)
-            .socialType(SocialType.valueOf(socialType))
-            .profileImageUrl(profileImg).build();
+        Climber climber = Climber.toEntity(socialId, SocialType.valueOf(socialType), profileImg);
         climberRepository.save(climber);
 
         String accessToken = jwtTokenProvider.createAccessToken(climber.getPayload());

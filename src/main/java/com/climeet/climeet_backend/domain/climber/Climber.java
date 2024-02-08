@@ -60,4 +60,12 @@ public class Climber extends User {
     public String getPayload(){
         return this.getId()+"+climber";
     }
+
+    public static Climber toEntity(String socialId, SocialType socialType, String profileImg){
+        return Climber.builder()
+            .socialId(socialId)
+            .socialType(socialType)
+            .profileImageUrl(profileImg)
+            .build();
+    }
 }
