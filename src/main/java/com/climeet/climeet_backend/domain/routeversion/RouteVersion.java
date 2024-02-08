@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImage;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,6 +31,9 @@ public class RouteVersion extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ClimbingGym climbingGym;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ClimbingGymLayoutImage climbingGymLayoutImage;
+
     @NotNull
     private LocalDate timePoint;
 
@@ -41,10 +45,10 @@ public class RouteVersion extends BaseTimeEntity {
 
 
     public static RouteVersion toEntity(ClimbingGym climbingGym, LocalDate timePoint,
-        String routeList,
-        String sectorList) {
+        String routeList, String sectorList, ClimbingGymLayoutImage climbingGymLayoutImage) {
         return RouteVersion.builder()
             .climbingGym(climbingGym)
+            .climbingGymLayoutImage(climbingGymLayoutImage)
             .timePoint(timePoint)
             .routeList(routeList)
             .sectorList(sectorList)

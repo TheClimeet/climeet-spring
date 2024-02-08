@@ -2,6 +2,8 @@ package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImage;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImageRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
@@ -12,21 +14,22 @@ import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
-import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionDetailResponse;
+import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionFilteringKeyResponse;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
-import java.util.Arrays;
-import java.util.Collections;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,8 @@ public class RouteVersionService {
     private final SectorRepository sectorRepository;
     private final ManagerRepository managerRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
+    private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
+    private final S3Service s3Service;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
@@ -47,10 +52,11 @@ public class RouteVersionService {
         if (routeVersionList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
         }
-        return routeVersionList.stream().map(routeVersion -> routeVersion.getTimePoint()).toList();
+        return routeVersionList.stream().map(RouteVersion::getTimePoint).toList();
     }
 
-    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user) {
+    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user,
+        MultipartFile layoutImage) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
@@ -77,38 +83,48 @@ public class RouteVersionService {
         String sectorIdListString = RouteVersionConverter.convertListToString(
             createRouteVersionRequest.getSectorIdList());
 
+        // 이미지 url이나 이미지 파일이 들어오지 않았을 때 예외처리
+        if (layoutImage == null && createRouteVersionRequest.getLayoutImageId() == null) {
+            throw new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE);
+        }
+
+        ClimbingGymLayoutImage climbingGymLayoutImage = null;
+        // 이미지 파일이 들어왔으면 s3에 업로드 후 사용
+        if (layoutImage != null) {
+            String layoutImageUrl = s3Service.uploadFile(layoutImage).getImgUrl();
+            climbingGymLayoutImage = climbingGymLayoutImageRepository.save(
+                ClimbingGymLayoutImage.toEntity(layoutImageUrl));
+        }
+        // 이미지 파일이 안들어왔으면 기존 url 그대로 사용
+        else {
+            climbingGymLayoutImage = climbingGymLayoutImageRepository.findById(
+                    createRouteVersionRequest.getLayoutImageId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE));
+        }
+
         routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
-            createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString));
+            createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString,
+            climbingGymLayoutImage));
 
     }
 
+    public RouteVersionFilteringKeyResponse getRouteVersionFilteringKey(Long gymId,
+        LocalDate timePoint) {
+        if (timePoint == null) {
+            timePoint = LocalDate.now();
+        }
 
-    public RouteVersionDetailResponse getRouteVersionDetail(Long gymId, LocalDate timePoint) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
                 climbingGym, timePoint)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
-
-        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
-            routeVersion.getRouteList());
-        if (routeIdList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
-        }
-        
-        routeIdList = routeIdList.stream().sorted(Collections.reverseOrder()).toList();
-        routeIdList = routeIdList.subList(0, Math.min(routeIdList.size(), 10));
 
         List<Long> sectorIdList = RouteVersionConverter.convertStringToList(
             routeVersion.getSectorList());
         if (sectorIdList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_SECTOR_LIST);
-        }
-
-        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
-        if (routeList.size() != routeIdList.size()) {
-            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
         List<Sector> sectorList = sectorRepository.findByIdIn(sectorIdList);
@@ -122,24 +138,25 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
         }
 
-        List<RouteDetailResponse> routeListResponse = routeList.stream()
-            .map(RouteDetailResponse::toDto).toList();
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
             .map(SectorDetailResponse::toDto).toList();
         List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
             .map(DifficultyMappingDetailResponse::toDto).toList();
+        int maxFloor = sectorList.stream()
+            .mapToInt(Sector::getFloor).max().orElse(0);
 
-        return RouteVersionDetailResponse.toDto(climbingGym, sectorDetailResponses,
-            routeListResponse, difficultyMappingDetailResponses);
+        return RouteVersionFilteringKeyResponse.toDto(climbingGym, sectorDetailResponses,
+            difficultyMappingDetailResponses, maxFloor, routeVersion);
     }
 
-    public List<RouteDetailResponse> getRouteVersionFiltering(Long gymId,
-        GetFilteredRouteVersionRequest requestDto) {
+    public PageResponseDto<List<RouteDetailResponse>> getRouteVersionFilteringRouteList(Long gymId,
+        GetFilteredRouteVersionRequest getFilteredRouteVersionRequest) {
+
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(
-                climbingGym, requestDto.getTimePoint())
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
+                climbingGym, getFilteredRouteVersionRequest.getTimePoint())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
         List<Long> routeIdList = RouteVersionConverter.convertStringToList(
@@ -153,26 +170,43 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
-        List<Route> filteredRouteList = routeList.stream().filter(route -> {
-            boolean floorFilter =
-                requestDto.getFloorList().length == 0 || Arrays.stream(requestDto.getFloorList())
-                    .anyMatch(floor -> floor == route.getSector().getFloor());
-            boolean sectorFilter = requestDto.getSectorIdList().length == 0 || Arrays.stream(
-                    requestDto.getSectorIdList())
-                .anyMatch(sectorId -> sectorId == route.getSector().getId());
-            boolean difficultyFilter =
-                requestDto.getDifficultyList().length == 0 || Arrays.stream(
-                    requestDto.getDifficultyList()).anyMatch(
-                    difficulty -> difficulty == route.getDifficultyMapping()
-                        .getDifficulty());
-            return floorFilter && sectorFilter && difficultyFilter;
-        }).toList();
-
-        if (filteredRouteList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        // floor Filter 적용
+        if (getFilteredRouteVersionRequest.getFloor() != null) {
+            routeList = routeList.stream()
+                .filter(route -> route.getSector().getFloor()
+                    == getFilteredRouteVersionRequest.getFloor())
+                .toList();
         }
 
-        return filteredRouteList.stream().map(RouteDetailResponse::toDto).toList();
-    }
+        // sector Filter 적용
+        if (getFilteredRouteVersionRequest.getSectorId() != null) {
+            routeList = routeList.stream()
+                .filter(route -> route.getSector().getId()
+                    == getFilteredRouteVersionRequest.getSectorId())
+                .toList();
+        }
 
+        // difficulty Filter 적용
+        if (getFilteredRouteVersionRequest.getDifficulty() != null) {
+            routeList = routeList.stream()
+                .filter(route -> route.getDifficultyMapping().getDifficulty()
+                    == getFilteredRouteVersionRequest.getDifficulty())
+                .toList();
+        }
+
+        List<RouteDetailResponse> routeDetailResponseList = routeList.stream()
+            .sorted(Comparator.comparing(Route::getId).reversed())
+            .skip(
+                getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
+            .limit(getFilteredRouteVersionRequest.getSize())
+            .map(RouteDetailResponse::toDto)
+            .toList();
+
+        boolean hasNextPage = (getFilteredRouteVersionRequest.getPage() + 1)
+            * getFilteredRouteVersionRequest.getSize() < routeList.size();
+
+        return new PageResponseDto<>(getFilteredRouteVersionRequest.getPage(), hasNextPage,
+            routeDetailResponseList);
+    }
 }
+

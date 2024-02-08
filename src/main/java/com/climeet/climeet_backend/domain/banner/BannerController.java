@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.banner;
 
 import com.climeet.climeet_backend.domain.banner.dto.BannerResponseDto.BannerDetailInfo;
+import com.climeet.climeet_backend.domain.banner.dto.BannerResponseDto.BannerSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import java.util.List;
@@ -19,5 +20,10 @@ public class BannerController {
         @CurrentUser User user
     ){
         return ResponseEntity.ok(bannerService.getBannerListBetweenDates());
+    }
+
+    @GetMapping("retool/banners")
+    public ResponseEntity<List<BannerSimpleInfo>> getBannerList() {
+        return ResponseEntity.ok(bannerService.getBannerList());
     }
 }

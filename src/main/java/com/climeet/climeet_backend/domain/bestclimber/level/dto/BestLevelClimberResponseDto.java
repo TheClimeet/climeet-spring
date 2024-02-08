@@ -22,13 +22,16 @@ public class BestLevelClimberResponseDto {
 
         private int thisWeekHighDifficulty;
 
+        private Long highDifficultyCount;
+
         public static BestLevelClimberDetailInfo toDTO(
             BestLevelClimber bestLevelClimber){
             return BestLevelClimberDetailInfo.builder()
                 .ranking(bestLevelClimber.getRanking())
                 .profileImageUrl(bestLevelClimber.getProfileImageUrl())
-                .thisWeekHighDifficulty(bestLevelClimber.getThisWeekHighDifficulty())
+                .thisWeekHighDifficulty(bestLevelClimber.getDifficulty())
                 .profileName(bestLevelClimber.getProfileName())
+                .highDifficultyCount(bestLevelClimber.getDifficultyCount())
                 .build();
         }
     }

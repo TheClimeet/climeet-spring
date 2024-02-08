@@ -16,22 +16,26 @@ public class RouteVersionRequestDto {
         private LocalDate timePoint;
         private List<Long> routeIdList;
         private List<Long> sectorIdList;
+        private Long layoutImageId;
     }
 
     @Getter
     public static class GetFilteredRouteVersionRequest {
 
-        private int[] floorList = null;
-        private Long[] sectorIdList = null;
-        private int[] difficultyList = null;
+        private int page;
+        private int size;
+        private Integer floor;
+        private Long sectorId;
+        private Integer difficulty;
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate timePoint;
 
         public GetFilteredRouteVersionRequest() {
-            this.floorList = new int[0];
-            this.sectorIdList = new Long[0];
-            this.difficultyList = new int[0];
+            this.floor = null;
+            this.sectorId = null;
+            this.difficulty = null;
+            this.timePoint = LocalDate.now();
         }
     }
 

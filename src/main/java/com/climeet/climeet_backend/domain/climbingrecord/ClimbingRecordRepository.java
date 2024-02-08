@@ -2,15 +2,14 @@ package com.climeet.climeet_backend.domain.climbingrecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.user.User;
-import com.climeet.climeet_backend.global.security.CurrentUser;
 import jakarta.persistence.Tuple;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, Long> {
 
@@ -31,11 +30,32 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
         @Param("endDate") LocalDate endDate);
 
     @Query("SELECT " +
+        "   SUM(HOUR(cr.climbingTime) * 3600 + MINUTE(cr.climbingTime) * 60 + SECOND(cr.climbingTime)) as totalTime, "
+        +
+        "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
+        "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
+        "FROM ClimbingRecord cr " +
+        "WHERE cr.climbingDate BETWEEN :startDate AND :endDate AND cr.gym = :climbingGym AND cr.user = :user")
+    Tuple getStatisticsInfoBetweenDaysAndUserAndGym(@Param("user") User user,
+        @Param("climbingGym" ) ClimbingGym climbingGym,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
+
+
+
+    @Query("SELECT " +
         "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
         "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
         "FROM ClimbingRecord cr " +
         "WHERE cr.user = :user")
     Tuple findAllClearRateAndUser(@Param("user") User user);
+
+    @Query("SELECT " +
+        "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
+        "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
+        "FROM ClimbingRecord cr " +
+        "WHERE cr.user = :user AND cr.gym = :gym ")
+    Tuple findAllClearRateAndUserAndGym(@Param("user") User user, @Param("gym") ClimbingGym gym);
 
     @Query("SELECT " +
         "cr.user, SUM(cr.totalCompletedCount) as totalCount " +
@@ -57,13 +77,20 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
     List<Object[]> findByTimeRankingClimbingDateBetweenAndClimbingGym(LocalDate startDate,
         LocalDate endDate, ClimbingGym climbingGym);
 
-    @Query("SELECT " +
-        "cr.user, MAX(cr.highDifficulty) as highDifficulty " +
-        "FROM ClimbingRecord cr " +
-        "WHERE cr.climbingDate BETWEEN :startDate AND :endDate " +
-        "AND cr.gym = :climbingGym " +
-        "GROUP BY cr.user " +
-        "ORDER BY highDifficulty DESC")
+    @Query(
+        "SELECT cr.user, MAX(cr.highDifficulty), COUNT(*) as highDifficultyCount " +
+         "FROM " +
+            "(" +
+            "SELECT cr.user as user, MAX(cr.highDifficulty) as highDifficulty " +
+            "FROM ClimbingRecord cr " +
+            "WHERE cr.climbingDate BETWEEN :startDate AND :endDate AND cr.gym = :climbingGym " +
+            "GROUP BY cr.user) as subquery " +
+        "INNER JOIN ClimbingRecord cr ON cr.user.id = subquery.user.id " +
+        "Where subquery.user.id = cr.user.id AND subquery.highDifficulty = cr.highDifficulty " +
+        "AND cr.climbingDate BETWEEN :startDate AND :endDate AND cr.gym = :climbingGym " +
+        "GROUP BY subquery.user.id " +
+        "ORDER BY subquery.highDifficulty DESC, highDifficultyCount DESC"
+    )
     List<Object[]> findByLevelRankingClimbingDateBetweenAndClimbingGym(LocalDate startDate,
         LocalDate endDate, ClimbingGym climbingGym);
 

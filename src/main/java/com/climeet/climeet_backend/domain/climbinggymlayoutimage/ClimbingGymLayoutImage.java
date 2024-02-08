@@ -1,6 +1,6 @@
-package com.climeet.climeet_backend.domain.followrelationship;
+package com.climeet.climeet_backend.domain.climbinggymlayoutimage;
 
-import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,26 +21,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-public class FollowRelationship extends BaseTimeEntity {
+public class ClimbingGymLayoutImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "follower_id")
-    private User follower;
+    @NotNull
+    private String imgUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "following_id")
-    private User following;
-
-    private Boolean isUploadShortsRecent = false;
-
-    public static FollowRelationship toEntity(User follower, User following){
-        return FollowRelationship.builder()
-            .follower(follower)
-            .following(following)
+    public static ClimbingGymLayoutImage toEntity(String imgUrl) {
+        return ClimbingGymLayoutImage.builder()
+            .imgUrl(imgUrl)
             .build();
     }
 

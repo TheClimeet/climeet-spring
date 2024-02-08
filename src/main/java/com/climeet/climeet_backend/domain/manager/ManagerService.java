@@ -1,8 +1,10 @@
 package com.climeet.climeet_backend.domain.manager;
 
 
+import com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.climbinggym.enums.ServiceBitmask;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
@@ -13,6 +15,7 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +32,7 @@ public class ManagerService {
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final BitmaskConverter bitmaskConverter;
 
     @Transactional
     public ManagerSimpleInfo login(@RequestBody CreateAccessTokenRequest createAccessTokenRequest){
@@ -86,6 +90,10 @@ public class ManagerService {
         String accessToken = jwtTokenProvider.createAccessToken(manager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(manager.getId());
         manager.updateToken(accessToken, refreshToken);
+
+        //서비스 리스트 등록
+        List<ServiceBitmask> gymServiceList = createManagerRequest.getProvideServiceList();
+        gym.updateServiceBitMask(bitmaskConverter.convertServiceListToBitmask(gymServiceList));
 
         return new ManagerSimpleInfo(manager);
     }

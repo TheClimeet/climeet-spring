@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> {
     List<RouteRecord> findAllByClimbingRecordId(Long ClimbingRecordId);
@@ -20,7 +21,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         "FROM RouteRecord rr " +
         "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.user = :user " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
-    List<Map<Long,Long>> getRouteRecordDifficultyBetween(
+    List<Object[]> getRouteRecordDifficultyBetween(
         @Param("user") User user,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
@@ -29,18 +30,40 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     @Query("SELECT " +
         "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
-        "WHERE rr.user = :user " +
+        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym AND rr.user = :user " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
-    List<Map<Long,Long>> findAllRouteRecordDifficultyAndUser(
+    List<Object[]> getRouteRecordDifficultyBetweenDatesAndGym(
+        @Param("user") User user,
+        @Param("gym") ClimbingGym gym,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+
+    @Query("SELECT " +
+        "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
+        "FROM RouteRecord rr " +
+        "WHERE rr.user = :user AND rr.isCompleted = true " +
+        "GROUP BY rr.route.difficultyMapping.difficulty" )
+    List<Object[]> findAllRouteRecordDifficultyAndUser(
         @Param("user") User user
     );
 
     @Query("SELECT " +
         "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
-        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym " +
+        "WHERE rr.user = :user AND rr.isCompleted = true AND rr.gym = :gym " +
+        "GROUP BY rr.route.difficultyMapping.difficulty" )
+    List<Object[]> findAllRouteRecordDifficultyAndUserAndGym(
+        @Param("user") User user,
+        @Param("gym") ClimbingGym gym
+    );
+
+    @Query("SELECT " +
+        "   rr.route.difficultyMapping.difficulty as difficulty, COUNT(*) as count " +
+        "FROM RouteRecord rr " +
+        "WHERE rr.routeRecordDate BETWEEN :startDate AND :endDate AND rr.gym = :gym AND rr.isCompleted = true " +
         "GROUP BY rr.route.difficultyMapping.difficulty")
-    List<Map<Long,Long>> getRouteRecordDifficultyBetweenDaysAndGym(
+    List<Object[]> getRouteRecordDifficultyBetweenDaysAndGym(
         @Param("gym") ClimbingGym gym,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate

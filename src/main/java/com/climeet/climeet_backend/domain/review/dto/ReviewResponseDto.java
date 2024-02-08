@@ -3,11 +3,11 @@ package com.climeet.climeet_backend.domain.review.dto;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.review.Review;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public class ReviewResponseDto {
 
@@ -15,16 +15,34 @@ public class ReviewResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ReviewSummaryDetailResponse {
+    public static class ReviewDetailListResponse {
+
+        private ReviewSummaryResponse summary;
+        private List<ReviewDetailResponse> reviewList;
+
+        public static ReviewDetailListResponse toDto(ReviewSummaryResponse summary,
+            List<ReviewDetailResponse> reviewList) {
+            return ReviewDetailListResponse.builder()
+                .summary(summary)
+                .reviewList(reviewList)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ReviewSummaryResponse {
 
         private Long gymId;
         private Float averageRating;
         private int reviewCount;
         private ReviewDetailResponse myReview;
 
-        public static ReviewSummaryDetailResponse toDTO(ClimbingGym climbingGym,
+        public static ReviewSummaryResponse toDTO(ClimbingGym climbingGym,
             ReviewDetailResponse myReview) {
-            return ReviewSummaryDetailResponse.builder()
+            return ReviewSummaryResponse.builder()
                 .gymId(climbingGym.getId())
                 .averageRating(climbingGym.getAverageRating())
                 .reviewCount(climbingGym.getReviewCount())

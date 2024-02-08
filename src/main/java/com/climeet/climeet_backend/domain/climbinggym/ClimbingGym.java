@@ -4,6 +4,7 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,17 +41,25 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String profileImageUrl;
 
-    private String layoutImageUrl;
-
-    public void changeLayoutImageUrl(String layoutImageUrl) {
-        this.layoutImageUrl = layoutImageUrl;
-    }
-
     private Float AverageRating = 0.0F;
 
     private Float sumRating = 0.0F;
 
     private int reviewCount = 0;
+
+    private String tel;
+
+    private String address;
+
+    @Column(columnDefinition = "json")
+    private String businessHours;
+
+    public void updateGymInfo(String tel, String address, String businessHours) {
+        this.tel = tel;
+        this.address = address;
+        this.businessHours = businessHours;
+    }
+
 
     public void reviewCreate(Float rating) {
         this.sumRating += rating;
@@ -67,7 +76,7 @@ public class ClimbingGym extends BaseTimeEntity {
     public void averageRatingCalculate() {
         if (this.reviewCount > 0) {
             float averageRating = this.sumRating / this.reviewCount;
-            DecimalFormat decimalFormat = new DecimalFormat("#.#");
+            DecimalFormat decimalFormat = new DecimalFormat("#.0");
             decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
             String formattedAverageRating = decimalFormat.format(averageRating);
             this.AverageRating = Float.parseFloat(formattedAverageRating);
@@ -80,6 +89,10 @@ public class ClimbingGym extends BaseTimeEntity {
     private int selectionCount = 0;
 
     private int serviceBitMask = 0;
+
+    public void updateServiceBitMask(int value){
+        this.serviceBitMask = value;
+    }
 
     public void setManager(Manager manager) {
         // 기존 Manager와의 관계를 해제
@@ -113,4 +126,5 @@ public class ClimbingGym extends BaseTimeEntity {
         this.thisWeekSelectionCount--;
 
     }
+
 }
