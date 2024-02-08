@@ -28,6 +28,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _DUPLICATE_GYM_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_003", "이미 관리자가 등록된 암장입니다."),
     _EMPTY_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_004", "해당 관리자가 존재하지 않습니다."),
     _ERROR_JSON_PARSE(HttpStatus.CONFLICT, "CLIMBING_GYM_005", "JSON 파싱을 할 수 없습니다."),
+    _EMPTY_BACKGROUND_IMAGE(HttpStatus.CONFLICT, "CLIMBING_GYM_006", "암장 배경 이미지가 없습니다."),
 
     //루트 버전 관련
     _EMPTY_VERSION_LIST(HttpStatus.CONFLICT, "ROUTE_VERSION_001", "암장의 루트 버전이 존재하지 않습니다."),
@@ -81,16 +82,16 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_REVIEW(HttpStatus.CONFLICT, "REVIEW_003", "리뷰 내용이 없습니다."),
 
     //유저 관련
-    _EMPTY_USER(HttpStatus.CONFLICT, "USER_001", "존재하지 않는 유저입니다."),
+    _EMPTY_USER(HttpStatus.NOT_FOUND, "USER_001", "존재하지 않는 유저입니다."),
 
     //숏츠 댓글 관련
     _EMPTY_SHORTS_COMMENT(HttpStatus.CONFLICT, "SHORTS_COMMENT_001", "존재하지 않는 쇼츠 댓글입니다."),
 
     //팔로우 관련
-    _EMPTY_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_001", "존재하지 않는 팔로우 관계입니다")
-
-    ;
-
+    _EMPTY_FOLLOW_RELATIONSHIP(HttpStatus.NOT_FOUND, "FOLLOW_RELATION_001", "존재하지 않는 팔로우 관계입니다."),
+    _EXIST_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_RELATION_002", "이미 존재하는 팔로우 관계입니다.");
+  
+  
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

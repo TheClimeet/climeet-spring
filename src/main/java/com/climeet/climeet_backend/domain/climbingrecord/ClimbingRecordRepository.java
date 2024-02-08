@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, Long> {
 
@@ -48,6 +49,13 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
         "FROM ClimbingRecord cr " +
         "WHERE cr.user = :user")
     Tuple findAllClearRateAndUser(@Param("user") User user);
+
+    @Query("SELECT " +
+        "   SUM(cr.totalCompletedCount) as totalCompletedCount, " +
+        "   SUM(cr.attemptRouteCount) as attemptRouteCount " +
+        "FROM ClimbingRecord cr " +
+        "WHERE cr.user = :user AND cr.gym = :gym ")
+    Tuple findAllClearRateAndUserAndGym(@Param("user") User user, @Param("gym") ClimbingGym gym);
 
     @Query("SELECT " +
         "cr.user, SUM(cr.totalCompletedCount) as totalCount " +

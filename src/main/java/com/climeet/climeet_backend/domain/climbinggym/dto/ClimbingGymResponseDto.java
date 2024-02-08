@@ -66,23 +66,49 @@ public class ClimbingGymResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ClimbingGymDetailResponse {
+
         private String gymProfileImageUrl;
-        private String managerProfileImageUrl;
+        private String gymBackGroundImageUrl;
         private String gymName;
         private Long followerCount;
         private Long followingCount;
         private float averageRating;
         private int reviewCount;
 
-        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager){
+        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager,
+            String gymBackGroundImageUrl) {
             return ClimbingGymDetailResponse.builder()
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
-                .managerProfileImageUrl(manager.getProfileImageUrl())
+                .gymBackGroundImageUrl(gymBackGroundImageUrl)
                 .gymName(climbingGym.getName())
                 .followerCount(manager.getFollowerCount())
                 .followingCount(manager.getFollowingCount())
                 .averageRating(climbingGym.getAverageRating())
                 .reviewCount(climbingGym.getReviewCount())
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimbingGymTabInfoResponse {
+
+        private Long gymId;
+        private String address;
+        private String tel;
+        private Map<String, List<String>> businessHours;
+        private List<String> serviceList;
+
+        public static ClimbingGymTabInfoResponse toDto(ClimbingGym climbingGym,
+            Map<String, List<String>> businessHours, List<String> serviceList) {
+            return ClimbingGymTabInfoResponse.builder()
+                .gymId(climbingGym.getId())
+                .address(climbingGym.getAddress())
+                .tel(climbingGym.getTel())
+                .businessHours(businessHours)
+                .serviceList(serviceList)
                 .build();
         }
     }

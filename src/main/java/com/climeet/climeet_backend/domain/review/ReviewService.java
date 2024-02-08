@@ -44,15 +44,14 @@ public class ReviewService {
 
 
     @Transactional
-    public void createReview(CreateReviewRequest createReviewRequest, User user) {
+    public void createReview(CreateReviewRequest createReviewRequest, User user, Long gymId) {
 
         // 리뷰 rating의 범위 확인
         if (IsInvalidRating(createReviewRequest.getRating())) {
             throw new GeneralException(ErrorStatus._RATING_OUT_OF_RANGE);
         }
 
-        ClimbingGym climbingGym = climbingGymRepository.findById(
-                createReviewRequest.getClimbingGymId())
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         // 관리자가 등록된 암장인지 확인
@@ -122,14 +121,13 @@ public class ReviewService {
 
 
     @Transactional
-    public void changeReview(CreateReviewRequest changeReviewRequest, User user) {
+    public void changeReview(CreateReviewRequest changeReviewRequest, User user, Long gymId) {
         // 리뷰 rating의 범위 확인
         if (IsInvalidRating(changeReviewRequest.getRating())) {
             throw new GeneralException(ErrorStatus._RATING_OUT_OF_RANGE);
         }
 
-        ClimbingGym climbingGym = climbingGymRepository.findById(
-                changeReviewRequest.getClimbingGymId())
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         // 관리자가 등록된 암장인지 확인
