@@ -10,7 +10,6 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
@@ -41,7 +40,7 @@ public class ManagerService {
         managerRepository.findByLoginId(loginId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD));
 
-        Manager IdManager = managerRepository.findByLoginIdAndisRegistered(loginId, true)
+        Manager IdManager = managerRepository.findByLoginIdAndIsRegistered(loginId, true)
             .orElseThrow(()-> new GeneralException(ErrorStatus._PENDING_APPROVAL));
 
 

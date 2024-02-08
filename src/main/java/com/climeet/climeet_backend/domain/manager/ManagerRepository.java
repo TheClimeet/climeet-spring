@@ -10,7 +10,7 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
 
     Optional<Manager> findByLoginId(String loginId);
 
-    Optional<Manager> findByLoginIdAndisRegistered(String loginId, Boolean status);
+    Optional<Manager> findByLoginIdAndIsRegistered(String loginId, Boolean status);
     Optional<Manager> findByClimbingGym(ClimbingGym climbingGym);
 
     boolean existsByClimbingGym(ClimbingGym gym);
