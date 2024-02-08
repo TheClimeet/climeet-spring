@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.shorts;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,6 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
     @Query("SELECT s FROM Shorts s WHERE s.ranking <> 0 AND s.isPublic = true ORDER BY s.ranking ASC, s.createdAt DESC")
     Slice<Shorts> findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(Pageable pageable);
 
-    List<Shorts> findByCreatedAtBefore(Date dateTime);
+    List<Shorts> findByCreatedAtBefore(LocalDateTime dateTime);
 
 }

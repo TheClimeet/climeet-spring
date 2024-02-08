@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -38,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ShortsService {
 
     private final ShortsRepository shortsRepository;
@@ -161,11 +163,15 @@ public class ShortsService {
 
     }
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24) //24시간마다 실행
+
+    @Transactional
+    @Scheduled(fixedRate = 1000 * 60) //1분마다 실행
     public void updateVideoStatus(){
-        Date threeDaysAgo = new Date(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 3);
+
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<Shorts> shortsList = shortsRepository.findByCreatedAtBefore(threeDaysAgo);
         for(Shorts shorts : shortsList) {
+            System.out.println(shorts);
             List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowerId(
                 shorts.getUser().getId());
 
