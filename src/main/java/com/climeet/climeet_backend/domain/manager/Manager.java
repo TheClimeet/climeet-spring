@@ -54,7 +54,7 @@ public class Manager extends User {
             .profileName(createManagerRequest.getName())
             .phoneNumber(createManagerRequest.getPhoneNumber())
             .email(createManagerRequest.getEmail())
-            .isRegistered(true)
+            .isRegistered(false)
             .climbingGym(gym)
             .followerCount(0L)
             .followingCount(0L)
