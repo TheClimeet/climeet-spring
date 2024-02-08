@@ -9,8 +9,14 @@ import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto
 import com.climeet.climeet_backend.domain.climbinggym.enums.ServiceBitmask;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -19,7 +25,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.builder.Diff;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +43,8 @@ public class ClimbingGymService {
     private final ManagerRepository managerRepository;
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
     private final BitmaskConverter bitmaskConverter;
+    private final RouteRecordRepository routeRecordRepository;
+    private final DifficultyMappingRepository difficultyMappingRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -150,5 +160,36 @@ public class ClimbingGymService {
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
         }
+    }
+
+    public void getFollowingUserAverageLevelInClimbingGym(Long gymId) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        List<Object[]> userRecord = routeRecordRepository.getFollowUserSumCountDifficultyInClimbingGym(
+            climbingGym.getManager());
+        if (userRecord.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_AVERAGE_LEVEL_DATA);
+        }
+
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+            climbingGym);
+        if(difficultyMappingList.isEmpty()){
+            throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
+        }
+
+        // data[0] = 팔로우 유자의 완등 루트 난이도 sum 값
+        // data[1] = 팔로우 유저의 완들 루트 count 값
+        Map<Integer, Integer> levelCounts = userRecord.stream()
+            .map(data -> Math.round((float) (Long) data[0] / (Long) data[1]))
+            .collect(Collectors.toMap(
+                level -> level, // Key값
+                level -> 1, // Key값이 새로 만들어질 때
+                Integer::sum // 이미 Key값이 존재할 때
+            ));
+
+        levelCounts.forEach(
+            (level, count) -> System.out.println("평균 레벨 " + level + " : " + count + "명"));
+
     }
 }

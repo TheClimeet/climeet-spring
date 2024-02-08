@@ -73,4 +73,13 @@ public class ClimbingGymController {
             climbingGymService.updateClimbingGymInfo(updateClimbingGymInfoRequest));
     }
 
+    @Operation(summary = "암장 실력분포 조회")
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_AVERAGE_LEVEL_DATA})
+    @GetMapping("/{gymId}/graph/level")
+    public ResponseEntity<String> getFollowingUserAverageLevelInClimbingGym(
+        @PathVariable Long gymId, @CurrentUser User user) {
+        climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId);
+        return ResponseEntity.ok("ok");
+    }
+
 }
