@@ -68,7 +68,7 @@ public class ClimbingGymResponseDto {
     public static class ClimbingGymDetailResponse {
 
         private String gymProfileImageUrl;
-        private List<String> gymBackGroundImageUrl;
+        private String gymBackGroundImageUrl;
         private String gymName;
         private Long followerCount;
         private Long followingCount;
@@ -76,7 +76,7 @@ public class ClimbingGymResponseDto {
         private int reviewCount;
 
         public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager,
-            List<String> gymBackGroundImageUrl) {
+            String gymBackGroundImageUrl) {
             return ClimbingGymDetailResponse.builder()
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
                 .gymBackGroundImageUrl(gymBackGroundImageUrl)

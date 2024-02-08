@@ -50,7 +50,7 @@ public class ClimbingGymController {
 
     @Operation(summary = "암장 프로필 정보 (상단) 불러오기")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER,
-        ErrorStatus._EMPTY_BACKGROUND_IMAGE_LIST})
+        ErrorStatus._EMPTY_BACKGROUND_IMAGE})
     @GetMapping("/{gymId}")
     public ResponseEntity<ClimbingGymDetailResponse> getClimbingGymInfo(
         @PathVariable Long gymId, @CurrentUser User user) {

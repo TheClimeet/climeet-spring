@@ -93,15 +93,11 @@ public class ClimbingGymService {
         Manager manager = managerRepository.findByClimbingGym(climbingGym)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        List<ClimbingGymBackgroundImage> backgroundImageList = climbingGymBackgroundImageRepository.findByClimbingGym(
-            climbingGym);
-        if (backgroundImageList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE_LIST);
-        }
-        List<String> backgroundImageUrlList = backgroundImageList.stream()
-            .map(ClimbingGymBackgroundImage::getImgUrl)
-            .toList();
-        return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImageUrlList);
+        ClimbingGymBackgroundImage backgroundImage = climbingGymBackgroundImageRepository.findByClimbingGym(
+                climbingGym)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
+
+        return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImage.getImgUrl());
     }
 
     public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
