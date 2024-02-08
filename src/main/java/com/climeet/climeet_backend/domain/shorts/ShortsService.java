@@ -74,7 +74,8 @@ public class ShortsService {
         shortsRepository.save(shorts);
 
         //팔로워 관계 isUploadShortsRecent update
-        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowerId(user.getId());
+        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowingId(shorts.getUser()
+            .getId());
         for(FollowRelationship f : followRelationshipList){
             f.updateUploadStatus(true);
         }
@@ -172,7 +173,7 @@ public class ShortsService {
         List<Shorts> shortsList = shortsRepository.findByCreatedAtBefore(threeDaysAgo);
         for(Shorts shorts : shortsList) {
             System.out.println(shorts);
-            List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowerId(
+            List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowingId(
                 shorts.getUser().getId());
 
             for(FollowRelationship relationship : followRelationship){

@@ -41,6 +41,7 @@ public class FollowRelationship extends BaseTimeEntity {
         return FollowRelationship.builder()
             .follower(follower)
             .following(following)
+            .isUploadShortsRecent(false)
             .build();
     }
 
