@@ -7,6 +7,8 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -61,7 +63,8 @@ public class Shorts extends BaseTimeEntity {
 
     private Boolean isSoundEnabled;
 
-    private Boolean isPublic;
+    @Enumerated(EnumType.STRING)
+    private ShortsVisibility shortsVisibility;
 
     public static Shorts toEntity(User user, ClimbingGym climbingGym, Sector sector, Route route,
         String videoUrl, String thumbnailImageUrl, CreateShortsRequest createShortsRequest) {
@@ -73,7 +76,7 @@ public class Shorts extends BaseTimeEntity {
             .thumbnailImageUrl(thumbnailImageUrl)
             .videoUrl(videoUrl)
             .isSoundEnabled(createShortsRequest.isSoundEnabled())
-            .isPublic(createShortsRequest.isPublic())
+            .shortsVisibility(createShortsRequest.getShortsVisibility())
             .description(createShortsRequest.getDescription())
             .build();
     }

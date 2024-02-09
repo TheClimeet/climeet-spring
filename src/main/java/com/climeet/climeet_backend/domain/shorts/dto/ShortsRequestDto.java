@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.shorts.dto;
 
+import com.climeet.climeet_backend.domain.shorts.ShortsVisibility;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,6 @@ public class ShortsRequestDto {
         private Long sectorId;
         private String description;
         boolean isSoundEnabled;
-        boolean isPublic;
+        ShortsVisibility shortsVisibility;
     }
 }

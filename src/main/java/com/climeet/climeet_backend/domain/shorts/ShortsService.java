@@ -68,10 +68,20 @@ public class ShortsService {
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByShortsVisibilityInOrderByCreatedAtDesc(
+            ShortsVisibility.getPublicAndFollowersOnlyList(),
             pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
+            //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
+            .filter(shorts -> {
+                if(shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
+                    return followRelationshipRepository.existsByFollowerIdAndFollowingId(
+                        user.getId(), shorts.getUser().getId());
+                }
+                //public이면 통과
+                return true;
+            })
             .map(shorts -> {
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
                     shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getDifficulty());
@@ -93,7 +103,7 @@ public class ShortsService {
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, int page,
         int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByIsPublicTrueANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
             pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
