@@ -48,13 +48,23 @@ public class ShortsService {
     public void uploadShorts(User user, MultipartFile video, MultipartFile thumbnailImage,
         CreateShortsRequest createShortsRequest) {
 
-        ClimbingGym climbingGym = climbingGymRepository.findById(
-                createShortsRequest.getClimbingGymId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        Sector sector = sectorRepository.findById(createShortsRequest.getSectorId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
-        Route route = routeRepository.findById(createShortsRequest.getRouteId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
+        ClimbingGym climbingGym = null;
+        if (createShortsRequest.getClimbingGymId() != null) {
+            climbingGym = climbingGymRepository.findById(createShortsRequest.getClimbingGymId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+        }
+
+        Sector sector = null;
+        if (createShortsRequest.getSectorId() != null) {
+            sector = sectorRepository.findById(createShortsRequest.getSectorId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SECTOR));
+        }
+
+        Route route = null;
+        if (createShortsRequest.getRouteId() != null) {
+            route = routeRepository.findById(createShortsRequest.getRouteId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
+        }
 
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
@@ -75,7 +85,7 @@ public class ShortsService {
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
             .filter(shorts -> {
-                if(shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
+                if (shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
                     return followRelationshipRepository.existsByFollowerIdAndFollowingId(
                         user.getId(), shorts.getUser().getId());
                 }
@@ -84,7 +94,8 @@ public class ShortsService {
             })
             .map(shorts -> {
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getDifficulty());
+                    shorts.getClimbingGym(),
+                    shorts.getRoute().getDifficultyMapping().getDifficulty());
 
                 return ShortsSimpleInfo.toDTO(
                     shorts.getId(),
@@ -92,7 +103,7 @@ public class ShortsService {
                     shorts.getClimbingGym().getName(),
                     findShorts(user, shorts.getId(), difficultyMapping),
                     difficultyMapping
-                    );
+                );
             })
             .toList();
 
@@ -109,7 +120,8 @@ public class ShortsService {
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             .map(shorts -> {
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getDifficulty());
+                    shorts.getClimbingGym(),
+                    shorts.getRoute().getDifficultyMapping().getDifficulty());
 
                 return ShortsSimpleInfo.toDTO(
                     shorts.getId(),
@@ -125,7 +137,8 @@ public class ShortsService {
             shortsInfoList);
     }
 
-    public ShortsDetailInfo findShorts(User user, Long shortsId, DifficultyMapping difficultyMapping) {
+    public ShortsDetailInfo findShorts(User user, Long shortsId,
+        DifficultyMapping difficultyMapping) {
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
@@ -146,12 +159,14 @@ public class ShortsService {
         shorts.updateViewCountUp();
     }
 
-    public List<ShortsProfileSimpleInfo> getShortsProfileList(User user){
+    public List<ShortsProfileSimpleInfo> getShortsProfileList(User user) {
         Long currentUserId = user.getId();
-        List<FollowRelationship> followingUserList = followRelationshipRepository.findByFollowerId(currentUserId);
+        List<FollowRelationship> followingUserList = followRelationshipRepository.findByFollowerId(
+            currentUserId);
         List<ShortsProfileSimpleInfo> shortsProfileSimpleInfos = followingUserList.stream()
             .map(followRelationship -> {
-                return ShortsProfileSimpleInfo.toDTO(followRelationship.getFollowing(), followRelationship);
+                return ShortsProfileSimpleInfo.toDTO(followRelationship.getFollowing(),
+                    followRelationship);
             })
             .toList();
 
