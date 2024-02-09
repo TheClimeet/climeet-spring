@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.climbinggym.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,28 @@ public class ClimbingGymResponseDto {
                 .address(climbingGym.getAddress())
                 .tel(climbingGym.getTel())
                 .businessHours(businessHours)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimbingGymAverageLevelDetailResponse {
+
+        private int difficulty;
+        private String gymDifficultyName;
+        private String gymDifficultyColor;
+        private int percentage;
+
+        public static ClimbingGymAverageLevelDetailResponse toDto(
+            DifficultyMapping difficultyMapping, int percentage) {
+            return ClimbingGymAverageLevelDetailResponse.builder()
+                .difficulty(difficultyMapping.getDifficulty())
+                .gymDifficultyName(difficultyMapping.getGymDifficultyName())
+                .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
+                .percentage(percentage)
                 .build();
         }
     }

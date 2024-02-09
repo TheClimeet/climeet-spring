@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymSimpleResponse;
@@ -11,23 +12,20 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
-import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
-import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.builder.Diff;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +46,9 @@ public class ClimbingGymService {
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
+    private final static int AVERAGE_DIVISOR = 100;
+    private final static int DEFAULT_PERCENTAGE = 0;
+    private final static int COUNTING_VALUE = 1;
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
         int page, int size) {
@@ -162,7 +163,8 @@ public class ClimbingGymService {
         }
     }
 
-    public void getFollowingUserAverageLevelInClimbingGym(Long gymId) {
+    public List<ClimbingGymAverageLevelDetailResponse> getFollowingUserAverageLevelInClimbingGym(
+        Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -174,22 +176,54 @@ public class ClimbingGymService {
 
         List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
             climbingGym);
-        if(difficultyMappingList.isEmpty()){
+        if (difficultyMappingList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
         }
 
         // data[0] = 팔로우 유자의 완등 루트 난이도 sum 값
         // data[1] = 팔로우 유저의 완들 루트 count 값
-        Map<Integer, Integer> levelCounts = userRecord.stream()
+        Map<DifficultyMapping, Integer> levelCounts = userRecord.stream()
             .map(data -> Math.round((float) (Long) data[0] / (Long) data[1]))
             .collect(Collectors.toMap(
-                level -> level, // Key값
-                level -> 1, // Key값이 새로 만들어질 때
+                level -> getClosestGymDifficulty(level, difficultyMappingList), // Key값
+                level -> COUNTING_VALUE, // Key값이 새로 만들어질 때
                 Integer::sum // 이미 Key값이 존재할 때
             ));
 
-        levelCounts.forEach(
-            (level, count) -> System.out.println("평균 레벨 " + level + " : " + count + "명"));
+        // count 값을 percentage 값으로 변환
+        int totalUsers = userRecord.size();
+        levelCounts.replaceAll(
+            (level, count) -> (int) Math.round((double) count / totalUsers * AVERAGE_DIVISOR));
 
+        // counting 되지 않은 difficultyMapping key에 0 입력
+        difficultyMappingList.stream()
+            .filter(mapping -> !levelCounts.containsKey(mapping))
+            .forEach(mapping -> levelCounts.put(mapping, DEFAULT_PERCENTAGE));
+
+        return levelCounts.entrySet()
+            .stream()
+            .map(entry -> ClimbingGymAverageLevelDetailResponse.toDto(entry.getKey(),
+                entry.getValue()))
+            .sorted(Comparator.comparingInt(ClimbingGymAverageLevelDetailResponse::getDifficulty))
+            .toList();
+    }
+
+    private DifficultyMapping getClosestGymDifficulty(Integer level,
+        List<DifficultyMapping> difficultyMappingList) {
+        DifficultyMapping difficulty = null;
+        int minDifference = Integer.MAX_VALUE;
+        int closestDifficulty = Integer.MAX_VALUE;
+
+        for (DifficultyMapping mapping : difficultyMappingList) {
+            int difference = Math.abs(level - mapping.getDifficulty());
+            if (difference < minDifference || (difference == minDifference
+                && mapping.getDifficulty() < closestDifficulty)) {
+                minDifference = difference;
+                closestDifficulty = mapping.getDifficulty();
+                difficulty = mapping;
+            }
+        }
+
+        return difficulty;
     }
 }
