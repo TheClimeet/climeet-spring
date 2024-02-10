@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ShortsRepository extends JpaRepository<Shorts, Long> {
 
-    Slice<Shorts> findAllByShortsVisibilityInOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibility, Pageable pageable);
+    Slice<Shorts> findAllByShortsVisibilityInOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Pageable pageable);
 
     @Query("SELECT s "
         + "FROM Shorts s "
@@ -17,4 +17,9 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
         + "ORDER BY s.ranking ASC, s.createdAt DESC")
     Slice<Shorts> findAllByShortsVisibilityPublicANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(Pageable pageable);
 
+    Slice<Shorts> findAllByShortsVisibilityInAndClimbingGymIdOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Long climbingGymId, Pageable pageable);
+
+    Slice<Shorts> findAllByShortsVisibilityInAndSectorIdOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Long gymId, Pageable pageable);
+
+    Slice<Shorts> findAllByShortsVisibilityInAndRouteIdInOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, List<Long> routeIds, Pageable pageable);
 }

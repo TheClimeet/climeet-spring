@@ -73,17 +73,39 @@ public class ShortsService {
         String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
 
         Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl,
-            thumbnailImageUrl,
-            createShortsRequest);
+            thumbnailImageUrl, createShortsRequest);
 
         shortsRepository.save(shorts);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
+        Long sectorId, List<Long> routeIds, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByShortsVisibilityInOrderByCreatedAtDesc(
-            ShortsVisibility.getPublicAndFollowersOnlyList(),
-            pageable);
+        List<ShortsVisibility> shortsVisibilities = ShortsVisibility.getPublicAndFollowersOnlyList();
+
+        Slice<Shorts> shortsSlice = null;
+
+        if (routeIds == null) {
+            //암장으로 필터링
+            if (sectorId == null) {
+                shortsSlice = shortsRepository.findAllByShortsVisibilityInAndClimbingGymIdOrderByCreatedAtDesc(
+                    shortsVisibilities, gymId, pageable);
+            }
+            //섹터로 필터링
+            if (sectorId != null) {
+                shortsSlice = shortsRepository.findAllByShortsVisibilityInAndSectorIdOrderByCreatedAtDesc(
+                    shortsVisibilities, sectorId, pageable);
+            }
+        }
+        if (routeIds != null) {
+            //루트 리스트로 필터링
+            shortsSlice = shortsRepository.findAllByShortsVisibilityInAndRouteIdInOrderByCreatedAtDesc(
+                shortsVisibilities, routeIds, pageable);
+        }
+        if (gymId == null) {
+            shortsSlice = shortsRepository.findAllByShortsVisibilityInOrderByCreatedAtDesc(
+                ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
+        }
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
@@ -94,22 +116,16 @@ public class ShortsService {
                 }
                 //public이면 통과
                 return true;
-            })
-            .map(shorts -> {
+            }).map(shorts -> {
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
                     shorts.getClimbingGym(),
                     shorts.getRoute().getDifficultyMapping().getDifficulty());
 
-                return ShortsSimpleInfo.toDTO(
-                    shorts.getId(),
-                    shorts.getThumbnailImageUrl(),
+                return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
                     shorts.getClimbingGym().getName(),
-                    findShorts(user, shorts.getId(), difficultyMapping),
-                    difficultyMapping,
-                    shorts.getUser() instanceof Manager
-                );
-            })
-            .toList();
+                    findShorts(user, shorts.getId(), difficultyMapping), difficultyMapping,
+                    shorts.getUser() instanceof Manager);
+            }).toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
@@ -121,22 +137,15 @@ public class ShortsService {
         Slice<Shorts> shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
             pageable);
 
-        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            .map(shorts -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    shorts.getClimbingGym(),
-                    shorts.getRoute().getDifficultyMapping().getDifficulty());
+        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream().map(shorts -> {
+            DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getDifficulty());
 
-                return ShortsSimpleInfo.toDTO(
-                    shorts.getId(),
-                    shorts.getThumbnailImageUrl(),
-                    shorts.getClimbingGym().getName(),
-                    findShorts(user, shorts.getId(), difficultyMapping),
-                    difficultyMapping,
-                    shorts.getUser() instanceof Manager
-                );
-            })
-            .toList();
+            return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
+                shorts.getClimbingGym().getName(),
+                findShorts(user, shorts.getId(), difficultyMapping), difficultyMapping,
+                shorts.getUser() instanceof Manager);
+        }).toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
@@ -148,8 +157,7 @@ public class ShortsService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
         boolean isLiked = shortsLikeRepository.existsShortsLikeByUserAndShorts(user, shorts);
-        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(
-            user,
+        boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user,
             shorts);
 
         return ShortsDetailInfo.toDTO(shorts.getUser(), shorts, shorts.getClimbingGym(),
@@ -172,10 +180,8 @@ public class ShortsService {
             .map(followRelationship -> {
                 return ShortsProfileSimpleInfo.toDTO(followRelationship.getFollowing(),
                     followRelationship);
-            })
-            .toList();
+            }).toList();
 
         return shortsProfileSimpleInfos;
-
     }
 }

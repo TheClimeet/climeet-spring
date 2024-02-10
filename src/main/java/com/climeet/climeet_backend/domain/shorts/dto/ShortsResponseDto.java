@@ -26,7 +26,7 @@ public class ShortsResponseDto {
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private String climeetDifficultyName;
-        private boolean isManager;
+        private Boolean isManager;
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
@@ -61,8 +61,8 @@ public class ShortsResponseDto {
         private int commentCount;
         private int bookmarkCount;
         private int shareCount;
-        private boolean isLiked;
-        private boolean isBookmarked;
+        private Boolean isLiked;
+        private Boolean isBookmarked;
         private String description;
         private String routeImageUrl;
         private String gymDifficultyName;
@@ -111,7 +111,6 @@ public class ShortsResponseDto {
                 .build();
 
         }
-
 
     }
 }

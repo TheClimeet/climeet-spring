@@ -32,12 +32,13 @@ public class ShortsController {
     private final ShortsService shortsService;
 
     @PostMapping("/shorts")
-    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_SECTOR, ErrorStatus._EMPTY_ROUTE})
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_SECTOR,
+        ErrorStatus._EMPTY_ROUTE})
     @Operation(summary = "숏츠 업로드")
-    public ResponseEntity<String> uploadShorts(
-        @CurrentUser User user,
+    public ResponseEntity<String> uploadShorts(@CurrentUser User user,
         @RequestPart(value = "video") MultipartFile video,
-        @RequestPart MultipartFile thumbnailImage, @RequestPart CreateShortsRequest createShortsRequest) {
+        @RequestPart MultipartFile thumbnailImage,
+        @RequestPart CreateShortsRequest createShortsRequest) {
         shortsService.uploadShorts(user, video, thumbnailImage, createShortsRequest);
         return ResponseEntity.ok("업로드 성공");
     }
@@ -46,24 +47,24 @@ public class ShortsController {
     @Operation(summary = "숏츠 최신순 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(
         @CurrentUser User user,
-        @RequestParam int page,
-        @RequestParam int size) {
-        return ResponseEntity.ok(shortsService.findShortsLatest(user, page, size));
+        @RequestParam int page, @RequestParam int size,
+        @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
+        @RequestParam(required = false) List<Long> routeId
+    ) {
+        return ResponseEntity.ok(
+            shortsService.findShortsLatest(user, gymId, sectorId, routeId, page, size));
     }
 
     @GetMapping("/shorts/popular")
     @Operation(summary = "숏츠 인기순 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(
-        @CurrentUser User user,
-        @RequestParam int page,
-        @RequestParam int size) {
+        @CurrentUser User user, @RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(shortsService.findShortsPopular(user, page, size));
     }
 
     @PatchMapping("/shorts/{shortsId}/viewCount")
     @Operation(summary = "숏츠 조회수 증가")
-    public ResponseEntity<String> updateShortsViewCount(
-        @CurrentUser User user,
+    public ResponseEntity<String> updateShortsViewCount(@CurrentUser User user,
         @PathVariable Long shortsId) {
         shortsService.updateShortsViewCount(user, shortsId);
         return ResponseEntity.ok("조회수 증가에 성공했습니다.");
@@ -71,9 +72,10 @@ public class ShortsController {
 
     @GetMapping("/shorts/profile")
     @Operation(summary = "숏츠 프로필 바 조회", description = "팔로우 하고있는 암장, 프로필 리스트 조회/최근에 영상을 올렸을 시 true")
-    public ResponseEntity<List<ShortsProfileSimpleInfo>> getShortsProfileList(@CurrentUser User user){
-        List<ShortsProfileSimpleInfo> shortsProfileSimpleInfoList = shortsService.getShortsProfileList(user);
+    public ResponseEntity<List<ShortsProfileSimpleInfo>> getShortsProfileList(
+        @CurrentUser User user) {
+        List<ShortsProfileSimpleInfo> shortsProfileSimpleInfoList = shortsService.getShortsProfileList(
+            user);
         return ResponseEntity.ok(shortsProfileSimpleInfoList);
-
     }
- }
+}
