@@ -176,9 +176,6 @@ public class ShortsService {
             List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowingId(
                 shorts.getUser().getId());
 
-            for(FollowRelationship relationship : followRelationship){
-                relationship.updateUploadStatus(false);
-            }
         }
 
 
