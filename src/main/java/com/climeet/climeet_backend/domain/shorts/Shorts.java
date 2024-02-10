@@ -40,7 +40,7 @@ public class Shorts extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Route route;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
 
     private String videoUrl;
@@ -64,7 +64,7 @@ public class Shorts extends BaseTimeEntity {
     private Boolean isSoundEnabled;
 
     @Enumerated(EnumType.STRING)
-    private ShortsVisibility shortsVisibility;
+    private ShortsVisibility shortsVisibility = ShortsVisibility.PUBLIC;
 
     public static Shorts toEntity(User user, ClimbingGym climbingGym, Sector sector, Route route,
         String videoUrl, String thumbnailImageUrl, CreateShortsRequest createShortsRequest) {

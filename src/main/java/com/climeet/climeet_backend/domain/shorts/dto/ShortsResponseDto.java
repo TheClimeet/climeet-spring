@@ -26,10 +26,11 @@ public class ShortsResponseDto {
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private String climeetDifficultyName;
+        private boolean isManager;
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
-            String gymName, ShortsDetailInfo shortsDetailInfo, DifficultyMapping difficultyMapping) {
+            String gymName, ShortsDetailInfo shortsDetailInfo, DifficultyMapping difficultyMapping, boolean isManager) {
             return ShortsSimpleInfo.builder()
                 .shortsId(shortsId)
                 .thumbnailImageUrl(thumbnailImageUrl)
@@ -37,6 +38,7 @@ public class ShortsResponseDto {
                 .gymDifficultyName(difficultyMapping.getGymDifficultyName())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
                 .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())
+                .isManager(isManager)
                 .shortsDetailInfo(shortsDetailInfo)
                 .build();
         }

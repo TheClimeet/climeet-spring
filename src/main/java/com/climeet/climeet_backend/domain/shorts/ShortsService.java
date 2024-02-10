@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
+import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.sector.Sector;
@@ -17,6 +18,7 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSim
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -35,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ShortsService {
 
     private final ShortsRepository shortsRepository;
+    private final UserRepository userRepository;
     private final ClimbingGymRepository climbingGymRepository;
     private final SectorRepository sectorRepository;
     private final RouteRepository routeRepository;
@@ -102,7 +105,8 @@ public class ShortsService {
                     shorts.getThumbnailImageUrl(),
                     shorts.getClimbingGym().getName(),
                     findShorts(user, shorts.getId(), difficultyMapping),
-                    difficultyMapping
+                    difficultyMapping,
+                    shorts.getUser() instanceof Manager
                 );
             })
             .toList();
@@ -128,7 +132,8 @@ public class ShortsService {
                     shorts.getThumbnailImageUrl(),
                     shorts.getClimbingGym().getName(),
                     findShorts(user, shorts.getId(), difficultyMapping),
-                    difficultyMapping
+                    difficultyMapping,
+                    shorts.getUser() instanceof Manager
                 );
             })
             .toList();
