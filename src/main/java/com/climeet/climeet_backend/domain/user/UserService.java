@@ -10,6 +10,7 @@ import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimp
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final FollowRelationshipRepository followRelationshipRepository;
 
+    @Transactional
     public User updateNotification(User user, boolean isAllowFollowNotification,
         boolean isAllowLikeNotification, boolean isAllowCommentNotification,
         boolean isAllowAdNotification) {
@@ -34,6 +36,7 @@ public class UserService {
 
     }
 
+    @Transactional
     public UserTokenSimpleInfo updateUserToken(String refreshToken) {
         Long userId = Long.valueOf(jwtTokenProvider.getPayload(refreshToken));
         User user = userRepository.findById(userId)
