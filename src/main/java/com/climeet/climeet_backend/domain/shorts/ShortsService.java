@@ -131,11 +131,33 @@ public class ShortsService {
             shortsInfoList);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, int page,
-        int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, Long gymId,
+        Long sectorId, List<Long> routeIds, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
-            pageable);
+
+        Slice<Shorts> shortsSlice = null;
+
+        if (routeIds == null) {
+            //암장으로 필터링
+            if (sectorId == null) {
+                shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroAndClimbingGymIdOrderByRankingAscCreatedAtDesc(
+                    gymId, pageable);
+            }
+            //섹터로 필터링
+            if (sectorId != null) {
+                shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroAndSectorIdOrderByRankingAscCreatedAtDesc(
+                    sectorId, pageable);
+            }
+        }
+        if (routeIds != null) {
+            //루트 리스트로 필터링
+            shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroAndRouteIdInOrderByRankingAscCreatedAtDesc(
+                routeIds, pageable);
+        }
+        if (gymId == null) {
+            shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(
+                pageable);
+        }
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream().map(shorts -> {
             DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(

@@ -46,20 +46,20 @@ public class ShortsController {
     @GetMapping("/shorts/latest")
     @Operation(summary = "숏츠 최신순 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(
-        @CurrentUser User user,
-        @RequestParam int page, @RequestParam int size,
+        @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
-        @RequestParam(required = false) List<Long> routeId
-    ) {
+        @RequestParam(required = false) List<Long> routeIds) {
         return ResponseEntity.ok(
-            shortsService.findShortsLatest(user, gymId, sectorId, routeId, page, size));
+            shortsService.findShortsLatest(user, gymId, sectorId, routeIds, page, size));
     }
 
     @GetMapping("/shorts/popular")
     @Operation(summary = "숏츠 인기순 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(
-        @CurrentUser User user, @RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(shortsService.findShortsPopular(user, page, size));
+        @CurrentUser User user, @RequestParam int page, @RequestParam int size,
+        @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
+        @RequestParam(required = false) List<Long> routeIds) {
+        return ResponseEntity.ok(shortsService.findShortsPopular(user, gymId, sectorId, routeIds, page, size));
     }
 
     @PatchMapping("/shorts/{shortsId}/viewCount")
