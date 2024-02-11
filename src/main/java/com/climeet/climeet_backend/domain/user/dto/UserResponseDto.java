@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user.dto;
 
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import lombok.AllArgsConstructor;
@@ -70,15 +71,15 @@ public class UserResponseDto {
     @NoArgsConstructor
     @Builder
     public static class UserHomeGymSimpleInfo{
-        private Long userId;
-        private String userProfileUrl;
+        private Long gymId;
+        private String gymProfileUrl;
         private String gymName;
 
-        public static UserHomeGymSimpleInfo toDTO(User gymManager){
+        public static UserHomeGymSimpleInfo toDTO(ClimbingGym gym){
             return UserHomeGymSimpleInfo.builder()
-                .userId(gymManager.getId())
-                .userProfileUrl(gymManager.getProfileImageUrl())
-                .gymName(gymManager.getProfileName())
+                .gymId(gym.getId())
+                .gymProfileUrl(gym.getProfileImageUrl())
+                .gymName(gym.getName())
                 .build();
         }
     }
