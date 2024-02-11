@@ -1,16 +1,16 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.User;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> {
+
     List<RouteRecord> findAllByClimbingRecordId(Long ClimbingRecordId);
 
     @Query("SELECT rr FROM RouteRecord rr WHERE rr.user = :user")
@@ -68,4 +68,13 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
     );
+
+    @Query("SELECT " +
+        "   AVG(rr.route.difficultyMapping.difficulty) as averageDifficulty " +
+        "FROM RouteRecord rr " +
+        "JOIN FollowRelationship fr ON rr.user = fr.follower " +
+        "WHERE rr.isCompleted = true AND fr.following = :manager " +
+        "GROUP BY rr.user")
+    List<Float> getFollowUserSumCountDifficultyInClimbingGym(@Param("manager") User manager);
+
 }
