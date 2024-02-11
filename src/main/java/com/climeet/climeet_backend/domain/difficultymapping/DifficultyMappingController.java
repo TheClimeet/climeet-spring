@@ -47,4 +47,13 @@ public class DifficultyMappingController {
         return ResponseEntity.ok(difficultyMappingService.getDifficultyMapping(gymId));
     }
 
+    @Operation(summary = "암장 색 코드 목록 조회")
+    @SwaggerApiError({})
+    @GetMapping("/difficulty/color")
+    public ResponseEntity<List<String>> getGymDifficultyColorList(
+        @CurrentUser User user
+    ){
+        return ResponseEntity.ok(difficultyMappingService.getGymDifficultyColorList());
+    }
+
 }
