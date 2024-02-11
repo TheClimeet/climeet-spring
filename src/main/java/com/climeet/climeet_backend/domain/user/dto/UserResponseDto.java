@@ -64,4 +64,22 @@ public class UserResponseDto {
         }
 
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserHomeGymSimpleInfo{
+        private Long userId;
+        private String userProfileUrl;
+        private String gymName;
+
+        public static UserHomeGymSimpleInfo toDTO(User gymManager){
+            return UserHomeGymSimpleInfo.builder()
+                .userId(gymManager.getId())
+                .userProfileUrl(gymManager.getProfileImageUrl())
+                .gymName(gymManager.getProfileName())
+                .build();
+        }
+    }
 }
