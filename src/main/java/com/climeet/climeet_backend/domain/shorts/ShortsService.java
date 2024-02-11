@@ -96,12 +96,12 @@ public class ShortsService {
                     shortsVisibilities, sectorId, pageable);
             }
         }
+        //루트 리스트로 필터링
         if (routeIds != null) {
-            //루트 리스트로 필터링
             shortsSlice = shortsRepository.findAllByShortsVisibilityInAndRouteIdInOrderByCreatedAtDesc(
                 shortsVisibilities, routeIds, pageable);
         }
-        if (gymId == null) {
+        if (gymId == null && sectorId == null && routeIds == null) {
             shortsSlice = shortsRepository.findAllByShortsVisibilityInOrderByCreatedAtDesc(
                 ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
         }

@@ -34,7 +34,7 @@ public class ShortsController {
     @PostMapping("/shorts")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_SECTOR,
         ErrorStatus._EMPTY_ROUTE})
-    @Operation(summary = "숏츠 업로드")
+    @Operation(summary = "숏츠 업로드", description = "**shortsVisibility** : PUBLIC OR FOLLOWERS_ONLY OR PRIVATE")
     public ResponseEntity<String> uploadShorts(@CurrentUser User user,
         @RequestPart(value = "video") MultipartFile video,
         @RequestPart MultipartFile thumbnailImage,
@@ -44,7 +44,7 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/latest")
-    @Operation(summary = "숏츠 최신순 조회")
+    @Operation(summary = "숏츠 최신순 조회", description = "gymId, sectorId, routeIds 미 입력시 전체 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
@@ -54,7 +54,7 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/popular")
-    @Operation(summary = "숏츠 인기순 조회")
+    @Operation(summary = "숏츠 인기순 조회", description = "gymId, sectorId, routeIds 미 입력시 전체 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
