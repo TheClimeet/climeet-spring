@@ -47,6 +47,8 @@ public class RouteRecord extends BaseTimeEntity {
 
     private Boolean isCompleted = false;
 
+    private int difficulty;
+
     public static RouteRecord toEntity(User user, CreateRouteRecord createRouteRecordReq,
         ClimbingRecord climbingRecord, Route route) {
         return RouteRecord.builder()
@@ -57,11 +59,11 @@ public class RouteRecord extends BaseTimeEntity {
             .attemptCount(createRouteRecordReq.getAttemptCount())
             .isCompleted(createRouteRecordReq.getIsCompleted())
             .routeRecordDate(climbingRecord.getClimbingDate())
+            .difficulty(route.getDifficultyMapping().getDifficulty())
             .build();
     }
 
-    public void update(int attemptCount, Boolean isCompleted, Route route) {
-        this.route = route;
+    public void update(int attemptCount, Boolean isCompleted) {
         this.attemptCount = attemptCount;
         this.isCompleted = isCompleted;
     }
