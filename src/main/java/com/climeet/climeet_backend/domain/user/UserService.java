@@ -2,10 +2,12 @@ package com.climeet.climeet_backend.domain.user;
 
 
 import com.climeet.climeet_backend.domain.climber.Climber;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -133,6 +135,17 @@ public class UserService {
         return userFollowDetailResponseList;
     }
 
+    public List<UserHomeGymSimpleInfo> getHomeGyms(User currentUser){
+        List<FollowRelationship> followRelationships = followRelationshipRepository.findByFollowerId(currentUser.getId());
+
+        return followRelationships.stream()
+            .filter(followRelationship -> followRelationship.getFollowing() instanceof Manager)
+            .map(followRelationship ->{
+                ClimbingGym climbingGym = ((Manager) followRelationship.getFollowing()).getClimbingGym();
+                return UserHomeGymSimpleInfo.toDTO(climbingGym);
+            }).toList();
+
+    }
 
 
 
