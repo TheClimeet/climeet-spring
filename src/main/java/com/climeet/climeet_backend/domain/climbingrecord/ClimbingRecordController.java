@@ -117,7 +117,7 @@ public class ClimbingRecordController {
             climbingRecordService.getClimbingRecordStatistics(user, year, month));
     }
 
-    @Operation(summary = "나의 월별 & 암장별 운동기록 통계")
+    @Operation(summary = "특정 암장에 대한 나의 월 통계")
     @GetMapping("/users/gyms/{gymId}/statistics/months")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<ClimbingRecordStatisticsInfoByGym> getClimbingStatisticsByGymMonthly(
@@ -167,7 +167,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderLevelByGym(gymId));
     }
 
-    @Operation(summary = "유저별 전체 암장에 대한 누적 통계")
+    @Operation(summary = "[유저프로필] 유저별 전체 암장에 대한 누적 통계")
     @GetMapping("/users/{userId}/statistics")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> getUserStatistics(

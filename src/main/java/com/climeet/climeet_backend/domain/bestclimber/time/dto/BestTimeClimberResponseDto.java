@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.bestclimber.time.dto;
 
+import static com.climeet.climeet_backend.global.utils.DateTimeConverter.convertDoubleToStringTime;
+
 import com.climeet.climeet_backend.domain.bestclimber.time.BestTimeClimber;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,14 +22,14 @@ public class BestTimeClimberResponseDto {
 
         private String profileName;
 
-        private Long thisWeekTotalClimbingTime;
+        private String thisWeekTotalClimbingTime;
 
         public static BestTimeClimberDetailInfo toDTO(
             BestTimeClimber bestTimeClimber){
             return BestTimeClimberDetailInfo.builder()
                 .ranking(bestTimeClimber.getRanking())
                 .profileImageUrl(bestTimeClimber.getProfileImageUrl())
-                .thisWeekTotalClimbingTime(bestTimeClimber.getThisWeekTotalClimbingTime())
+                .thisWeekTotalClimbingTime(convertDoubleToStringTime(bestTimeClimber.getThisWeekTotalClimbingTime()))
                 .profileName(bestTimeClimber.getProfileName())
                 .build();
         }

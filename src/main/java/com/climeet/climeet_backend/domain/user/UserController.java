@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.user;
 
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -51,5 +52,11 @@ public class UserController {
         List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollowing(userId, currentUser, userCategory);
         return ResponseEntity.ok(userFollowDetailResponseList);
 
+    }
+
+    @GetMapping("/home/homegyms")
+    @Operation(summary = "홈 화면 홈짐 바로가기")
+    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getHomeGyms(currentUser));
     }
 }
