@@ -176,6 +176,9 @@ public class RouteRecordService {
             if (!difficulties.isEmpty()) {
                 climbingRecord.setHighDifficulty(difficulties.get(difficulties.size() - 1));
             }
+            else{
+                climbingRecord.setHighDifficulty(0);
+            }
         }
 
         //climbingRecord의 평균 업데이트
