@@ -2,7 +2,6 @@ package com.climeet.climeet_backend.domain.retool.gymregistration.dto;
 
 import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.convertBitmaskToServiceList;
 
-import com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.enums.ServiceBitmask;
 import com.climeet.climeet_backend.domain.manager.Manager;

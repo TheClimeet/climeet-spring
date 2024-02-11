@@ -23,7 +23,6 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;

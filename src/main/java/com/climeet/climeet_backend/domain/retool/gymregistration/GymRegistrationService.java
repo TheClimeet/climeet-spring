@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class GymRegistrationService {
 
     private final GymRegistrationRepository gymRegistrationRepository;
-    private final BitmaskConverter bitmaskConverter;
 
     public List<GetGymRegistrationsSimpleInfo> getGymRegistrations() {
         List<GymRegistration> gymRegistrations = gymRegistrationRepository.findAll();

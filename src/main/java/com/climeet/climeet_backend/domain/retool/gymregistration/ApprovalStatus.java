@@ -1,5 +1,8 @@
 package com.climeet.climeet_backend.domain.retool.gymregistration;
 
+import lombok.Getter;
+
+@Getter
 public enum ApprovalStatus {
     APPROVED("승인"),
     REJECTED("미승인"),
@@ -11,7 +14,4 @@ public enum ApprovalStatus {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }
