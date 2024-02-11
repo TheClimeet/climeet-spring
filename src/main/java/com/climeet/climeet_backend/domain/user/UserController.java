@@ -57,7 +57,6 @@ public class UserController {
     @GetMapping("/home/homegyms")
     @Operation(summary = "홈 화면 홈짐 바로가기")
     public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
-        List<UserHomeGymSimpleInfo> userHomeGymSimpleInfos = userService.getHomeGyms(currentUser);
-        return ResponseEntity.ok(userHomeGymSimpleInfos);
+        return ResponseEntity.ok(userService.getHomeGyms(currentUser));
     }
 }
