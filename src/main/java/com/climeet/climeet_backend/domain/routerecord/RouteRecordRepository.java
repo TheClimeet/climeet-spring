@@ -72,12 +72,11 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
     );
 
     @Query("SELECT " +
-        "   SUM(rr.route.difficultyMapping.difficulty) as sumDifficulty, " +
-        "   COUNT(rr) as sumCount " +
+        "   AVG(rr.route.difficultyMapping.difficulty) as averageDifficulty " +
         "FROM RouteRecord rr " +
         "JOIN FollowRelationship fr ON rr.user = fr.follower " +
         "WHERE rr.isCompleted = true AND fr.following = :manager " +
         "GROUP BY rr.user")
-    List<Object[]> getFollowUserSumCountDifficultyInClimbingGym(@Param("manager") User manager);
+    List<Float> getFollowUserSumCountDifficultyInClimbingGym(@Param("manager") User manager);
 
 }

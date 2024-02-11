@@ -21,6 +21,7 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +47,8 @@ public class ClimbingGymService {
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
-    private final static int AVERAGE_DIVISOR = 100;
-    private final static int DEFAULT_PERCENTAGE = 0;
-    private final static int COUNTING_VALUE = 1;
+    private final static int PERCENTAGE_DIVISOR = 100;
+    private final static double DEFAULT_PERCENTAGE = 0;
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
         int page, int size) {
@@ -168,9 +168,9 @@ public class ClimbingGymService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<Object[]> userRecord = routeRecordRepository.getFollowUserSumCountDifficultyInClimbingGym(
+        List<Float> userAverageRecord = routeRecordRepository.getFollowUserSumCountDifficultyInClimbingGym(
             climbingGym.getManager());
-        if (userRecord.isEmpty()) {
+        if (userAverageRecord.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_AVERAGE_LEVEL_DATA);
         }
 
@@ -180,20 +180,12 @@ public class ClimbingGymService {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
         }
 
-        // data[0] = 팔로우 유자의 완등 루트 난이도 sum 값
-        // data[1] = 팔로우 유저의 완들 루트 count 값
-        Map<DifficultyMapping, Integer> levelCounts = userRecord.stream()
-            .map(data -> Math.round((float) (Long) data[0] / (Long) data[1]))
-            .collect(Collectors.toMap(
-                level -> getClosestGymDifficulty(level, difficultyMappingList), // Key값
-                level -> COUNTING_VALUE, // Key값이 새로 만들어질 때
-                Integer::sum // 이미 Key값이 존재할 때
-            ));
-
-        // count 값을 percentage 값으로 변환
-        int totalUsers = userRecord.size();
-        levelCounts.replaceAll(
-            (level, count) -> (int) Math.round((double) count / totalUsers * AVERAGE_DIVISOR));
+        Map<DifficultyMapping, Double> levelCounts = userAverageRecord.stream()
+            .map(Float::intValue)
+            .collect(Collectors.groupingBy(
+                level -> getClosestGymDifficulty(level, difficultyMappingList),
+                Collectors.collectingAndThen(Collectors.counting(),
+                    count -> (count / (double) userAverageRecord.size()) * PERCENTAGE_DIVISOR)));
 
         // counting 되지 않은 difficultyMapping key에 0 입력
         difficultyMappingList.stream()

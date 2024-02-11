@@ -145,10 +145,10 @@ public class ClimbingGymResponseDto {
         private int difficulty;
         private String gymDifficultyName;
         private String gymDifficultyColor;
-        private int percentage;
+        private double percentage;
 
         public static ClimbingGymAverageLevelDetailResponse toDto(
-            DifficultyMapping difficultyMapping, int percentage) {
+            DifficultyMapping difficultyMapping, double percentage) {
             return ClimbingGymAverageLevelDetailResponse.builder()
                 .difficulty(difficultyMapping.getDifficulty())
                 .gymDifficultyName(difficultyMapping.getGymDifficultyName())
