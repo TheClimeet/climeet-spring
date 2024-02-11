@@ -90,9 +90,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //팔로우 관련
     _EMPTY_FOLLOW_RELATIONSHIP(HttpStatus.NOT_FOUND, "FOLLOW_RELATION_001", "존재하지 않는 팔로우 관계입니다."),
-    _EXIST_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_RELATION_002", "이미 존재하는 팔로우 관계입니다.");
+    _EXIST_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_RELATION_002", "이미 존재하는 팔로우 관계입니다."),
   
-  
+    //암장 회원가입 관련
+    _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 안는 암장입니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

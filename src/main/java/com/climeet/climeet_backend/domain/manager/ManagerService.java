@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.manager;
 
 
+import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.convertServiceListToBitmask;
+
 import com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
@@ -32,7 +34,6 @@ public class ManagerService {
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
-    private final BitmaskConverter bitmaskConverter;
 
     @Transactional
     public ManagerSimpleInfo login(@RequestBody CreateAccessTokenRequest createAccessTokenRequest){
@@ -93,7 +94,7 @@ public class ManagerService {
 
         //서비스 리스트 등록
         List<ServiceBitmask> gymServiceList = createManagerRequest.getProvideServiceList();
-        gym.updateServiceBitMask(bitmaskConverter.convertServiceListToBitmask(gymServiceList));
+        gym.updateServiceBitMask(convertServiceListToBitmask(gymServiceList));
 
         return new ManagerSimpleInfo(manager);
     }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class BitmaskConverter {
 
     // Service List → Bitmask
-    public int convertServiceListToBitmask(List<ServiceBitmask> serviceList) {
+    public static int convertServiceListToBitmask(List<ServiceBitmask> serviceList) {
         int bitmask = 0;
         for (ServiceBitmask serviceBitMask : serviceList) {
             bitmask |= serviceBitMask.getValue();
@@ -18,7 +18,7 @@ public class BitmaskConverter {
     }
 
     // Bitmask → Service List
-    public List<ServiceBitmask> convertBitmaskToServiceList(int bitmask) {
+    public static List<ServiceBitmask> convertBitmaskToServiceList(int bitmask) {
         List<ServiceBitmask> serviceList = new ArrayList<>();
         for (ServiceBitmask service : ServiceBitmask.values()) {
             if ((bitmask & service.getValue()) != 0) {
