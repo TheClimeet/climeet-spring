@@ -30,16 +30,18 @@ public class ShortsResponseDto {
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
-            String gymName, ShortsDetailInfo shortsDetailInfo, DifficultyMapping difficultyMapping, boolean isManager) {
-            return ShortsSimpleInfo.builder()
-                .shortsId(shortsId)
+            ClimbingGym climbingGym, ShortsDetailInfo shortsDetailInfo, String gymDifficultyName,
+            String gymDifficultyColor, String gymClimeetDifficultyName, boolean isManager) {
+            String gymName = null;
+            if(climbingGym != null) gymName = climbingGym.getName();
+
+            return ShortsSimpleInfo.builder().shortsId(shortsId)
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .gymName(gymName)
-                .gymDifficultyName(difficultyMapping.getGymDifficultyName())
-                .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
-                .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())
-                .isManager(isManager)
-                .shortsDetailInfo(shortsDetailInfo)
+                .gymDifficultyName(gymDifficultyName)
+                .gymDifficultyColor(gymDifficultyColor)
+                .climeetDifficultyName(gymClimeetDifficultyName)
+                .isManager(isManager).shortsDetailInfo(shortsDetailInfo)
                 .build();
         }
     }
@@ -70,45 +72,59 @@ public class ShortsResponseDto {
         private Boolean isSoundEnabled;
 
         public static ShortsDetailInfo toDTO(User user, Shorts shorts, ClimbingGym climbingGym,
-            Sector sector, boolean isLiked, boolean isBookmarked, DifficultyMapping difficultyMapping) {
+            Sector sector, boolean isLiked, boolean isBookmarked, String gymDifficultyName,
+            String gymDifficultyColor) {
+            Long gymId = null;
+            String gymName = null;
+            Long sectorId = null;
+            String sectorName = null;
+            if(climbingGym != null) {
+                gymId = climbingGym.getId();
+                gymName = climbingGym.getName();
+            }
+            if(sector != null) {
+                sectorId = sector.getId();
+                sectorName = sector.getSectorName();
+            }
+
             return ShortsDetailInfo.builder()
                 .userShortsSimpleInfo(UserShortsSimpleInfo.toDto(user))
                 .shortsId(shorts.getId())
-                .gymName(climbingGym.getName())
-                .sectorName(sector.getSectorName())
-                .gymId(climbingGym.getId())
-                .sectorId(sector.getId())
+                .gymName(gymName)
+                .sectorName(sectorName)
+                .gymId(gymId)
+                .sectorId(sectorId)
                 .videoUrl(shorts.getVideoUrl())
                 .likeCount(shorts.getLikeCount())
                 .commentCount(shorts.getCommentCount())
                 .bookmarkCount(shorts.getBookmarkCount())
                 .shareCount(shorts.getShareCount())
-                .isLiked(isLiked)
-                .isBookmarked(isBookmarked)
+                .isLiked(isLiked).isBookmarked(isBookmarked)
                 .description(shorts.getDescription())
-                .gymDifficultyName(difficultyMapping.getGymDifficultyName())
-                .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
+                .gymDifficultyName(gymDifficultyName)
+                .gymDifficultyColor(gymDifficultyColor)
                 .isSoundEnabled(shorts.getIsSoundEnabled())
                 .build();
         }
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ShortsProfileSimpleInfo{
+    public static class ShortsProfileSimpleInfo {
+
         private Long followingUserId;
         private String followingUserName;
         private String followingUserProfileUrl;
         private Boolean isUploadRecent;
 
-        public static ShortsProfileSimpleInfo toDTO(User user, FollowRelationship followRelationship){
-            return ShortsProfileSimpleInfo.builder()
-                .followingUserId(user.getId())
+        public static ShortsProfileSimpleInfo toDTO(User user,
+            FollowRelationship followRelationship) {
+            return ShortsProfileSimpleInfo.builder().followingUserId(user.getId())
                 .followingUserName(user.getProfileName())
                 .followingUserProfileUrl(user.getProfileImageUrl())
-                .isUploadRecent(followRelationship.getIsUploadShortsRecent())
-                .build();
+                .isUploadRecent(followRelationship.getIsUploadShortsRecent()).build();
 
         }
 

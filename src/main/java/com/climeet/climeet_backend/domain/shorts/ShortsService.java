@@ -37,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ShortsService {
 
     private final ShortsRepository shortsRepository;
-    private final UserRepository userRepository;
     private final ClimbingGymRepository climbingGymRepository;
     private final SectorRepository sectorRepository;
     private final RouteRepository routeRepository;
@@ -117,14 +116,25 @@ public class ShortsService {
                 //public이면 통과
                 return true;
             }).map(shorts -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    shorts.getClimbingGym(),
-                    shorts.getRoute().getDifficultyMapping().getDifficulty());
+                DifficultyMapping difficultyMapping = null;
+                String gymDifficultyName = null;
+                String gymDifficultyColor = null;
+                String climeetDifficultyName = null;
+
+                if (shorts.getRoute() != null) {
+                    difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                        shorts.getClimbingGym(),
+                        shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+                    gymDifficultyName = difficultyMapping.getGymDifficultyName();
+                    gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+                    climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+                }
 
                 return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
-                    shorts.getClimbingGym().getName(),
-                    findShorts(user, shorts.getId(), difficultyMapping), difficultyMapping,
-                    shorts.getUser() instanceof Manager);
+                    shorts.getClimbingGym(),
+                    findShorts(user, shorts.getId(), difficultyMapping), gymDifficultyName,
+                    gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
             }).toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
@@ -160,13 +170,26 @@ public class ShortsService {
         }
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream().map(shorts -> {
-            DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                shorts.getClimbingGym(), shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+            DifficultyMapping difficultyMapping = null;
+            String gymDifficultyName = null;
+            String gymDifficultyColor = null;
+            String climeetDifficultyName = null;
+
+            if (shorts.getRoute() != null) {
+                difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                    shorts.getClimbingGym(),
+                    shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+                gymDifficultyName = difficultyMapping.getGymDifficultyName();
+                gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+                climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+            }
 
             return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
-                shorts.getClimbingGym().getName(),
-                findShorts(user, shorts.getId(), difficultyMapping), difficultyMapping,
-                shorts.getUser() instanceof Manager);
+                shorts.getClimbingGym(),
+                findShorts(user, shorts.getId(), difficultyMapping), gymDifficultyName,
+                gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
         }).toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
@@ -182,8 +205,15 @@ public class ShortsService {
         boolean isBookmarked = shortsBookmarkRepository.existsShortsBookmarkByUserAndShorts(user,
             shorts);
 
+        String gymDifficultyColor = null;
+        String gymDifficultyName = null;
+        if (difficultyMapping != null) {
+            gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+            gymDifficultyName = difficultyMapping.getGymDifficultyName();
+        }
+
         return ShortsDetailInfo.toDTO(shorts.getUser(), shorts, shorts.getClimbingGym(),
-            shorts.getSector(), isLiked, isBookmarked, difficultyMapping);
+            shorts.getSector(), isLiked, isBookmarked, gymDifficultyColor, gymDifficultyName);
     }
 
     public void updateShortsViewCount(User user, Long shortsId) {
