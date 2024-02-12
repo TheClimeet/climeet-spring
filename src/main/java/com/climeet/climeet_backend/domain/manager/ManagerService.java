@@ -10,7 +10,6 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
-import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
@@ -38,8 +37,12 @@ public class ManagerService {
     public ManagerSimpleInfo login(@RequestBody CreateAccessTokenRequest createAccessTokenRequest){
         String loginId = createAccessTokenRequest.getLoginId();
         String password = createAccessTokenRequest.getPassword();
-        Manager IdManager = managerRepository.findByLoginId(loginId)
+        managerRepository.findByLoginId(loginId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD));
+
+        Manager IdManager = managerRepository.findByLoginIdAndIsRegistered(loginId, true)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._PENDING_APPROVAL));
+
 
         if(!IdManager.checkPassword(password, passwordEncoder)){
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
@@ -62,7 +65,7 @@ public class ManagerService {
 
 
     @Transactional
-    public ManagerSimpleInfo signUp(@RequestBody CreateManagerRequest createManagerRequest) {
+    public void signUp(@RequestBody CreateManagerRequest createManagerRequest) {
         ClimbingGym gym = climbingGymRepository.findById(createManagerRequest.getGymId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -95,7 +98,6 @@ public class ManagerService {
         List<ServiceBitmask> gymServiceList = createManagerRequest.getProvideServiceList();
         gym.updateServiceBitMask(bitmaskConverter.convertServiceListToBitmask(gymServiceList));
 
-        return new ManagerSimpleInfo(manager);
     }
     private void saveClimbingGymBackgroundImage(CreateManagerRequest createManagerRequest, ClimbingGym gym){
         ClimbingGymBackgroundImage climbingGymBackgroundImage = ClimbingGymBackgroundImage.builder()
