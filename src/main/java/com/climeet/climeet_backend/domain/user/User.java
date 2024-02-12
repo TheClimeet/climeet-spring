@@ -68,6 +68,9 @@ public class User {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @NotNull
+    private String fcmToken;
+
     public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
