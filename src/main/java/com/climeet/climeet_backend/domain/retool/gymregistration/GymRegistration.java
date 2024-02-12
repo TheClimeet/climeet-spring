@@ -37,4 +37,13 @@ public class GymRegistration extends BaseTimeEntity {
     private ApprovalStatus approvalStatus;
 
     private LocalDate approvedAt;
+
+    public void updateApprovalStatus(Boolean isApproved) {
+        if(isApproved) {
+            this.approvalStatus = ApprovalStatus.APPROVED;
+        }
+        else {
+            this.approvalStatus = ApprovalStatus.REJECTED;
+        }
+    }
 }
