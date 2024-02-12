@@ -17,7 +17,7 @@ public enum GymDifficulty {
     갈색("#6E4C41"),
     회색("#8B8B8B"),
     검정("#000000"),
-    컴피("#######");
+    컴피("#000000");
 
     private String colorCode;
 
