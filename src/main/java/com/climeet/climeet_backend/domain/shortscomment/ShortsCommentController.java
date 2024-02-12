@@ -69,7 +69,7 @@ public class ShortsCommentController {
             shortsCommentService.findShortsChildCommentList(user, shortsId, parentCommentId, page, size));
     }
 
-    @Operation(summary = "숏츠 댓글 상호작용")
+    @Operation(summary = "숏츠 댓글 상호작용", description = "**shortsVisibility** : LIKE, DISLIKE, NONE")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PatchMapping("/shortsComments/{shortsCommentId}")
     public ResponseEntity<String> changeShortsCommentLikeStatus(

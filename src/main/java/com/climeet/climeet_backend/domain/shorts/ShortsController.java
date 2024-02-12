@@ -37,9 +37,8 @@ public class ShortsController {
     @Operation(summary = "숏츠 업로드", description = "**shortsVisibility** : PUBLIC OR FOLLOWERS_ONLY OR PRIVATE")
     public ResponseEntity<String> uploadShorts(@CurrentUser User user,
         @RequestPart(value = "video") MultipartFile video,
-        @RequestPart MultipartFile thumbnailImage,
         @RequestPart CreateShortsRequest createShortsRequest) {
-        shortsService.uploadShorts(user, video, thumbnailImage, createShortsRequest);
+        shortsService.uploadShorts(user, video, createShortsRequest);
         return ResponseEntity.ok("업로드 성공");
     }
 
@@ -48,9 +47,9 @@ public class ShortsController {
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
-        @RequestParam(required = false) List<Long> routeIds) {
+        @RequestParam(required = false) Long routeId) {
         return ResponseEntity.ok(
-            shortsService.findShortsLatest(user, gymId, sectorId, routeIds, page, size));
+            shortsService.findShortsLatest(user, gymId, sectorId, routeId, page, size));
     }
 
     @GetMapping("/shorts/popular")
@@ -58,8 +57,8 @@ public class ShortsController {
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
-        @RequestParam(required = false) List<Long> routeIds) {
-        return ResponseEntity.ok(shortsService.findShortsPopular(user, gymId, sectorId, routeIds, page, size));
+        @RequestParam(required = false) Long routeId) {
+        return ResponseEntity.ok(shortsService.findShortsPopular(user, gymId, sectorId, routeId, page, size));
     }
 
     @PatchMapping("/shorts/{shortsId}/viewCount")

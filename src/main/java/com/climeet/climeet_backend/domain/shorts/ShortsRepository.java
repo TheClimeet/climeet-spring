@@ -37,16 +37,16 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
     @Query("SELECT s "
         + "FROM Shorts s "
         + "WHERE s.ranking <> 0 "
-        + "AND s.route.id IN :routeIds "
+        + "AND s.route.id = :routeId "
         + "AND s.shortsVisibility = 'PUBLIC' "
         + "ORDER BY s.ranking ASC, s.createdAt DESC")
-    Slice<Shorts> findAllByShortsVisibilityPublicANDByRankingNotZeroAndRouteIdInOrderByRankingAscCreatedAtDesc(@Param("routeIds") List<Long> routeIds, Pageable pageable);
+    Slice<Shorts> findAllByShortsVisibilityPublicANDByRankingNotZeroAndRouteIdOrderByRankingAscCreatedAtDesc(@Param("routeId") Long routeId, Pageable pageable);
 
     Slice<Shorts> findAllByShortsVisibilityInAndClimbingGymIdOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Long climbingGymId, Pageable pageable);
 
     Slice<Shorts> findAllByShortsVisibilityInAndSectorIdOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Long gymId, Pageable pageable);
 
-    Slice<Shorts> findAllByShortsVisibilityInAndRouteIdInOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, List<Long> routeIds, Pageable pageable);
+    Slice<Shorts> findAllByShortsVisibilityInAndRouteIdOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Long routeId, Pageable pageable);
 
 
 }

@@ -47,7 +47,7 @@ public class ShortsService {
     private final FollowRelationshipRepository followRelationshipRepository;
 
     @Transactional
-    public void uploadShorts(User user, MultipartFile video, MultipartFile thumbnailImage,
+    public void uploadShorts(User user, MultipartFile video,
         CreateShortsRequest createShortsRequest) {
 
         ClimbingGym climbingGym = null;
@@ -69,22 +69,21 @@ public class ShortsService {
         }
 
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
-        String thumbnailImageUrl = s3Service.uploadFile(thumbnailImage).getImgUrl();
 
         Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl,
-            thumbnailImageUrl, createShortsRequest);
+            createShortsRequest);
 
         shortsRepository.save(shorts);
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
-        Long sectorId, List<Long> routeIds, int page, int size) {
+        Long sectorId, Long routeId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         List<ShortsVisibility> shortsVisibilities = ShortsVisibility.getPublicAndFollowersOnlyList();
 
         Slice<Shorts> shortsSlice = null;
 
-        if (routeIds == null) {
+        if (routeId == null) {
             //암장으로 필터링
             if (sectorId == null) {
                 shortsSlice = shortsRepository.findAllByShortsVisibilityInAndClimbingGymIdOrderByCreatedAtDesc(
@@ -97,11 +96,11 @@ public class ShortsService {
             }
         }
         //루트 리스트로 필터링
-        if (routeIds != null) {
-            shortsSlice = shortsRepository.findAllByShortsVisibilityInAndRouteIdInOrderByCreatedAtDesc(
-                shortsVisibilities, routeIds, pageable);
+        if (routeId != null) {
+            shortsSlice = shortsRepository.findAllByShortsVisibilityInAndRouteIdOrderByCreatedAtDesc(
+                shortsVisibilities, routeId, pageable);
         }
-        if (gymId == null && sectorId == null && routeIds == null) {
+        if (gymId == null && sectorId == null && routeId == null) {
             shortsSlice = shortsRepository.findAllByShortsVisibilityInOrderByCreatedAtDesc(
                 ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
         }
@@ -142,12 +141,12 @@ public class ShortsService {
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, Long gymId,
-        Long sectorId, List<Long> routeIds, int page, int size) {
+        Long sectorId, Long routeId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Slice<Shorts> shortsSlice = null;
 
-        if (routeIds == null) {
+        if (routeId == null) {
             //암장으로 필터링
             if (sectorId == null) {
                 shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroAndClimbingGymIdOrderByRankingAscCreatedAtDesc(
@@ -159,10 +158,10 @@ public class ShortsService {
                     sectorId, pageable);
             }
         }
-        if (routeIds != null) {
+        if (routeId != null) {
             //루트 리스트로 필터링
-            shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroAndRouteIdInOrderByRankingAscCreatedAtDesc(
-                routeIds, pageable);
+            shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroAndRouteIdOrderByRankingAscCreatedAtDesc(
+                routeId, pageable);
         }
         if (gymId == null) {
             shortsSlice = shortsRepository.findAllByShortsVisibilityPublicANDByRankingNotZeroOrderByRankingAscCreatedAtDesc(

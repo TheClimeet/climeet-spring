@@ -67,13 +67,13 @@ public class Shorts extends BaseTimeEntity {
     private ShortsVisibility shortsVisibility = ShortsVisibility.PUBLIC;
 
     public static Shorts toEntity(User user, ClimbingGym climbingGym, Sector sector, Route route,
-        String videoUrl, String thumbnailImageUrl, CreateShortsRequest createShortsRequest) {
+        String videoUrl, CreateShortsRequest createShortsRequest) {
         return Shorts.builder()
             .user(user)
             .climbingGym(climbingGym)
             .sector(sector)
             .route(route)
-            .thumbnailImageUrl(thumbnailImageUrl)
+            .thumbnailImageUrl(createShortsRequest.getThumbnailImageUrl())
             .videoUrl(videoUrl)
             .isSoundEnabled(createShortsRequest.isSoundEnabled())
             .shortsVisibility(createShortsRequest.getShortsVisibility())

@@ -14,8 +14,9 @@ public class ShortsRequestDto {
         private Long climbingGymId;
         private Long routeId;
         private Long sectorId;
+        private String thumbnailImageUrl;
         private String description;
-        boolean isSoundEnabled;
+        private boolean isSoundEnabled;
 
         @NotNull
         ShortsVisibility shortsVisibility;
