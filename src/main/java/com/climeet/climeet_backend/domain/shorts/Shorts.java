@@ -7,6 +7,8 @@ import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,7 +40,7 @@ public class Shorts extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Route route;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
 
     private String videoUrl;
@@ -61,19 +63,20 @@ public class Shorts extends BaseTimeEntity {
 
     private Boolean isSoundEnabled;
 
-    private Boolean isPublic;
+    @Enumerated(EnumType.STRING)
+    private ShortsVisibility shortsVisibility = ShortsVisibility.PUBLIC;
 
     public static Shorts toEntity(User user, ClimbingGym climbingGym, Sector sector, Route route,
-        String videoUrl, String thumbnailImageUrl, CreateShortsRequest createShortsRequest) {
+        String videoUrl, CreateShortsRequest createShortsRequest) {
         return Shorts.builder()
             .user(user)
             .climbingGym(climbingGym)
             .sector(sector)
             .route(route)
-            .thumbnailImageUrl(thumbnailImageUrl)
+            .thumbnailImageUrl(createShortsRequest.getThumbnailImageUrl())
             .videoUrl(videoUrl)
             .isSoundEnabled(createShortsRequest.isSoundEnabled())
-            .isPublic(createShortsRequest.isPublic())
+            .shortsVisibility(createShortsRequest.getShortsVisibility())
             .description(createShortsRequest.getDescription())
             .build();
     }
