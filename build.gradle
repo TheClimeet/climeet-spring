@@ -50,6 +50,9 @@ dependencies {
     //oauth 2.0
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
+    //firebase
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
 }
 
 tasks.named('test') {
