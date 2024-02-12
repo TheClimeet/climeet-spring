@@ -1,8 +1,12 @@
 package com.climeet.climeet_backend.domain.user.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
+import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.user.User;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -103,6 +107,44 @@ public class UserResponseDto {
                 .gymId(gym.getId())
                 .gymProfileUrl(gym.getProfileImageUrl())
                 .gymName(gym.getName())
+                .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserHomeGymDetailInfo{
+        private Long gymId;
+        private String gymProfileUrl;
+        private String gymName;
+
+        @Getter
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Builder
+        public static class RouteSimpleInfo {
+            private Long routeId;
+            private String routeImgUrl;
+            private String difficultyName;
+        }
+
+        private List<RouteSimpleInfo> routeSimpleInfos;
+
+        public static UserHomeGymDetailInfo toDTO(ClimbingGym gym, List<Route> routeList){
+            List<RouteSimpleInfo> routeInfo = routeList.stream()
+                .map(route -> RouteSimpleInfo.builder()
+                    .routeId(route.getId())
+                    .routeImgUrl(route.getRouteImageUrl())
+                    .difficultyName(route.getDifficultyMapping().getClimeetDifficultyName())
+                    .build())
+                .toList();
+            return UserHomeGymDetailInfo.builder()
+                .gymId(gym.getId())
+                .gymProfileUrl(gym.getProfileImageUrl())
+                .gymName(gym.getName())
+                .routeSimpleInfos(routeInfo)
                 .build();
         }
     }
