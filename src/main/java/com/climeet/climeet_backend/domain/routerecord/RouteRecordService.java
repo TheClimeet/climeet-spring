@@ -11,6 +11,7 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,10 @@ public class RouteRecordService {
         if (requestDto.getIsCompleted()) {
             climbingRecord.totalCompletedCountUp();
         }
+
+        climbingRecord.setHighDifficulty(Math.max(route.getDifficultyMapping().getDifficulty(),
+            climbingRecord.getHighDifficulty()));
+
         return ResponseEntity.ok("루트 기록 성공");
 
     }
@@ -98,26 +103,20 @@ public class RouteRecordService {
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
         //각 필드의 기존값들
-        Long oldRouteId = routeRecord.getRoute().getId();
-        int oldAttemptTime = routeRecord.getAttemptCount();
+        int oldAttemptCount = routeRecord.getAttemptCount();
         Boolean oldIsCompleted = routeRecord.getIsCompleted();
 
         //각 필드의 새값들
-        Long newRouteId = updateRouteRecord.getRouteId();
-        Integer newAttemptTime = updateRouteRecord.getAttemptCount();
+        Integer attemptCount = updateRouteRecord.getAttemptCount();
         Boolean newIsComplete = updateRouteRecord.getIsComplete();
 
-        if (newRouteId != null) {
-            oldRouteId = newRouteId;
-        }
-
-        if (newAttemptTime != null) {
-            climbingRecord.setAttemptCount(newAttemptTime - oldAttemptTime);
-            oldAttemptTime = newAttemptTime;
+        if (attemptCount != null) {
+            climbingRecord.setAttemptCount(attemptCount - oldAttemptCount);
+            oldAttemptCount = attemptCount;
         }
 
         if (newIsComplete != null && newIsComplete != oldIsCompleted) {
-            int difficulty = routeRecord.getRoute().getDifficultyMapping().getDifficulty();
+            int difficulty = routeRecord.getDifficulty();
             int oldAvgDifficulty = climbingRecord.getAvgDifficulty();
             int oldCount = climbingRecord.getTotalCompletedCount();
 
@@ -132,12 +131,10 @@ public class RouteRecordService {
             }
             oldIsCompleted = newIsComplete;
         }
-        Route route = routeRepository.findById(oldRouteId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
         climbingRecord.attemptRouteCountUp();
 
-        routeRecord.update(oldAttemptTime, oldIsCompleted, route);
+        routeRecord.update(oldAttemptCount, oldIsCompleted);
 
         return new RouteRecordSimpleInfo(routeRecord);
     }
@@ -156,10 +153,32 @@ public class RouteRecordService {
 
         ClimbingRecord climbingRecord = routeRecord.getClimbingRecord();
 
-        int difficulty = routeRecord.getRoute().getDifficultyMapping().getDifficulty();
+        int difficulty = routeRecord.getDifficulty();
 
-        if(climbingRecord.getHighDifficulty() < difficulty){
-            climbingRecord.setHighDifficulty(difficulty);
+        List<RouteRecord> routeRecordList = routeRecordRepository.findAllByClimbingRecordId(
+            climbingRecord.getId());
+
+
+        List<Integer> difficulties = routeRecordList.stream()
+            .filter(record -> !record.getRoute().getId()
+                .equals(routeRecord.getRoute().getId()))
+            .map(RouteRecord::getDifficulty)
+            .toList();
+
+        // difficulties 리스트에 difficulty 이상인 값이 있는지 확인
+        Optional<Integer> largerOrEqual = difficulties.stream()
+            .filter(d -> d >= difficulty)
+            .findFirst();
+
+        // difficulty 이상인 값이 없는 경우, 있는 경우라면 climbingRecord를 업데이트 하지 않아도 됨.
+        if (largerOrEqual.isEmpty()) {
+            // difficulties 리스트가 비어있지 않은 경우라면 climbingRecord에 남은 routeRecord 기록들이 있다는 뜻.
+            if (!difficulties.isEmpty()) {
+                climbingRecord.setHighDifficulty(difficulties.get(difficulties.size() - 1));
+            }
+            else{
+                climbingRecord.setHighDifficulty(0);
+            }
         }
 
         //climbingRecord의 평균 업데이트
