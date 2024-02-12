@@ -37,10 +37,10 @@ public class ManagerController {
     @PostMapping("/signup")
     @Operation(summary = "관리자 회원가입", description = "**Enum 설명**\n\n**ServiceBitmask** :  샤워\\_시설,  샤워\\_용품,  수건\\_제공,  간이\\_세면대,  초크\\_대여,  암벽화\\_대여,  삼각대\\_대여,  운동복\\_대여")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._DUPLICATE_LOGINID})
-    public ResponseEntity<ManagerSimpleInfo> signUp(@RequestBody
+    public ResponseEntity<String> signUp(@RequestBody
         CreateManagerRequest createManagerRequest){
-        ManagerSimpleInfo managerSimpleInfo = managerService.signUp(createManagerRequest);
-       return ResponseEntity.ok(managerSimpleInfo);
+        managerService.signUp(createManagerRequest);
+       return ResponseEntity.ok("회원가입 완료. 승인 대기 중.");
     }
 
     @Operation(summary = "암장 등록 중복 확인", description = "이미 관리자가 등록된 암장인지 확인하는 API \n\n **이미 관리자 등록 되어있음** : false \n\n **관리자 등록 안되어 있음** : true")

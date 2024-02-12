@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,5 +60,19 @@ public class Climber extends User {
 
     public String getPayload(){
         return this.getId()+"+climber";
+    }
+
+    public static Climber toEntity(String socialId, SocialType socialType, String profileImg){
+        return Climber.builder()
+            .socialId(socialId)
+            .socialType(socialType)
+            .profileImageUrl(profileImg)
+            .status(true)
+            .followerCount(0L)
+            .followingCount(0L)
+            .thisWeekCompleteCount(0)
+            .thisWeekTotalClimbingTime(0L)
+            .createdAt(LocalDateTime.now())
+            .build();
     }
 }
