@@ -70,6 +70,29 @@ public class UserResponseDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    public static class UserFollowSimpleInfo{
+        private Long userId;
+        private String userName;
+        private String userProfileUrl;
+        private Long followerCount;
+        private Long followingCount;
+
+        public static UserFollowSimpleInfo toDTO(User follower){
+            return UserFollowSimpleInfo.builder()
+                .userId(follower.getId())
+                .userName(follower.getProfileName())
+                .userProfileUrl(follower.getProfileImageUrl())
+                .followerCount(follower.getFollowerCount())
+                .followingCount(follower.getFollowingCount())
+                .build();
+        }
+
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class UserHomeGymSimpleInfo{
         private Long gymId;
         private String gymProfileUrl;

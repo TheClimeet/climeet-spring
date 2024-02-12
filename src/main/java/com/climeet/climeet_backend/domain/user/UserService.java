@@ -7,6 +7,7 @@ import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -145,6 +146,18 @@ public class UserService {
                 return UserHomeGymSimpleInfo.toDTO(climbingGym);
             }).toList();
 
+    }
+
+    public List<UserFollowSimpleInfo> getClimberFollowing(User currentUser){
+        List<FollowRelationship> followingClimbers = followRelationshipRepository.findByFollowerId(
+            currentUser.getId());
+
+        return followingClimbers.stream()
+            .filter(followingClimber -> followingClimber.getFollowing() instanceof Climber)
+            .map(followRelationship -> {
+                User climber = followRelationship.getFollowing();
+                return UserFollowSimpleInfo.toDTO(climber);
+            }).toList();
     }
 
 
