@@ -137,10 +137,6 @@ public class ClimbingRecordService {
         List<ClimbingRecord> climbingRecordList = climbingRecordRepository.findByClimbingDateBetweenAndUser(
             startDate, endDate, user);
 
-        if (climbingRecordList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_CLIMBING_RECORD);
-        }
-
         return climbingRecordList.stream()
             .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
             .collect(Collectors.toList());
