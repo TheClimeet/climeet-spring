@@ -60,6 +60,9 @@ public class ClimberService {
         //login
         if (optionalClimber.isPresent()) {
             resultClimber = login(optionalClimber.get());
+            if(climberRequestDto.getFcmToken()!=null) {
+                optionalClimber.get().updateFCMToken(climberRequestDto.getFcmToken());
+            }
         }
         if (resultClimber == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
@@ -133,6 +136,7 @@ public class ClimberService {
         climber.updateProfileName(climberRequestDto.getNickName());
         climber.updateClimbingLevel(climberRequestDto.getClimbingLevel());
         climber.updateDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
+        climber.updateFCMToken(climberRequestDto.getFcmToken());
         if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
             climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }

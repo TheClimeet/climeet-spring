@@ -76,6 +76,10 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+    public void updateFCMToken(String fcmToken){
+        this.fcmToken = fcmToken;
+    }
+
     public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
         this.isAllowFollowNotification = isAllowFollowNotification;
         this.isAllowLikeNotification = isAllowLikeNotification;
