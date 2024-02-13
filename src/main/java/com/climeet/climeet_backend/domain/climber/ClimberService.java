@@ -2,15 +2,17 @@ package com.climeet.climeet_backend.domain.climber;
 
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
-import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberSimpleInfo;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.domain.user.UserService;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
@@ -42,7 +44,7 @@ public class ClimberService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
+    public ClimberSimpleInfo handleSocialLogin(String socialType, String accessToken,
         @RequestBody CreateClimberRequest climberRequestDto) {
         HashMap<String, String> userInfo;
         userInfo = getClimberProfileByToken(socialType, accessToken);
@@ -62,7 +64,7 @@ public class ClimberService {
         if (resultClimber == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
-        return new ClimberResponseDto(resultClimber);
+        return ClimberSimpleInfo.toDTO(resultClimber);
 
 
     }
@@ -194,6 +196,8 @@ public class ClimberService {
     public boolean checkNicknameDuplication(String nickName){
         return userRepository.findByprofileName(nickName).isPresent();
     }
+
+
 
 
 
