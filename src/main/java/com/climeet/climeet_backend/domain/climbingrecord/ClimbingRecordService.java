@@ -188,9 +188,10 @@ public class ClimbingRecordService {
             throw new GeneralException(ErrorStatus._INVALID_MEMBER);
         }
 
-        climbingRecordRepository.deleteById(id);
-
+        Long totalTime = climbingRecord.getClimbingTime().toNanoOfDay() / 1000000000;
+        user.thisWeekTotalClimbingTimeDown(totalTime);
         climbingRecord.getGym().thisWeekSelectionCountDown();
+        climbingRecordRepository.deleteById(id);
 
         return ResponseEntity.ok("클라이밍기록이 삭제되었습니다.");
     }
@@ -289,7 +290,7 @@ public class ClimbingRecordService {
                     gym, ((int) arr[CLIMEET_LEVEL]));
                 Long levelCount = (Long) arr[LEVEL_COUNT];
 
-                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount );
+                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
             .collect(Collectors.toList());
 
@@ -324,7 +325,7 @@ public class ClimbingRecordService {
                     gym, ((int) arr[CLIMEET_LEVEL]));
                 Long levelCount = (Long) arr[LEVEL_COUNT];
 
-                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount );
+                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
             .collect(Collectors.toList());
 
@@ -366,7 +367,8 @@ public class ClimbingRecordService {
         List<BestTimeUserSimpleInfo> ranking = bestUserRanking.stream()
             .map(userRankMap -> {
                 User user = (User) userRankMap[RANKING_USER];
-                String totalTime = convertDoubleToStringTime((Double) userRankMap[RANKING_CONDITION]);
+                String totalTime = convertDoubleToStringTime(
+                    (Double) userRankMap[RANKING_CONDITION]);
                 return BestTimeUserSimpleInfo.toDTO(user, rank[0]++, totalTime);
             })
             .collect(Collectors.toList());
@@ -394,9 +396,8 @@ public class ClimbingRecordService {
                 Number count = (Number) userRankMap[RANKING_COUNT];
                 int highDifficultyCount = count.intValue();
 
-
                 DifficultyMapping difficultyMapping = difficultyMappingList.stream()
-                    .filter(iter -> iter.getDifficulty() == highDifficulty )
+                    .filter(iter -> iter.getDifficulty() == highDifficulty)
                     .findAny().get();
 
                 String climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
@@ -404,7 +405,8 @@ public class ClimbingRecordService {
                 String gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
 
                 return BestLevelUserSimpleInfo.toDTO(user, rank[0]++, highDifficulty,
-                    highDifficultyCount, climeetDifficultyName, gymDifficultyName, gymDifficultyColor);
+                    highDifficultyCount, climeetDifficultyName, gymDifficultyName,
+                    gymDifficultyColor);
             })
             .collect(Collectors.toList());
 
@@ -463,7 +465,8 @@ public class ClimbingRecordService {
     }
 
 
-    public ClimbingRecordUserAndGymStatisticsDetailInfo getUserStatisticsByGym(Long userId, Long gymId) {
+    public ClimbingRecordUserAndGymStatisticsDetailInfo getUserStatisticsByGym(Long userId,
+        Long gymId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_MEMBER));
 
@@ -481,14 +484,13 @@ public class ClimbingRecordService {
         List<Object[]> difficulties = routeRecordRepository
             .findAllRouteRecordDifficultyAndUserAndGym(user, gym);
 
-
         List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
             .map(arr -> {
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
                     gym, ((int) arr[CLIMEET_LEVEL]));
                 Long levelCount = (Long) arr[LEVEL_COUNT];
 
-                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount );
+                return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
             .collect(Collectors.toList());
 
