@@ -79,7 +79,6 @@ public class UserResponseDto {
         private String userName;
         private String userProfileUrl;
         private Long followerCount;
-        private Long followingCount;
 
         public static UserFollowSimpleInfo toDTO(User follower){
             return UserFollowSimpleInfo.builder()
@@ -87,7 +86,6 @@ public class UserResponseDto {
                 .userName(follower.getProfileName())
                 .userProfileUrl(follower.getProfileImageUrl())
                 .followerCount(follower.getFollowerCount())
-                .followingCount(follower.getFollowingCount())
                 .build();
         }
 
