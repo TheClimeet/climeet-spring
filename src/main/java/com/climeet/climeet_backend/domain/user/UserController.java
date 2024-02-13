@@ -71,14 +71,16 @@ public class UserController {
     }
 
     @GetMapping("/users/accounts")
-    @Operation(summary = "로그인 계정 정보")
+    @Operation(summary = "로그인 계정 정보 조회")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<UserAccountDetailInfo> getLoginUserProfiles(
         @CurrentUser User currentUser) {
         return ResponseEntity.ok(userService.getLoginUserProfiles(currentUser));
     }
 
-    @PatchMapping("/users/notification")
+    @PatchMapping("/users/notifications")
     @Operation(summary = "notificaion 허용 범위 수정")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<String> updateUserNotification(@CurrentUser User currentUser, @RequestBody
     UpdateUserAllowNotificationRequest updateRequestDto) {
         return ResponseEntity.ok(userService.updateUserNotification(currentUser, updateRequestDto));

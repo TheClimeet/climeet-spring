@@ -178,7 +178,6 @@ public class UserService {
     }
 
     @Transactional
-
     public String updateUserNotification(User currentUser,
         UpdateUserAllowNotificationRequest request) {
 
