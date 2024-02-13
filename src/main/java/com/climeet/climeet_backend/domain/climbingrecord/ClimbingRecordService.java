@@ -173,7 +173,10 @@ public class ClimbingRecordService {
         Long updateTime = 0L;
         // updateClimbingRecordDto의 time이 null이 아니면 업데이트 수행
         if (newTime != null) {
-            updateTime = oldTime.toNanoOfDay()/NANO_TO_SEC - newTime.toNanoOfDay()/NANO_TO_SEC;
+            updateTime = newTime.toNanoOfDay()/NANO_TO_SEC - oldTime.toNanoOfDay()/NANO_TO_SEC;
+            System.out.println("oldTIme = " + oldTime);
+            System.out.println("newTime = " + newTime);
+            System.out.println("updateTime = " + updateTime);
             oldTime = newTime;
         }
 
