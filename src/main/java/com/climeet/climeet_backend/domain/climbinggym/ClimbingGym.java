@@ -41,6 +41,10 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String profileImageUrl;
 
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     private Float AverageRating = 0.0F;
 
     private Float sumRating = 0.0F;
@@ -90,7 +94,7 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int serviceBitMask = 0;
 
-    public void updateServiceBitMask(int value){
+    public void updateServiceBitMask(int value) {
         this.serviceBitMask = value;
     }
 

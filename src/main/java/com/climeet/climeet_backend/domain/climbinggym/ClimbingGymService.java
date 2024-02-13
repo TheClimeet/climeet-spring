@@ -1,6 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
-import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
@@ -15,13 +15,14 @@ import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRep
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -44,6 +46,7 @@ public class ClimbingGymService {
     private final BitmaskConverter bitmaskConverter;
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
+    private final S3Service s3Service;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -132,11 +135,8 @@ public class ClimbingGymService {
     }
 
 
-    public ClimbingGymInfoResponse updateClimbingGymInfo(
-
-        UpdateClimbingGymInfoRequest updateClimbingGymInfoRequest) {
-        ClimbingGym climbingGym = climbingGymRepository.findById(
-                updateClimbingGymInfoRequest.getGymId())
+    public ClimbingGymInfoResponse updateClimbingGymInfo(Long gymId) {
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
         RestClient restClient = RestClient.create();
@@ -198,6 +198,35 @@ public class ClimbingGymService {
                 entry.getValue()))
             .sorted(Comparator.comparingInt(ClimbingGymAverageLevelDetailResponse::getDifficulty))
             .toList();
+    }
+
+    public String changeClimbingGymBackgroundImage(User user, MultipartFile image) {
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
+        String backgroundImageUrl = s3Service.uploadFile(image).getImgUrl();
+        return null;
+    }
+
+    public String changeClimbingGymProfileImage(User user, MultipartFile image) {
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+        ClimbingGym climbingGym = manager.getClimbingGym();
+        String profileImageUrl = s3Service.uploadFile(image).getImgUrl();
+        s3Service.deleteFile(climbingGym.getProfileImageUrl());
+        climbingGym.updateProfileImageUrl(profileImageUrl);
+        climbingGymRepository.save(climbingGym);
+        return profileImageUrl;
+    }
+
+    public void updateClimbingGymService(User user,
+        UpdateClimbingGymServiceRequest updateClimbingGymServiceRequest) {
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+        ClimbingGym climbingGym = manager.getClimbingGym();
+        climbingGym.updateServiceBitMask(bitmaskConverter.convertServiceListToBitmask(
+            updateClimbingGymServiceRequest.getServiceList()));
+        climbingGymRepository.save(climbingGym);
     }
 
     private DifficultyMapping getClosestGymDifficulty(Integer level,
