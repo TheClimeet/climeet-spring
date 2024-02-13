@@ -15,6 +15,7 @@ public class BestRouteResponseDto {
     @Builder
     public static class BestRouteDetailInfo {
 
+        private Long routeId;
         private int ranking;
         private int thisWeekSelectionCount;
         private String routeImageUrl;
@@ -26,6 +27,7 @@ public class BestRouteResponseDto {
 
         public static BestRouteDetailInfo toDTO(BestRoute bestRoute) {
             return BestRouteDetailInfo.builder()
+                .routeId(bestRoute.getRoute().getId())
                 .ranking(bestRoute.getRanking())
                 .thisWeekSelectionCount(bestRoute.getThisWeekSelectionCount())
                 .routeImageUrl(bestRoute.getRouteImageUrl())
