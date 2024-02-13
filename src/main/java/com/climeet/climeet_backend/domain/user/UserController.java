@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user;
 
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
@@ -58,5 +59,11 @@ public class UserController {
     @Operation(summary = "홈 화면 홈짐 바로가기")
     public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getHomeGyms(currentUser));
+    }
+
+    @GetMapping("/users/accounts")
+    @Operation(summary = "로그인 계정 정보")
+    public ResponseEntity<UserAccountDetailInfo> getLoginUserProfiles(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getLoginUserProfiles(currentUser));
     }
 }

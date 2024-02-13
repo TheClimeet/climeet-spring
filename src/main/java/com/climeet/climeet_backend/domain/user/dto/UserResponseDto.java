@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user.dto;
 
+import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.user.User;
@@ -80,6 +81,28 @@ public class UserResponseDto {
                 .gymId(gym.getId())
                 .gymProfileUrl(gym.getProfileImageUrl())
                 .gymName(gym.getName())
+                .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserAccountDetailInfo{
+        private Long userId;
+        private String userName;
+        private String userProfileUrl;
+        private boolean isManager;
+        private SocialType socialType;
+
+        public static UserAccountDetailInfo toDTO(User user,boolean isManager, SocialType socialType){
+            return UserAccountDetailInfo.builder()
+                .userId(user.getId())
+                .userName(user.getProfileName())
+                .userProfileUrl(user.getProfileImageUrl())
+                .isManager(isManager)
+                .socialType(socialType)
                 .build();
         }
     }
