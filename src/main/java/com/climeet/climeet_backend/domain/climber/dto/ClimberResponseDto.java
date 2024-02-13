@@ -3,29 +3,68 @@ package com.climeet.climeet_backend.domain.climber.dto;
 import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
 public class ClimberResponseDto {
 
-    private SocialType socialType;
-    private String accessToken;
-    private String refreshToken;
-
-
-    public ClimberResponseDto(Climber climber){
-        this.socialType = climber.getSocialType();
-        this.accessToken = climber.getAccessToken();
-        this.refreshToken = climber.getRefreshToken();
-    }
+    @Builder
     @Getter
-    public static class ClimberTokenRefreshResponse{
-        @JsonProperty("access_token")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimberSimpleInfo {
+
+        private SocialType socialType;
         private String accessToken;
+        private String refreshToken;
+
+
+        public static ClimberSimpleInfo toDTO(Climber climber) {
+            return ClimberSimpleInfo.builder()
+                .socialType(climber.getSocialType())
+                .accessToken(climber.getAccessToken())
+                .refreshToken(climber.getRefreshToken())
+                .build();
+        }
+
+        @Getter
+        public static class ClimberTokenRefreshResponse {
+
+            @JsonProperty("access_token")
+            private String accessToken;
+        }
+
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimberDetailInfo {
+
+        //프로필사진, 유저 인덱스, 이름, 팔로워수, 나랑 팔로우 여부
+        private Long userId;
+        private String climberName;
+        private String profileImgUrl;
+        private Long followerCount;
+        private Boolean isFollower;
+
+        public static ClimberDetailInfo toDTO(Climber climber, boolean status){
+            return ClimberDetailInfo.builder()
+                .userId(climber.getId())
+                .climberName(climber.getProfileName())
+                .profileImgUrl(climber.getProfileImageUrl())
+                .followerCount(climber.getFollowerCount())
+                .isFollower(status)
+                .build();
+        }
 
 
+    }
 
 }
+
+
