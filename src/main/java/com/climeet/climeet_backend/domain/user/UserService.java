@@ -9,6 +9,7 @@ import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
@@ -163,7 +164,6 @@ public class UserService {
         boolean isManager = true;
         SocialType socialType = null;
 
-
         if (manager.isEmpty() && climber.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_USER);
         }
@@ -175,6 +175,35 @@ public class UserService {
         }
 
         return UserAccountDetailInfo.toDTO(currentUser, isManager, socialType);
+    }
+
+    @Transactional
+
+    public String updateUserNotification(User currentUser,
+        UpdateUserAllowNotificationRequest request) {
+
+        boolean isAllowFollowNotification = currentUser.getIsAllowFollowNotification();
+        boolean isAllowLikeNotification = currentUser.getIsAllowLikeNotification();
+        boolean isAllowCommentNotification = currentUser.getIsAllowCommentNotification();
+        boolean isAllowAdNotification = currentUser.getIsAllowAdNotification();
+
+        if (request.getIsAllowFollowNotification() != null) {
+            isAllowFollowNotification = request.getIsAllowFollowNotification();
+        }
+        if (request.getIsAllowLikeNotification() != null) {
+            isAllowLikeNotification = request.getIsAllowLikeNotification();
+        }
+        if (request.getIsAllowCommentNotification() != null) {
+            isAllowCommentNotification = request.getIsAllowCommentNotification();
+        }
+        if (request.getIsAllowAdNotification() != null) {
+            isAllowAdNotification = request.getIsAllowAdNotification();
+        }
+
+        currentUser.updateNotification(isAllowFollowNotification, isAllowLikeNotification,
+            isAllowCommentNotification, isAllowAdNotification);
+
+        return "업데이트 완료";
     }
 
 }
