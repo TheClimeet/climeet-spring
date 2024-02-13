@@ -128,6 +128,8 @@ public class UserResponseDto {
             private Long routeId;
             private String routeImgUrl;
             private String difficultyName;
+            private Long sectorId;
+            private String sectorName;
         }
 
         private List<RouteSimpleInfo> routeSimpleInfos;
@@ -138,6 +140,8 @@ public class UserResponseDto {
                     .routeId(route.getId())
                     .routeImgUrl(route.getRouteImageUrl())
                     .difficultyName(route.getDifficultyMapping().getClimeetDifficultyName())
+                    .sectorId(route.getSector().getId())
+                    .sectorName(route.getSector().getSectorName())
                     .build())
                 .toList();
             return UserHomeGymDetailInfo.builder()
