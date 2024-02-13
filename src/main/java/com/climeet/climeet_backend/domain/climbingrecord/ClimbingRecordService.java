@@ -64,6 +64,8 @@ public class ClimbingRecordService {
     public static final int CLIMEET_LEVEL = 0;
     public static final int LEVEL_COUNT = 1;
 
+    public static final int NANO_TO_SEC = 1000000000;
+
 
     /**
      * 클라이밍기록 생성(루트기록생성포함)
@@ -79,7 +81,7 @@ public class ClimbingRecordService {
 
         //선택받았으니 하나 추가
         climbingGym.thisWeekSelectionCountUp();
-        Long totalTime = requestDto.getTime().toNanoOfDay() / 1000000000;
+        Long totalTime = requestDto.getTime().toNanoOfDay() / NANO_TO_SEC;
         user.thisWeekTotalClimbingTimeUp(totalTime);
 
         List<CreateRouteRecord> routeRecords = requestDto.getRouteRecordRequestDtoList();
@@ -168,12 +170,16 @@ public class ClimbingRecordService {
             oldDate = newDate;
         }
 
+        Long updateTime = 0L;
         // updateClimbingRecordDto의 time이 null이 아니면 업데이트 수행
         if (newTime != null) {
+            updateTime = oldTime.toNanoOfDay()/NANO_TO_SEC - newTime.toNanoOfDay()/NANO_TO_SEC;
             oldTime = newTime;
         }
 
         climbingRecord.update(oldDate, oldTime);
+
+        user.thisWeekTotalClimbingTimeUp(updateTime);
 
         return ClimbingRecordSimpleInfo.toDTO(climbingRecord);
     }
@@ -188,7 +194,7 @@ public class ClimbingRecordService {
             throw new GeneralException(ErrorStatus._INVALID_MEMBER);
         }
 
-        Long totalTime = climbingRecord.getClimbingTime().toNanoOfDay() / 1000000000;
+        Long totalTime = climbingRecord.getClimbingTime().toNanoOfDay() / NANO_TO_SEC;
         user.thisWeekTotalClimbingTimeDown(totalTime);
         climbingRecord.getGym().thisWeekSelectionCountDown();
         climbingRecordRepository.deleteById(id);
