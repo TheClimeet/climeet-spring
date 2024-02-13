@@ -101,12 +101,14 @@ public class UserResponseDto {
         private Long gymId;
         private String gymProfileUrl;
         private String gymName;
+        private Long followerCount;
 
         public static UserHomeGymSimpleInfo toDTO(ClimbingGym gym){
             return UserHomeGymSimpleInfo.builder()
                 .gymId(gym.getId())
                 .gymProfileUrl(gym.getProfileImageUrl())
                 .gymName(gym.getName())
+                .followerCount(gym.getManager().getFollowerCount())
                 .build();
         }
     }
