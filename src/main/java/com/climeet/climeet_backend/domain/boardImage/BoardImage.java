@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class BoardImage extends BaseTimeEntity {
 
     @Id
@@ -29,4 +31,11 @@ public class BoardImage extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
+
+    public static BoardImage toEntity(String imageUrl, Board board) {
+        return BoardImage.builder()
+            .board(board)
+            .imageUrl(imageUrl)
+            .build();
+    }
 }
