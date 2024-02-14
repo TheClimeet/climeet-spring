@@ -46,11 +46,9 @@ public class ClimbingGymService {
     private final ClimbingGymRepository climbingGymRepository;
     private final ManagerRepository managerRepository;
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
-    private final BitmaskConverter bitmaskConverter;
     private final FollowRelationshipRepository followRelationshipRepository;
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
-    private final FollowRelationshipRepository followRelationshipRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
