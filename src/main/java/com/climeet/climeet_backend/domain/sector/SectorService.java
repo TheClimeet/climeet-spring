@@ -31,14 +31,14 @@ public class SectorService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-//        // 섹터 이름 중복 체크 (같은 섹터에서 중복일 경우)
-//        List<Sector> sectorList = sectorRepository.findSectorByClimbingGymId(
-//            manager.getClimbingGym().getId());
-//        for (Sector sector : sectorList) {
-//            if (sector.getSectorName().equals(createSectorRequest.getName())) {
-//                throw new GeneralException(ErrorStatus._DUPLICATE_SECTOR_NAME);
-//            }
-//        }
+        // 섹터 이름 중복 체크 (같은 섹터에서 중복일 경우)
+        List<Sector> sectorList = sectorRepository.findSectorByClimbingGymId(
+            manager.getClimbingGym().getId());
+        for (Sector sector : sectorList) {
+            if (sector.getSectorName().equals(createSectorRequest.getName())) {
+                throw new GeneralException(ErrorStatus._DUPLICATE_SECTOR_NAME);
+            }
+        }
 
         String sectorImageUrl = s3Service.uploadFile(sectorImage).getImgUrl();
 

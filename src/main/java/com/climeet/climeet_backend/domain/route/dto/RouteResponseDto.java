@@ -20,6 +20,7 @@ public class RouteResponseDto {
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private String routeImageUrl;
+        private String holdColor;
 
         public static RouteDetailResponse toDto(Route route) {
             return RouteDetailResponse.builder()
@@ -31,6 +32,7 @@ public class RouteResponseDto {
                 .gymDifficultyName(route.getDifficultyMapping().getGymDifficultyName())
                 .gymDifficultyColor(route.getDifficultyMapping().getGymDifficultyColor())
                 .routeImageUrl(route.getRouteImageUrl())
+                .holdColor(route.getHoldColor())
                 .build();
         }
     }
