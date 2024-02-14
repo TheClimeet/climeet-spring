@@ -112,7 +112,7 @@ public class ReviewService {
             .map(review -> ReviewDetailResponse.toDTO(review))
             .toList();
 
-        ReviewDetailListResponse reviewDetailListResponse = ReviewDetailListResponse.toDto(
+        ReviewDetailListResponse reviewDetailListResponse = ReviewDetailListResponse.toDTO(
             reviewSummaryResponse, reviewList);
 
         return new PageResponseDto<>(pageable.getPageNumber(), reviewSlice.hasNext(),

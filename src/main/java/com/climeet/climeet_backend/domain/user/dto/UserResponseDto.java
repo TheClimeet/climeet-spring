@@ -37,7 +37,7 @@ public class UserResponseDto {
         private String profileImgUrl;
         private String profileName;
 
-        public static UserShortsSimpleInfo toDto(User user) {
+        public static UserShortsSimpleInfo toDTO(User user) {
             return UserShortsSimpleInfo.builder()
                 .profileImgUrl(user.getProfileImageUrl())
                 .profileName(user.getProfileName())
@@ -162,7 +162,7 @@ public class UserResponseDto {
         private Long userId;
         private String userName;
         private String userProfileUrl;
-        private boolean isManager;
+        private Boolean isManager;
         private SocialType socialType;
 
         public static UserAccountDetailInfo toDTO(User user,boolean isManager, SocialType socialType){

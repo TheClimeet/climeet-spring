@@ -76,7 +76,7 @@ public class ClimbingGymResponseDto {
         private float averageRating;
         private int reviewCount;
 
-        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager,
+        public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym, Manager manager,
             String gymBackGroundImageUrl) {
             return ClimbingGymDetailResponse.builder()
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
@@ -102,7 +102,7 @@ public class ClimbingGymResponseDto {
         private Map<String, List<String>> businessHours;
         private List<String> serviceList;
 
-        public static ClimbingGymTabInfoResponse toDto(ClimbingGym climbingGym,
+        public static ClimbingGymTabInfoResponse toDTO(ClimbingGym climbingGym,
             Map<String, List<String>> businessHours, List<String> serviceList) {
             return ClimbingGymTabInfoResponse.builder()
                 .gymId(climbingGym.getId())
@@ -125,7 +125,7 @@ public class ClimbingGymResponseDto {
         private String tel;
         private Map<String, List<String>> businessHours;
 
-        public static ClimbingGymInfoResponse toDto(ClimbingGym climbingGym,
+        public static ClimbingGymInfoResponse toDTO(ClimbingGym climbingGym,
             Map<String, List<String>> businessHours) {
             return ClimbingGymInfoResponse.builder()
                 .name(climbingGym.getName())
@@ -147,7 +147,7 @@ public class ClimbingGymResponseDto {
         private String gymDifficultyColor;
         private double percentage;
 
-        public static ClimbingGymAverageLevelDetailResponse toDto(
+        public static ClimbingGymAverageLevelDetailResponse toDTO(
             DifficultyMapping difficultyMapping, double percentage) {
             return ClimbingGymAverageLevelDetailResponse.builder()
                 .difficulty(difficultyMapping.getDifficulty())
@@ -169,7 +169,7 @@ public class ClimbingGymResponseDto {
         private Long managerId;
         private Long follower;
         private String profileImageUrl;
-        private boolean isFollow;
+        private Boolean isFollow;
 
         public static AcceptedClimbingGymSimpleResponseWithFollow toDTO(ClimbingGym climbingGym,
             Long managerId, Long follower, String profileImageUrl, boolean isFollow) {

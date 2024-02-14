@@ -45,7 +45,7 @@ public class SectorService {
         Sector sector = sectorRepository.save(
             Sector.toEntity(createSectorRequest, manager.getClimbingGym(), sectorImageUrl));
 
-        return SectorSimpleResponse.toDto(sector);
+        return SectorSimpleResponse.toDTO(sector);
     }
 
     public List<SectorDetailResponse> getSectorList(Long gymId) {
@@ -55,7 +55,7 @@ public class SectorService {
         }
 
         return sectorList.stream()
-            .map(SectorDetailResponse::toDto)
+            .map(SectorDetailResponse::toDTO)
             .collect(Collectors.toList());
     }
 }

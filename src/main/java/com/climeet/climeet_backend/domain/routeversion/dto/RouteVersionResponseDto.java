@@ -27,7 +27,7 @@ public class RouteVersionResponseDto {
         private List<DifficultyMappingDetailResponse> difficultyList;
         private int maxFloor;
 
-        public static RouteVersionFilteringKeyResponse toDto(ClimbingGym climbingGym,
+        public static RouteVersionFilteringKeyResponse toDTO(ClimbingGym climbingGym,
             List<SectorDetailResponse> sectorList,
             List<DifficultyMappingDetailResponse> difficultyList, int maxFloor,
             RouteVersion routeVersion) {

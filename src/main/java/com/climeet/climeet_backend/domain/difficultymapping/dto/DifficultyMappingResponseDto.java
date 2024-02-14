@@ -19,7 +19,7 @@ public class DifficultyMappingResponseDto {
         private int difficulty;
         private String gymDifficultyColor;
 
-        public static DifficultyMappingDetailResponse toDto(
+        public static DifficultyMappingDetailResponse toDTO(
             DifficultyMapping difficultyMapping) {
             return DifficultyMappingDetailResponse.builder()
                 .climeetDifficultyName(difficultyMapping.getClimeetDifficultyName())

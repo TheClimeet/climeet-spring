@@ -20,7 +20,7 @@ public class SectorResponseDto {
         private String name;
         private int floor;
 
-        public static SectorDetailResponse toDto(Sector sector) {
+        public static SectorDetailResponse toDTO(Sector sector) {
             return SectorDetailResponse.builder()
                 .sectorId(sector.getId())
                 .name(sector.getSectorName())
@@ -38,7 +38,7 @@ public class SectorResponseDto {
 
         private Long sectorId;
 
-        public static SectorSimpleResponse toDto(Sector sector) {
+        public static SectorSimpleResponse toDTO(Sector sector) {
             return SectorSimpleResponse.builder()
                 .sectorId(sector.getId())
                 .build();

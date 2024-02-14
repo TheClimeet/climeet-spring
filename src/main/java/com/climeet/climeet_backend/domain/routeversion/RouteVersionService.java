@@ -139,13 +139,13 @@ public class RouteVersionService {
         }
 
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
-            .map(SectorDetailResponse::toDto).toList();
+            .map(SectorDetailResponse::toDTO).toList();
         List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
-            .map(DifficultyMappingDetailResponse::toDto).toList();
+            .map(DifficultyMappingDetailResponse::toDTO).toList();
         int maxFloor = sectorList.stream()
             .mapToInt(Sector::getFloor).max().orElse(0);
 
-        return RouteVersionFilteringKeyResponse.toDto(climbingGym, sectorDetailResponses,
+        return RouteVersionFilteringKeyResponse.toDTO(climbingGym, sectorDetailResponses,
             difficultyMappingDetailResponses, maxFloor, routeVersion);
     }
 
@@ -199,7 +199,7 @@ public class RouteVersionService {
             .skip(
                 getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
             .limit(getFilteredRouteVersionRequest.getSize())
-            .map(RouteDetailResponse::toDto)
+            .map(RouteDetailResponse::toDTO)
             .toList();
 
         boolean hasNextPage = (getFilteredRouteVersionRequest.getPage() + 1)

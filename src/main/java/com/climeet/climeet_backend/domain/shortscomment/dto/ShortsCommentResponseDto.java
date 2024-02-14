@@ -24,7 +24,7 @@ public class ShortsCommentResponseDto {
         int childCommentCount;
         String createdDate;
 
-        public static ShortsCommentParentResponse toDto(Long commentId, String nickname,
+        public static ShortsCommentParentResponse toDTO(Long commentId, String nickname,
             String profileImageUrl,
             String content, CommentLikeStatus commentLikeStatus, Boolean isParent,
             int likeCount, int dislikeCount,
@@ -60,7 +60,7 @@ public class ShortsCommentResponseDto {
         Long parentCommentId;
         String createdDate;
 
-        public static ShortsCommentChildResponse toDto(Long commentId, String nickname,
+        public static ShortsCommentChildResponse toDTO(Long commentId, String nickname,
             String profileImageUrl,
             String content, CommentLikeStatus commentLikeStatus,
             int likeCount, int dislikeCount,
