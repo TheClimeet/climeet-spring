@@ -90,6 +90,7 @@ public class UserController {
     }
 
     @GetMapping("/profile")
+    @SwaggerApiError({ErrorStatus._EMPTY_USER})
     @Operation(summary = "마이페이지 유저 프로필 조회")
     public ResponseEntity<UserProfileDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getUserMyPageProfile(currentUser));
