@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FollowRelationshipController {
     private final FollowRelationshipService followRelationshipService;
 
-    @PostMapping("/follow-relationship/{userId}")
+    @PostMapping("/follow-relationship")
     @Operation(summary = "유저 팔로우")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> followUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
@@ -30,7 +30,7 @@ public class FollowRelationshipController {
         return ResponseEntity.ok("팔로우 완료");
     }
 
-    @DeleteMapping("/follow-relationship/{userId}")
+    @DeleteMapping("/follow-relationship")
     @Operation(summary = "유저 팔로우 취소")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> unfollowUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
