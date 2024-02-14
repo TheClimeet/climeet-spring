@@ -81,12 +81,12 @@ public class ClimbingRecordResponseDto {
     @Builder
     public static class ClimbingRecordStatisticsInfo {
 
-        private LocalTime time;
+        private String time;
         private Long totalCompletedCount;
         private Long attemptRouteCount;
         private Map<String, Long> difficulty;
 
-        public static ClimbingRecordStatisticsInfo toDTO(LocalTime time, Long totalCompletedCount,
+        public static ClimbingRecordStatisticsInfo toDTO(String time, Long totalCompletedCount,
             Long attemptRouteCount, Map<String, Long> difficulty) {
 
             return ClimbingRecordStatisticsInfo.builder()
@@ -104,12 +104,12 @@ public class ClimbingRecordResponseDto {
     @Builder
     public static class ClimbingRecordStatisticsInfoByGym {
 
-        private LocalTime time;
+        private String time;
         private Long totalCompletedCount;
         private Long attemptRouteCount;
         private List<GymDifficultyMappingInfo> difficulty;
 
-        public static ClimbingRecordStatisticsInfoByGym toDTO(LocalTime time, Long totalCompletedCount,
+        public static ClimbingRecordStatisticsInfoByGym toDTO(String time, Long totalCompletedCount,
             Long attemptRouteCount, List<GymDifficultyMappingInfo> difficulty) {
 
             return ClimbingRecordStatisticsInfoByGym.builder()
@@ -271,14 +271,14 @@ public class ClimbingRecordResponseDto {
     @Builder
     public static class BestTimeUserSimpleInfo {
 
-        private LocalTime totalTime;
+        private String totalTime;
 
         private Long userId;
         protected String profileName;
         protected String profileImageUrl;
         private int ranking;
 
-        public static BestTimeUserSimpleInfo toDTO(User user, int ranking, LocalTime totalTime) {
+        public static BestTimeUserSimpleInfo toDTO(User user, int ranking, String totalTime) {
 
             return BestTimeUserSimpleInfo.builder()
                 .ranking(ranking)

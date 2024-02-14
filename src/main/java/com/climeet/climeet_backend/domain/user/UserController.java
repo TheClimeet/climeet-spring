@@ -1,6 +1,9 @@
 package com.climeet.climeet_backend.domain.user;
 
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -25,8 +28,7 @@ public class UserController {
     @Operation(summary = "소셜 Access token, Refresh token 재발급 ")
     @SwaggerApiError({ErrorStatus._INVALID_JWT, ErrorStatus._EXPIRED_JWT, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<UserTokenSimpleInfo> refreshToken(@RequestParam String refreshToken){
-        UserTokenSimpleInfo userTokenSimpleInfo = userService.updateUserToken(refreshToken);
-        return ResponseEntity.ok(userTokenSimpleInfo);
+        return ResponseEntity.ok(userService.updateUserToken(refreshToken));
 
 
     }
@@ -34,8 +36,7 @@ public class UserController {
     @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollower(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
-        List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollower(userId, currentUser, userCategory);
-        return ResponseEntity.ok(userFollowDetailResponseList);
+        return ResponseEntity.ok(userService.getFollower(userId, currentUser, userCategory));
 
     }
 
@@ -43,8 +44,25 @@ public class UserController {
     @Operation(summary = "특정 유저 팔로잉 조회", description = "**userCategory** : Manager OR Climber")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollowing(@RequestParam Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
-        List<UserFollowDetailInfo> userFollowDetailResponseList = userService.getFollowing(userId, currentUser, userCategory);
-        return ResponseEntity.ok(userFollowDetailResponseList);
+        return ResponseEntity.ok(userService.getFollowing(userId, currentUser, userCategory));
 
+    }
+
+    @GetMapping("/home/homegyms")
+    @Operation(summary = "홈 화면 홈짐 바로가기")
+    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getHomeGyms(currentUser));
+    }
+
+    @GetMapping("/climber-following")
+    @Operation(summary = "팔로우하는 클라이머 정보 조회(검색창 하단)")
+    public ResponseEntity<List<UserFollowSimpleInfo>> getClimberFollowing(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getClimberFollowing(currentUser));
+    }
+
+    @GetMapping("/gym-following")
+    @Operation(summary = "팔로우하는 암장 정보 조회(검색창 하단)")
+    public ResponseEntity<List<UserHomeGymDetailInfo>> getGymsFollowing(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getGymsFollowing(currentUser));
     }
 }

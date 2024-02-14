@@ -208,5 +208,29 @@ public class RouteVersionService {
         return new PageResponseDto<>(getFilteredRouteVersionRequest.getPage(), hasNextPage,
             routeDetailResponseList);
     }
+
+    public List<Route> getRouteVersionRouteList(Long gymId) {
+
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
+                climbingGym, LocalDate.now())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
+
+        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
+            routeVersion.getRouteList());
+        if (routeIdList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        }
+
+        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
+        if (routeList.size() != routeIdList.size()) {
+            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
+        }
+
+
+        return routeList;
+    }
 }
 
