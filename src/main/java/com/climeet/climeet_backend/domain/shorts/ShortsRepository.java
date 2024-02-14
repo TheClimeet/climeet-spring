@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.shorts;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -48,5 +49,7 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
 
     Slice<Shorts> findAllByShortsVisibilityInAndRouteIdOrderByCreatedAtDesc(List<ShortsVisibility> shortsVisibilities, Long routeId, Pageable pageable);
 
+
+    List<Shorts> findByCreatedAtBefore(LocalDateTime dateTime);
 
 }
