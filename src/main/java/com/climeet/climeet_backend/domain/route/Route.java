@@ -35,6 +35,8 @@ public class Route extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private DifficultyMapping difficultyMapping;
 
+    private String holdColor;
+
     private String routeImageUrl;
 
 

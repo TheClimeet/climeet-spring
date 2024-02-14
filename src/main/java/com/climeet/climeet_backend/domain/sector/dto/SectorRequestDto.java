@@ -9,6 +9,8 @@ public class SectorRequestDto {
     @NoArgsConstructor
     public static class CreateSectorRequest {
         private String name;
-        private int floor;
+        private int floor = 1;
+
+
     }
 }

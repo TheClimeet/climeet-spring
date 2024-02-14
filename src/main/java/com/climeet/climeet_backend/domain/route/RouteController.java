@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "ClimbingRoute", description = "클라이밍 루트 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/gym")
+@RequestMapping("api/gyms")
 public class RouteController {
 
     private final RouteService routeService;
