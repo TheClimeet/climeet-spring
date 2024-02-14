@@ -11,7 +11,11 @@ import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
+import com.climeet.climeet_backend.domain.route.Route;
+import com.climeet.climeet_backend.domain.routeversion.RouteVersionService;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -32,6 +36,7 @@ public class UserService {
     private final FollowRelationshipRepository followRelationshipRepository;
     private final ClimberRepository climberRepository;
     private final ManagerRepository managerRepository;
+    private final RouteVersionService routeVersionService;
 
     @Transactional
     public User updateNotification(User user, boolean isAllowFollowNotification,
@@ -158,6 +163,7 @@ public class UserService {
 
     }
 
+
     public UserAccountDetailInfo getLoginUserProfiles(User currentUser) {
         Optional<Manager> manager = managerRepository.findById(currentUser.getId());
         Optional<Climber> climber = climberRepository.findById(currentUser.getId());
@@ -185,6 +191,31 @@ public class UserService {
         boolean isAllowLikeNotification = currentUser.getIsAllowLikeNotification();
         boolean isAllowCommentNotification = currentUser.getIsAllowCommentNotification();
         boolean isAllowAdNotification = currentUser.getIsAllowAdNotification();
+
+    public List<UserFollowSimpleInfo> getClimberFollowing(User currentUser){
+        List<FollowRelationship> followingClimbers = followRelationshipRepository.findByFollowerId(
+            currentUser.getId());
+
+        return followingClimbers.stream()
+            .filter(followingClimber -> followingClimber.getFollowing() instanceof Climber)
+            .map(followRelationship -> {
+                User climber = followRelationship.getFollowing();
+                return UserFollowSimpleInfo.toDTO(climber);
+            }).toList();
+    }
+
+    public List<UserHomeGymDetailInfo> getGymsFollowing(User currentUser){
+        List<FollowRelationship> followingClimbers = followRelationshipRepository.findByFollowerId(
+            currentUser.getId());
+
+        return followingClimbers.stream()
+            .filter(followingClimber -> followingClimber.getFollowing() instanceof Manager)
+            .map(followRelationship -> {
+                ClimbingGym climbingGym = ((Manager) followRelationship.getFollowing()).getClimbingGym();
+                List<Route> gymRouteList = routeVersionService.getRouteVersionRouteList(climbingGym.getId());
+                return UserHomeGymDetailInfo.toDTO(climbingGym, gymRouteList);
+            }).toList();
+    }
 
         if (request.getIsAllowFollowNotification() != null) {
             isAllowFollowNotification = request.getIsAllowFollowNotification();
