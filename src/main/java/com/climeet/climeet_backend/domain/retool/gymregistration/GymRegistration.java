@@ -1,6 +1,7 @@
-package com.climeet.climeet_backend.domain.board;
+package com.climeet.climeet_backend.domain.retool.gymregistration;
 
-import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +11,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,35 +21,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Builder
-public class Board extends BaseTimeEntity {
+public class GymRegistration extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Manager manager;
 
-    @NotNull
-    private String title;
-
-    @NotNull
-    private String content;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ClimbingGym climbingGym;
 
     @Enumerated(EnumType.STRING)
-    private BoardType boardType;
+    private ApprovalStatus approvalStatus;
 
-    private int viewCount = 0;
+    private LocalDate approvedAt;
 
-    private int likeCount = 0;
-
-    public static Board toEntity(User user, String title, String content, BoardType boardType) {
-        return Board.builder()
-            .user(user)
-            .title(title)
-            .content(content)
-            .boardType(boardType)
-            .build();
+    public void updateApprovalStatus(Boolean isApproved) {
+        if(isApproved) {
+            this.approvalStatus = ApprovalStatus.APPROVED;
+        }
+        else {
+            this.approvalStatus = ApprovalStatus.REJECTED;
+        }
     }
 }

@@ -1,6 +1,7 @@
-package com.climeet.climeet_backend.domain.boardImage;
+package com.climeet.climeet_backend.domain.retool.gymduplicationrequest;
 
-import com.climeet.climeet_backend.domain.board.Board;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,10 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,23 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Builder
-public class BoardImage extends BaseTimeEntity {
+public class GymDuplicationRequest extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private String imageUrl;
+    @ManyToOne
+    private Manager manager;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Board board;
-
-    public static BoardImage toEntity(String imageUrl, Board board) {
-        return BoardImage.builder()
-            .board(board)
-            .imageUrl(imageUrl)
-            .build();
-    }
+    private ClimbingGym climbingGym;
 }

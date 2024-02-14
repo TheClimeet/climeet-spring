@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.convertBitmaskToServiceList;
+
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
@@ -21,7 +23,6 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,6 @@ public class ClimbingGymService {
     private final ClimbingGymRepository climbingGymRepository;
     private final ManagerRepository managerRepository;
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
-    private final BitmaskConverter bitmaskConverter;
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
 
@@ -115,7 +115,7 @@ public class ClimbingGymService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<String> serviceList = bitmaskConverter.convertBitmaskToServiceList(
+        List<String> serviceList = convertBitmaskToServiceList(
             climbingGym.getServiceBitMask()).stream().map(ServiceBitmask::name).toList();
 
         ObjectMapper objectMapper = new ObjectMapper();
