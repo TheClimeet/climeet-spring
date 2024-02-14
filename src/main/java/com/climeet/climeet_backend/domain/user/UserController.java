@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.user;
 
+import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
@@ -14,14 +16,16 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name="User")
+@Tag(name = "User")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
+
     private final UserService userService;
 
     @PostMapping("/refresh-token")
@@ -32,6 +36,7 @@ public class UserController {
 
 
     }
+
     @GetMapping("/followers")
     @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
@@ -50,9 +55,24 @@ public class UserController {
 
     @GetMapping("/home/homegyms")
     @Operation(summary = "홈 화면 홈짐 바로가기")
-    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
+    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser) {
         return ResponseEntity.ok(userService.getHomeGyms(currentUser));
     }
+
+    @GetMapping("/users/accounts")
+    @Operation(summary = "로그인 계정 정보 조회")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
+    public ResponseEntity<UserAccountDetailInfo> getLoginUserProfiles(
+        @CurrentUser User currentUser) {
+        return ResponseEntity.ok(userService.getLoginUserProfiles(currentUser));
+    }
+
+    @PatchMapping("/users/notifications")
+    @Operation(summary = "notificaion 허용 범위 수정")
+    @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
+    public ResponseEntity<String> updateUserNotification(@CurrentUser User currentUser, @RequestBody
+    UpdateUserAllowNotificationRequest updateRequestDto) {
+        return ResponseEntity.ok(userService.updateUserNotification(currentUser, updateRequestDto));
 
     @GetMapping("/climber-following")
     @Operation(summary = "팔로우하는 클라이머 정보 조회(검색창 하단)")
