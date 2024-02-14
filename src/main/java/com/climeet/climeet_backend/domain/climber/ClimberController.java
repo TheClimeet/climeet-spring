@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name="Climber Auth", description = "클라이머 인증 관련")
+@Tag(name="Climber", description = "클라이머 관련")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/climber")
@@ -52,6 +52,12 @@ public class ClimberController {
         boolean isDuplicated = !climberService.checkNicknameDuplication(nickName);
         return ResponseEntity.ok(isDuplicated);
 
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "클라이머 검색 기능")
+    public ResponseEntity<PageResponseDto<List<ClimberDetailInfo>>> getClimberSearchingList(@CurrentUser User currentUser, @RequestParam int page, @RequestParam int size, @RequestParam String climberName){
+        return ResponseEntity.ok(climberService.searchClimber(currentUser, climberName, page, size));
     }
 
 

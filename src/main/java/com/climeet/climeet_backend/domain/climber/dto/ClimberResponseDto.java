@@ -45,7 +45,6 @@ public class ClimberResponseDto {
     @AllArgsConstructor
     public static class ClimberDetailInfo {
 
-        //프로필사진, 유저 인덱스, 이름, 팔로워수, 나랑 팔로우 여부
         private Long userId;
         private String climberName;
         private String profileImgUrl;
