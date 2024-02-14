@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,6 +32,7 @@ public class ShortsLike {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
 
+    @Default
     private Boolean isLike = true;
 
     public static ShortsLike toEntity(User user, Shorts shorts) {
