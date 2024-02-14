@@ -5,12 +5,17 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingRequestDto.CreateDifficultyMappingRequest;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
 import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.GymDifficulty;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +35,13 @@ public class DifficultyMappingService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        return createDifficultyMappingRequest.getElements().stream()
+        return createDifficultyMappingRequest.getGymClimeetDifficulty().entrySet().stream()
             .map((element) -> {
-                ClimeetDifficulty climeetDifficulty = ClimeetDifficulty.findByString(
-                    element.getClimeetDifficultyName());
-
                 DifficultyMapping difficultyMapping = difficultyMappingRepository.save(
-                    DifficultyMapping.toEntity(element, manager.getClimbingGym(),
-                        climeetDifficulty.getStringValue(),
-                        climeetDifficulty.getIntValue()));
+                    DifficultyMapping.toEntity(
+                        GymDifficulty.findByName(element.getKey()),
+                        ClimeetDifficulty.findByString(element.getValue()),
+                        manager.getClimbingGym()));
                 return difficultyMapping.getId();
             })
             .toList();
@@ -57,5 +60,11 @@ public class DifficultyMappingService {
         }
 
         return difficultyMappingList.stream().map(DifficultyMappingDetailResponse::toDto).toList();
+    }
+
+    public Map<String, String> getGymDifficultyColorList() {
+        return Arrays.stream(GymDifficulty.values())
+            .collect(Collectors.toMap(Enum::name, GymDifficulty::getColorCode,
+                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 }

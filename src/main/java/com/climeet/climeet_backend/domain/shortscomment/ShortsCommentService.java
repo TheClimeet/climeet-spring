@@ -122,6 +122,7 @@ public class ShortsCommentService {
             responses);
     }
 
+    @Transactional
     public void changeShortsCommentLikeStatus(User user, Long shortsCommentId, boolean isLike,
         boolean isDislike) {
         ShortsComment shortsComment = shortsCommentRepository.findById(shortsCommentId)

@@ -21,6 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _WRONG_LOGINID_PASSWORD(HttpStatus.CONFLICT, "MEMBER_002", "아이디 또는 비밀번호가 일치하지 않습니다."),
     _DUPLICATE_LOGINID(HttpStatus.CONFLICT, "MEMBER_003", "중복된 ID입니다."),
     _INVALID_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER_004", "올바르지 않은 사용자입니다."),
+    _PENDING_APPROVAL(HttpStatus.NOT_FOUND, "MEMBER_005", "승인을 대기 중인 사용자입니다."),
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
@@ -29,6 +30,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _EMPTY_MANAGER(HttpStatus.CONFLICT, "CLIMBING_GYM_004", "해당 관리자가 존재하지 않습니다."),
     _ERROR_JSON_PARSE(HttpStatus.CONFLICT, "CLIMBING_GYM_005", "JSON 파싱을 할 수 없습니다."),
     _EMPTY_BACKGROUND_IMAGE(HttpStatus.CONFLICT, "CLIMBING_GYM_006", "암장 배경 이미지가 없습니다."),
+    _EMPTY_AVERAGE_LEVEL_DATA(HttpStatus.CONFLICT, "CLIMBING_GYM_007", "암장 평균레벨 데이터가 없습니다."),
 
     //루트 버전 관련
     _EMPTY_VERSION_LIST(HttpStatus.CONFLICT, "ROUTE_VERSION_001", "암장의 루트 버전이 존재하지 않습니다."),

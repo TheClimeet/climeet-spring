@@ -1,7 +1,8 @@
 package com.climeet.climeet_backend.domain.difficultymapping;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingRequestDto.DifficultyMappingElement;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.GymDifficulty;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,14 +47,14 @@ public class DifficultyMapping extends BaseTimeEntity {
     @Column(length = 7)
     private String gymDifficultyColor;
 
-    public static DifficultyMapping toEntity(DifficultyMappingElement requestDto,
-        ClimbingGym climbingGym, String climeetDifficultyName, int difficulty) {
+    public static DifficultyMapping toEntity(GymDifficulty gymDifficulty,
+        ClimeetDifficulty climeetDifficulty, ClimbingGym climbingGym) {
         return DifficultyMapping.builder()
             .climbingGym(climbingGym)
-            .climeetDifficultyName(climeetDifficultyName)
-            .difficulty(difficulty)
-            .gymDifficultyName(requestDto.getGymDifficultyName())
-            .gymDifficultyColor(requestDto.getGymDifficultyColor())
+            .climeetDifficultyName(climeetDifficulty.getStringValue())
+            .difficulty(climeetDifficulty.getIntValue())
+            .gymDifficultyName(gymDifficulty.getColorName())
+            .gymDifficultyColor(gymDifficulty.getColorCode())
             .build();
     }
 }
