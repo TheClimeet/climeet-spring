@@ -16,6 +16,8 @@ public class BestTimeClimberResponseDto {
     @Builder
     public static class BestTimeClimberDetailInfo{
 
+        private Long userId;
+
         private int ranking;
 
         private String profileImageUrl;
@@ -27,6 +29,7 @@ public class BestTimeClimberResponseDto {
         public static BestTimeClimberDetailInfo toDTO(
             BestTimeClimber bestTimeClimber){
             return BestTimeClimberDetailInfo.builder()
+                .userId(bestTimeClimber.getUserId())
                 .ranking(bestTimeClimber.getRanking())
                 .profileImageUrl(bestTimeClimber.getProfileImageUrl())
                 .thisWeekTotalClimbingTime(convertDoubleToStringTime(bestTimeClimber.getThisWeekTotalClimbingTime()))

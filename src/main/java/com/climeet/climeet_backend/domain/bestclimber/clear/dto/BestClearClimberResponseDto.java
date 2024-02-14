@@ -14,6 +14,8 @@ public class BestClearClimberResponseDto {
     @Builder
     public static class BestClearClimberDetailInfo{
 
+        private Long userId;
+
         private int ranking;
 
         private String profileImageUrl;
@@ -24,6 +26,7 @@ public class BestClearClimberResponseDto {
 
         public static BestClearClimberDetailInfo toDTO(BestClearClimber bestClearClimber){
             return BestClearClimberDetailInfo.builder()
+                .userId(bestClearClimber.getUserId())
                 .ranking(bestClearClimber.getRanking())
                 .profileImageUrl(bestClearClimber.getProfileImageUrl())
                 .thisWeekClearCount(bestClearClimber.getThisWeekClearCount())

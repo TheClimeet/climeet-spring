@@ -14,6 +14,7 @@ public class BestRecordGymResponseDto {
     @Builder
     public static class BestRecordGymDetailInfo {
 
+        private Long gymId;
         private int ranking;
         private String profileImageUrl;
         private String gymName;
@@ -23,6 +24,7 @@ public class BestRecordGymResponseDto {
 
         public static BestRecordGymDetailInfo toDTO(BestRecordGym bestRecordGym) {
             return BestRecordGymDetailInfo.builder()
+                .gymId(bestRecordGym.getClimbingGym().getId())
                 .ranking(bestRecordGym.getRanking())
                 .thisWeekSelectionCount(bestRecordGym.getThisWeekSelectionCount())
                 .profileImageUrl(bestRecordGym.getProfileImageUrl())

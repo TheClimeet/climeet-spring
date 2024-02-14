@@ -18,10 +18,10 @@ public class  ClimbingRecordRequestDto {
         @Schema(example = "1", description = "짐 id")
         private Long gymId;
 
-        @Schema(example = "LocalDate.of(2024, 1, 4)", description = "날짜입력")
+        @Schema(example = "2024-01-01", description = "날짜입력")
         private LocalDate date;
 
-        @Schema(example = "LocalTime.of(1, 30)", description = "시간")
+        @Schema(example = "00:00:00", description = "시간")
         private LocalTime time;
 
         @Schema(example = "3", description = "평균 레벨")
@@ -34,10 +34,10 @@ public class  ClimbingRecordRequestDto {
     @Getter
     @NoArgsConstructor
     public static class UpdateClimbingRecord {
-        @Schema(example = "LocalDate.of(2024, 1, 4)", description = "날짜입력")
+        @Schema(example = "2024-01-01", description = "날짜입력")
         private LocalDate date;
 
-        @Schema(example = "LocalTime.of(1, 30)", description = "시간")
+        @Schema(example = "00:00:00", description = "시간")
         private LocalTime time;
 
     }
