@@ -59,7 +59,7 @@ public class DifficultyMappingService {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
         }
 
-        return difficultyMappingList.stream().map(DifficultyMappingDetailResponse::toDto).toList();
+        return difficultyMappingList.stream().map(DifficultyMappingDetailResponse::toDTO).toList();
     }
 
     public Map<String, String> getGymDifficultyColorList() {

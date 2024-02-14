@@ -88,7 +88,7 @@ public class ShortsResponseDto {
             }
 
             return ShortsDetailInfo.builder()
-                .userShortsSimpleInfo(UserShortsSimpleInfo.toDto(user))
+                .userShortsSimpleInfo(UserShortsSimpleInfo.toDTO(user))
                 .shortsId(shorts.getId())
                 .gymName(gymName)
                 .sectorName(sectorName)

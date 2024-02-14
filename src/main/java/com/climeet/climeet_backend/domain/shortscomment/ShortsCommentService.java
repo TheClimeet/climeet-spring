@@ -75,7 +75,7 @@ public class ShortsCommentService {
             user, shortsCommentIncludeChildList);
 
         List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
-            .map(comment -> ShortsCommentParentResponse.toDto(
+            .map(comment -> ShortsCommentParentResponse.toDTO(
                 comment.getId(),
                 comment.getUser().getProfileName(),
                 comment.getUser().getProfileImageUrl(),
@@ -105,7 +105,7 @@ public class ShortsCommentService {
             user, childCommentList.getContent());
 
         List<ShortsCommentChildResponse> responses = childCommentList.stream()
-            .map(comment -> ShortsCommentChildResponse.toDto(
+            .map(comment -> ShortsCommentChildResponse.toDTO(
                 comment.getId(),
                 comment.getUser().getProfileName(),
                 comment.getUser().getProfileImageUrl(),

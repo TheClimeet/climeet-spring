@@ -48,14 +48,14 @@ public class RouteService {
             Route.toEntity(sector, routeImageUrl, difficultyMapping,
                 createRouteRequest.getHoldColor()));
 
-        return RouteSimpleResponse.toDto(route);
+        return RouteSimpleResponse.toDTO(route);
     }
 
     public RouteDetailResponse getRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
 
-        return RouteDetailResponse.toDto(route);
+        return RouteDetailResponse.toDTO(route);
     }
 
     public List<RouteDetailResponse> getRouteList(Long gymId) {
@@ -64,7 +64,7 @@ public class RouteService {
             throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
         }
         return routeList.stream()
-            .map(RouteDetailResponse::toDto)
+            .map(RouteDetailResponse::toDTO)
             .toList();
     }
 }

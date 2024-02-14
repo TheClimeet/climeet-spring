@@ -113,7 +113,7 @@ public class ClimbingGymService {
                 climbingGym)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
 
-        return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImage.getImgUrl());
+        return ClimbingGymDetailResponse.toDTO(climbingGym, manager, backgroundImage.getImgUrl());
     }
 
     public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
@@ -129,7 +129,7 @@ public class ClimbingGymService {
                 climbingGym.getBusinessHours(),
                 new TypeReference<Map<String, List<String>>>() {
                 });
-            return ClimbingGymTabInfoResponse.toDto(climbingGymRepository.save(climbingGym),
+            return ClimbingGymTabInfoResponse.toDTO(climbingGymRepository.save(climbingGym),
                 businessHoursMap, serviceList);
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
@@ -161,7 +161,7 @@ public class ClimbingGymService {
             Map<String, List<String>> businessHoursMap = objectMapper.readValue(businessHours,
                 new TypeReference<Map<String, List<String>>>() {
                 });
-            return ClimbingGymInfoResponse.toDto(climbingGymRepository.save(climbingGym),
+            return ClimbingGymInfoResponse.toDTO(climbingGymRepository.save(climbingGym),
                 businessHoursMap);
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
@@ -199,7 +199,7 @@ public class ClimbingGymService {
 
         return levelCounts.entrySet()
             .stream()
-            .map(entry -> ClimbingGymAverageLevelDetailResponse.toDto(entry.getKey(),
+            .map(entry -> ClimbingGymAverageLevelDetailResponse.toDTO(entry.getKey(),
                 entry.getValue()))
             .sorted(Comparator.comparingInt(ClimbingGymAverageLevelDetailResponse::getDifficulty))
             .toList();
