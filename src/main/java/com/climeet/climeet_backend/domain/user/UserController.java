@@ -6,6 +6,7 @@ import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDet
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserProfileDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -86,5 +87,11 @@ public class UserController {
     @Operation(summary = "팔로우하는 암장 정보 조회(검색창 하단)")
     public ResponseEntity<List<UserHomeGymDetailInfo>> getGymsFollowing(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getGymsFollowing(currentUser));
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "마이페이지 유저 프로필 조회")
+    public ResponseEntity<UserProfileDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getUserMyPageProfile(currentUser));
     }
 }

@@ -43,16 +43,16 @@ public class User {
 
     private Boolean isAllowAdNotification;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long followerCount = 0L;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long followingCount = 0L;
 
     @ColumnDefault("0")
     private int thisWeekCompleteCount = 0;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long thisWeekTotalClimbingTime = 0L;
 
     @CreatedDate

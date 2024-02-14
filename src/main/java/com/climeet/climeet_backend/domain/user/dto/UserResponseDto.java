@@ -175,4 +175,29 @@ public class UserResponseDto {
                 .build();
         }
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserProfileDetailInfo{
+        private Long userId;
+        private String userName;
+        private String profileImgUrl;
+        private Long followerCount;
+        private Long followingCount;
+        private Boolean isManager;
+
+        public static UserProfileDetailInfo toDTO(User user, Boolean isManager){
+            return UserProfileDetailInfo.builder()
+                .userId(user.getId())
+                .userName(user.getProfileName())
+                .profileImgUrl(user.getProfileImageUrl())
+                .followerCount(user.getFollowerCount())
+                .followingCount(user.getFollowingCount())
+                .isManager(isManager)
+                .build();
+        }
+
+    }
 }
