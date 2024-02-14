@@ -17,6 +17,7 @@ import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDet
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymSimpleInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserProfileDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -237,6 +238,16 @@ public class UserService {
                 List<Route> gymRouteList = routeVersionService.getRouteVersionRouteList(climbingGym.getId());
                 return UserHomeGymDetailInfo.toDTO(climbingGym, gymRouteList);
             }).toList();
+    }
+
+    public UserProfileDetailInfo getUserMyPageProfile(User currentUser){
+        User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
+
+        boolean status = user instanceof Manager;
+
+        return UserProfileDetailInfo.toDTO(user, status);
+
     }
 
 }
