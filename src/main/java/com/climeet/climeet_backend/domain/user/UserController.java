@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -73,6 +74,7 @@ public class UserController {
     public ResponseEntity<String> updateUserNotification(@CurrentUser User currentUser, @RequestBody
     UpdateUserAllowNotificationRequest updateRequestDto) {
         return ResponseEntity.ok(userService.updateUserNotification(currentUser, updateRequestDto));
+    }
 
     @GetMapping("/climber-following")
     @Operation(summary = "팔로우하는 클라이머 정보 조회(검색창 하단)")

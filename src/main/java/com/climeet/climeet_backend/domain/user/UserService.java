@@ -183,6 +183,8 @@ public class UserService {
         return UserAccountDetailInfo.toDTO(currentUser, isManager, socialType);
     }
 
+
+
     @Transactional
     public String updateUserNotification(User currentUser,
         UpdateUserAllowNotificationRequest request) {
@@ -191,6 +193,26 @@ public class UserService {
         boolean isAllowLikeNotification = currentUser.getIsAllowLikeNotification();
         boolean isAllowCommentNotification = currentUser.getIsAllowCommentNotification();
         boolean isAllowAdNotification = currentUser.getIsAllowAdNotification();
+
+
+        if (request.getIsAllowFollowNotification() != null) {
+            isAllowFollowNotification = request.getIsAllowFollowNotification();
+        }
+        if (request.getIsAllowLikeNotification() != null) {
+            isAllowLikeNotification = request.getIsAllowLikeNotification();
+        }
+        if (request.getIsAllowCommentNotification() != null) {
+            isAllowCommentNotification = request.getIsAllowCommentNotification();
+        }
+        if (request.getIsAllowAdNotification() != null) {
+            isAllowAdNotification = request.getIsAllowAdNotification();
+        }
+
+        currentUser.updateNotification(isAllowFollowNotification, isAllowLikeNotification,
+            isAllowCommentNotification, isAllowAdNotification);
+
+        return "업데이트 완료";
+    }
 
     public List<UserFollowSimpleInfo> getClimberFollowing(User currentUser){
         List<FollowRelationship> followingClimbers = followRelationshipRepository.findByFollowerId(
@@ -215,25 +237,6 @@ public class UserService {
                 List<Route> gymRouteList = routeVersionService.getRouteVersionRouteList(climbingGym.getId());
                 return UserHomeGymDetailInfo.toDTO(climbingGym, gymRouteList);
             }).toList();
-    }
-
-        if (request.getIsAllowFollowNotification() != null) {
-            isAllowFollowNotification = request.getIsAllowFollowNotification();
-        }
-        if (request.getIsAllowLikeNotification() != null) {
-            isAllowLikeNotification = request.getIsAllowLikeNotification();
-        }
-        if (request.getIsAllowCommentNotification() != null) {
-            isAllowCommentNotification = request.getIsAllowCommentNotification();
-        }
-        if (request.getIsAllowAdNotification() != null) {
-            isAllowAdNotification = request.getIsAllowAdNotification();
-        }
-
-        currentUser.updateNotification(isAllowFollowNotification, isAllowLikeNotification,
-            isAllowCommentNotification, isAllowAdNotification);
-
-        return "업데이트 완료";
     }
 
 }
