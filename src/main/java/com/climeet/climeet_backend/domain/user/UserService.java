@@ -244,10 +244,7 @@ public class UserService {
         User user = userRepository.findById(currentUser.getId())
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
 
-        boolean status = false;
-        if(user instanceof Manager){
-            status = true;
-        }
+        boolean status = user instanceof Manager;
 
         return UserProfileDetailInfo.toDTO(user, status);
 
