@@ -59,11 +59,13 @@ public class GymRegistrationService {
         MimeMessage mail = javaMailSender.createMimeMessage();
 
         //메일 제목 지정
-        mail.setSubject("[클밋] 승인되었어용ㅋㅎㅋㅎ", "utf-8");
+        mail.setSubject("[클밋] 승인되었어용", "utf-8");
         //메일 내용 지정
         mail.setText(createEmailContent(content), "utf-8", "html");
         //이메일 주소 설정
         mail.addRecipient(RecipientType.TO, new InternetAddress("gourderased@gmail.com"));
+        mail.addRecipient(RecipientType.TO, new InternetAddress("bing_01@naver.com"));
+        mail.addRecipient(RecipientType.TO, new InternetAddress("ret0422@gmail.com"));
         //이메일 전송
         javaMailSender.send(mail);
     }
