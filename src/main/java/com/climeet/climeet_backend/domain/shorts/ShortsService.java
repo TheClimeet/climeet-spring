@@ -227,7 +227,7 @@ public class ShortsService {
         }
 
         return ShortsDetailInfo.toDTO(shorts.getUser(), shorts, shorts.getClimbingGym(),
-            shorts.getSector(), isLiked, isBookmarked, gymDifficultyColor, gymDifficultyName);
+            shorts.getSector(), isLiked, isBookmarked, gymDifficultyName, gymDifficultyColor);
     }
 
     public void updateShortsViewCount(User user, Long shortsId) {
