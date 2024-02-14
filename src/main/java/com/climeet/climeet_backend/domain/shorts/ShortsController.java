@@ -79,7 +79,8 @@ public class ShortsController {
     }
 
     @PostMapping("/shors/offLight")
-    @Operation(summary = "숏츠 프로필바 초록불 조회 처리")
+    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리")
+    @SwaggerApiError({ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> updateShortsGreenLight(@CurrentUser User user, @RequestParam Long followingUserId){
         shortsService.updateShortsGreenLight(user, followingUserId);
         return ResponseEntity.ok("초록불 OFF 완료");
