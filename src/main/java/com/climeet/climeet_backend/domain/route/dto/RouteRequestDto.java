@@ -11,5 +11,6 @@ public class RouteRequestDto {
 
         private Long sectorId;
         private String gymDifficultyName;
+        private String holdColor;
     }
 }

@@ -31,7 +31,7 @@ public class SectorService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        // 루트 이름 중복 체크 (같은 섹터에서 중복일 경우)
+        // 섹터 이름 중복 체크 (같은 섹터에서 중복일 경우)
         List<Sector> sectorList = sectorRepository.findSectorByClimbingGymId(
             manager.getClimbingGym().getId());
         for (Sector sector : sectorList) {

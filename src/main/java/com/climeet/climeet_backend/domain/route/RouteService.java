@@ -45,7 +45,8 @@ public class RouteService {
         String routeImageUrl = s3Service.uploadFile(routeImage).getImgUrl();
 
         Route route = routeRepository.save(
-            Route.toEntity(sector, routeImageUrl, difficultyMapping));
+            Route.toEntity(sector, routeImageUrl, difficultyMapping,
+                createRouteRequest.getHoldColor()));
 
         return RouteSimpleResponse.toDto(route);
     }

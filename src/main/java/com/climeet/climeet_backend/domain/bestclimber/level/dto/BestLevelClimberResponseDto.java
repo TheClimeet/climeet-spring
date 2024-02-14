@@ -14,6 +14,8 @@ public class BestLevelClimberResponseDto {
     @Builder
     public static class BestLevelClimberDetailInfo{
 
+        private Long userId;
+
         private int ranking;
 
         private String profileImageUrl;
@@ -27,6 +29,7 @@ public class BestLevelClimberResponseDto {
         public static BestLevelClimberDetailInfo toDTO(
             BestLevelClimber bestLevelClimber){
             return BestLevelClimberDetailInfo.builder()
+                .userId(bestLevelClimber.getUserId())
                 .ranking(bestLevelClimber.getRanking())
                 .profileImageUrl(bestLevelClimber.getProfileImageUrl())
                 .thisWeekHighDifficulty(bestLevelClimber.getDifficulty())

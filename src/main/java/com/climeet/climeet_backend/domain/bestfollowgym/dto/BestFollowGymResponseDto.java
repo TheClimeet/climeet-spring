@@ -14,6 +14,7 @@ public class BestFollowGymResponseDto {
     @Builder
     public static class BestFollowGymDetailInfo {
 
+        private Long gymId;
         private int ranking;
         private String profileImageUrl;
         private String gymName;
@@ -23,6 +24,7 @@ public class BestFollowGymResponseDto {
 
         public static BestFollowGymDetailInfo toDTO(BestFollowGym bestFollowGym) {
             return BestFollowGymDetailInfo.builder()
+                .gymId(bestFollowGym.getClimbingGym().getId())
                 .ranking(bestFollowGym.getRanking())
                 .thisWeekFollowerCount(bestFollowGym.getThisWeekFollowCount())
                 .profileImageUrl(bestFollowGym.getProfileImageUrl())

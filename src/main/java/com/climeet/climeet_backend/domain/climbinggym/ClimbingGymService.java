@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.convertBitmaskToServiceList;
+
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
@@ -137,7 +139,7 @@ public class ClimbingGymService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<String> serviceList = bitmaskConverter.convertBitmaskToServiceList(
+        List<String> serviceList = convertBitmaskToServiceList(
             climbingGym.getServiceBitMask()).stream().map(ServiceBitmask::name).toList();
 
         ObjectMapper objectMapper = new ObjectMapper();
