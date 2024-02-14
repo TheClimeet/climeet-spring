@@ -166,15 +166,18 @@ public class ShortsService {
 
 
     @Transactional
-    @Scheduled(fixedRate = 1000 * 60) //1분마다 실행
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24) //하루마다 시행
     public void updateVideoStatus(){
 
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<Shorts> shortsList = shortsRepository.findByCreatedAtBefore(threeDaysAgo);
         for(Shorts shorts : shortsList) {
-            System.out.println(shorts);
             List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowingId(
                 shorts.getUser().getId());
+
+            for(FollowRelationship relationship : followRelationship){
+                relationship.updateUploadStatus(false);
+            }
 
         }
 
