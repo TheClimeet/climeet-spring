@@ -51,6 +51,7 @@ public class BoardService {
     public List<BoardSimpleInfo> findBoardList() {
         User climeetOfficialAccount = userRepository.findById(CLIMEET_OFFICIAL_ACCOUNT)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+
         List<Board> boardList = boardRepository.findAll();
         return boardList.stream()
             .map(board -> {
