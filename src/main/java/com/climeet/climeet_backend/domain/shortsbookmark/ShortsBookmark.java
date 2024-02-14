@@ -31,7 +31,7 @@ public class ShortsBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
 
-    private Boolean isBookmarked;
+    private Boolean isBookmarked = true;
 
     public static ShortsBookmark toEntity(User user, Shorts shorts) {
         return ShortsBookmark.builder()

@@ -31,7 +31,7 @@ public class ShortsLike {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
 
-    private Boolean isLike;
+    private Boolean isLike = true;
 
     public static ShortsLike toEntity(User user, Shorts shorts) {
         return ShortsLike.builder()
