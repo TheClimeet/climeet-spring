@@ -59,16 +59,6 @@ public class ClimbingGymController {
     }
 
 
-    @Operation(summary = "암장 프로필 정보 (상단) 불러오기-쇼츠에서 프로필 클릭 시 호출")
-    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER,
-        ErrorStatus._EMPTY_BACKGROUND_IMAGE, ErrorStatus._BAD_REQUEST})
-    @GetMapping("/shorts-profile/{gymId}")
-    public ResponseEntity<ClimbingGymDetailResponse> getClimbingGymInfoInShorts(
-        @PathVariable Long gymId, @CurrentUser User user) {
-        return ResponseEntity.ok(climbingGymService.getClimbingGymInfoInShorts(user, gymId));
-    }
-
-
     @Operation(summary = "암장 프로필 정보 (탭) 불러오기")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._ERROR_JSON_PARSE})
     @GetMapping("/{gymId}/tab")

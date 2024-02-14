@@ -270,4 +270,11 @@ public class ShortsService {
 
 
     }
+
+    @Transactional
+    public void updateShortsGreenLight(User currentUser, Long userId){
+        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), userId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
+        followRelationship.updateUploadStatus(false);
+    }
 }
