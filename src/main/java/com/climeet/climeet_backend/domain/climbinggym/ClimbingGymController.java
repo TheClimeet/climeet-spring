@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
@@ -82,5 +83,16 @@ public class ClimbingGymController {
         return ResponseEntity.ok(
             climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId));
     }
+
+    @Operation(summary = "Manager가 등록된 암장 검색 기능 + 팔로잉 여부")
+    @GetMapping("/search/follow")
+    public ResponseEntity<PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>>> getAcceptedClimbingGymSearchingListWithFollow(
+        @RequestParam("gymname") String gymName, @RequestParam int page, @RequestParam int size,
+        @CurrentUser User user
+    ) {
+        return ResponseEntity.ok(
+            climbingGymService.searchAcceptedClimbingGymWithFollow(gymName, page, size, user));
+    }
+
 
 }

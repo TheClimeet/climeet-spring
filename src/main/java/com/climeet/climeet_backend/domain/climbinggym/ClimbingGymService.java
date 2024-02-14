@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
@@ -12,16 +13,18 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +47,7 @@ public class ClimbingGymService {
     private final BitmaskConverter bitmaskConverter;
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
+    private final FollowRelationshipRepository followRelationshipRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -218,4 +222,46 @@ public class ClimbingGymService {
 
         return difficulty;
     }
+
+    public PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>> searchAcceptedClimbingGymWithFollow(
+        String gymName, int page, int size, User user) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ClimbingGym> climbingGymSlice = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
+            gymName, pageable);
+
+        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowerId(
+            user.getId());
+
+        List<AcceptedClimbingGymSimpleResponseWithFollow> climbingGymList = climbingGymSlice.stream()
+            .map(climbingGym -> {
+                Long managerId = null;
+                Long follower = 0L;
+                String profileImageUrl = null;
+                // manager 유무 확인
+                if (climbingGym.getManager() != null) {
+                    managerId = climbingGym.getManager().getId();
+                    // manager가 있으면 follower 조회
+                    if (climbingGym.getManager().getFollowerCount() != null) {
+                        follower = climbingGym.getManager().getFollowerCount();
+                    }
+                }
+                // 프로필이 있으면 조회
+                if (climbingGym.getProfileImageUrl() != null) {
+                    profileImageUrl = climbingGym.getProfileImageUrl();
+                }
+
+                boolean isFollowing = followRelationshipList.stream()
+                    .map(FollowRelationship::getFollowing)
+                    .anyMatch(following -> following.equals(climbingGym.getManager()));
+
+                return AcceptedClimbingGymSimpleResponseWithFollow.toDTO(climbingGym, managerId,
+                    follower,
+                    profileImageUrl, isFollowing);
+            }).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
+            climbingGymList);
+
+    }
+
 }
