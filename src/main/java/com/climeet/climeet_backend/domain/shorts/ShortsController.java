@@ -78,11 +78,11 @@ public class ShortsController {
         return ResponseEntity.ok(shortsProfileSimpleInfoList);
     }
 
-    @PostMapping("/shors/offLight")
+    @PatchMapping("/shorts/isRead")
     @Operation(summary = "숏츠 프로필바 초록불 OFF 처리")
     @SwaggerApiError({ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP})
-    public ResponseEntity<String> updateShortsGreenLight(@CurrentUser User user, @RequestParam Long followingUserId){
-        shortsService.updateShortsGreenLight(user, followingUserId);
+    public ResponseEntity<String> updateShortsIsRead(@CurrentUser User user, @RequestParam Long followingUserId){
+        shortsService.updateShortsIsRead(user, followingUserId);
         return ResponseEntity.ok("초록불 OFF 완료");
     }
 }

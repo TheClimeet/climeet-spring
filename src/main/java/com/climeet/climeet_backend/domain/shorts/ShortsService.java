@@ -1,7 +1,5 @@
 package com.climeet.climeet_backend.domain.shorts;
 
-import static java.util.stream.Collectors.toList;
-
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
@@ -20,16 +18,13 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSim
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
-import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -272,7 +267,7 @@ public class ShortsService {
     }
 
     @Transactional
-    public void updateShortsGreenLight(User currentUser, Long userId){
+    public void updateShortsIsRead(User currentUser, Long userId){
         FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), userId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
         followRelationship.updateUploadStatus(false);
