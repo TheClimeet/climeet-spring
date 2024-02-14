@@ -4,6 +4,7 @@ import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.co
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
@@ -49,6 +50,7 @@ public class ClimbingGymService {
     private final FollowRelationshipRepository followRelationshipRepository;
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
+    private final FollowRelationshipRepository followRelationshipRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -242,4 +244,46 @@ public class ClimbingGymService {
 
         return difficulty;
     }
+
+    public PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>> searchAcceptedClimbingGymWithFollow(
+        String gymName, int page, int size, User user) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ClimbingGym> climbingGymSlice = climbingGymRepository.findByNameContainingAndManagerIsNotNull(
+            gymName, pageable);
+
+        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowerId(
+            user.getId());
+
+        List<AcceptedClimbingGymSimpleResponseWithFollow> climbingGymList = climbingGymSlice.stream()
+            .map(climbingGym -> {
+                Long managerId = null;
+                Long follower = 0L;
+                String profileImageUrl = null;
+                // manager 유무 확인
+                if (climbingGym.getManager() != null) {
+                    managerId = climbingGym.getManager().getId();
+                    // manager가 있으면 follower 조회
+                    if (climbingGym.getManager().getFollowerCount() != null) {
+                        follower = climbingGym.getManager().getFollowerCount();
+                    }
+                }
+                // 프로필이 있으면 조회
+                if (climbingGym.getProfileImageUrl() != null) {
+                    profileImageUrl = climbingGym.getProfileImageUrl();
+                }
+
+                boolean isFollowing = followRelationshipList.stream()
+                    .map(FollowRelationship::getFollowing)
+                    .anyMatch(following -> following.equals(climbingGym.getManager()));
+
+                return AcceptedClimbingGymSimpleResponseWithFollow.toDTO(climbingGym, managerId,
+                    follower,
+                    profileImageUrl, isFollowing);
+            }).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
+            climbingGymList);
+
+    }
+
 }

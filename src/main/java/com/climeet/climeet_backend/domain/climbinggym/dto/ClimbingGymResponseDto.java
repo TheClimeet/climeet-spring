@@ -158,4 +158,32 @@ public class ClimbingGymResponseDto {
         }
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AcceptedClimbingGymSimpleResponseWithFollow {
+
+        private Long id;
+        private String name;
+        private Long managerId;
+        private Long follower;
+        private String profileImageUrl;
+        private boolean isFollow;
+
+        public static AcceptedClimbingGymSimpleResponseWithFollow toDTO(ClimbingGym climbingGym,
+            Long managerId, Long follower, String profileImageUrl, boolean isFollow) {
+
+            return AcceptedClimbingGymSimpleResponseWithFollow.builder()
+                .id(climbingGym.getId())
+                .name(climbingGym.getName())
+                .managerId(managerId)
+                .follower(follower)
+                .profileImageUrl(profileImageUrl)
+                .isFollow(isFollow)
+                .build();
+        }
+
+    }
+
 }
