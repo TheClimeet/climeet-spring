@@ -1,7 +1,11 @@
 package com.climeet.climeet_backend.domain.board;
 
 import com.climeet.climeet_backend.domain.board.dto.boardRequestDto.PostBoardRequest;
+import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardDetailInfo;
+import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardRetoolSimpleInfo;
 import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardSimpleInfo;
+import com.climeet.climeet_backend.domain.boardImage.BoardImage;
+import com.climeet.climeet_backend.domain.boardImage.BoardImageRepository;
 import com.climeet.climeet_backend.domain.boardImage.BoardImageService;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
@@ -19,6 +23,9 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final BoardImageService boardImageService;
+    private final BoardImageRepository boardImageRepository;
+    public static final Long CLIMEET_OFFICIAL_ACCOUNT = 1L;
+
 
     @Transactional
     public void createBoard(PostBoardRequest postBoardRequest) {
@@ -33,11 +40,37 @@ public class BoardService {
 
     }
 
-    public List<BoardSimpleInfo> findBoards() {
+    public List<BoardRetoolSimpleInfo> findBoards() {
 
         List<Board> boardList = boardRepository.findAll();
 
-        return boardList.stream().map(BoardSimpleInfo::toDTO)
+        return boardList.stream().map(BoardRetoolSimpleInfo::toDTO)
             .toList();
+    }
+
+    public List<BoardSimpleInfo> findBoardList() {
+        User climeetOfficialAccount = userRepository.findById(CLIMEET_OFFICIAL_ACCOUNT)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+        List<Board> boardList = boardRepository.findAll();
+        return boardList.stream()
+            .map(board -> {
+                List<BoardImage> boardImageList = boardImageRepository.findAllByBoardId(board.getId());
+                if (boardImageList.isEmpty()) {
+                    return BoardSimpleInfo.toDTO(board, null, climeetOfficialAccount);
+                } else {
+                    return BoardSimpleInfo.toDTO(board, boardImageList.get(0).getImageUrl(), climeetOfficialAccount);
+                }
+            })
+            .toList();
+    }
+
+    public BoardDetailInfo findBoardById(Long boardId) {
+        User climeetOfficialAccount = userRepository.findById(CLIMEET_OFFICIAL_ACCOUNT)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._BOARD_NOT_FOUND));
+        return BoardDetailInfo.toDTO(board, boardImageRepository
+            .findAllByBoardId(boardId).stream().map(BoardImage::getImageUrl).toList(),
+            climeetOfficialAccount);
     }
 }
