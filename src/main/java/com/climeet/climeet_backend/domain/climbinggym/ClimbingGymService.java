@@ -118,25 +118,6 @@ public class ClimbingGymService {
         return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImage.getImgUrl());
     }
 
-
-
-    public ClimbingGymDetailResponse getClimbingGymInfoInShorts(User user, Long gymId) {
-        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-
-        Manager manager = managerRepository.findByClimbingGym(climbingGym)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
-
-        ClimbingGymBackgroundImage backgroundImage = climbingGymBackgroundImageRepository.findByClimbingGym(
-                climbingGym)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
-
-        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(user.getId(), manager.getId())
-            .orElseThrow(()-> new GeneralException(ErrorStatus._BAD_REQUEST));
-
-        return ClimbingGymDetailResponse.toDto(climbingGym, manager, backgroundImage.getImgUrl());
-    }
-
     public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
