@@ -50,6 +50,9 @@ public class ShortsComment extends BaseTimeEntity {
     @Default
     private Boolean isFirstChild = true;
 
+    @Default
+    private Boolean isParent = true;
+
     public static ShortsComment toEntity(User user, CreateShortsCommentRequest createShortsCommentRequest,
         Shorts shorts) {
         return ShortsComment.builder()
@@ -57,6 +60,10 @@ public class ShortsComment extends BaseTimeEntity {
             .user(user)
             .shorts(shorts)
             .build();
+    }
+
+    public void updateIsPrentFalse() {
+        this.isParent = false;
     }
 
     public void updateParentComment(ShortsComment parentComment) {
@@ -69,10 +76,6 @@ public class ShortsComment extends BaseTimeEntity {
 
     public void updateIsFirstChildFalse() {
         this.isFirstChild = false;
-    }
-
-    public boolean isParentComment() {
-        return childCommentCount != 0;
     }
 
     public void updateLikeCountPlus() {
