@@ -90,7 +90,7 @@ public class ClimbingGymController {
     }
 
     @Operation(summary = "암장 배경사진 변경 (1개만 등록 가능)")
-    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._EMPTY_BACKGROUND_IMAGE})
     @PatchMapping("/background-image")
     public ResponseEntity<String> changeClimbingGymBackgroundImage(@CurrentUser User user,
         @RequestPart MultipartFile image) {
@@ -115,7 +115,7 @@ public class ClimbingGymController {
     }
 
     @Operation(summary = "기본 가격(제공) 추가 & 수정")
-    @SwaggerApiError({})
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._ERROR_JSON_PARSE})
     @PostMapping("/price")
     public ResponseEntity<String> updateClimbingGymPrice(@CurrentUser User user,
         @RequestBody UpdateClimbingGymPriceRequest updateClimbingGymPriceRequest) {
@@ -124,6 +124,7 @@ public class ClimbingGymController {
     }
 
     @Operation(summary = "Manager가 등록된 암장 검색 기능 + 팔로잉 여부")
+    @SwaggerApiError({})
     @GetMapping("/search/follow")
     public ResponseEntity<PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>>> getAcceptedClimbingGymSearchingListWithFollow(
         @RequestParam("gymname") String gymName, @RequestParam int page, @RequestParam int size,
