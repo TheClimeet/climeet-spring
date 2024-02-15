@@ -123,7 +123,7 @@ public class ShortsCommentService {
     }
 
     @Transactional
-    public void changeShortsCommentLikeStatus(User user, Long shortsCommentId, boolean isLike,
+    public CommentLikeStatus changeShortsCommentLikeStatus(User user, Long shortsCommentId, boolean isLike,
         boolean isDislike) {
         ShortsComment shortsComment = shortsCommentRepository.findById(shortsCommentId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
@@ -144,6 +144,8 @@ public class ShortsCommentService {
             shortsCommentLikeService.updateCountsForNewLike(newShortsCommentLike, shortsComment);
             shortsCommentLikeRepository.save(newShortsCommentLike);
         }
+
+        return commentLikeStatus;
     }
 
     private List<ShortsComment> fetchParentAndFirstChildComments(
