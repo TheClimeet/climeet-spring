@@ -2,15 +2,20 @@ package com.climeet.climeet_backend.domain.climber;
 
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
-import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberDetailInfo;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberSimpleInfo;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
+import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.domain.user.UserService;
+import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
@@ -22,6 +27,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -40,9 +48,10 @@ public class ClimberService {
     private final FollowRelationshipService followRelationshipService;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final FollowRelationshipRepository followRelationshipRepository;
 
     @Transactional
-    public ClimberResponseDto handleSocialLogin(String socialType, String accessToken,
+    public ClimberSimpleInfo handleSocialLogin(String socialType, String accessToken,
         @RequestBody CreateClimberRequest climberRequestDto) {
         HashMap<String, String> userInfo;
         userInfo = getClimberProfileByToken(socialType, accessToken);
@@ -62,7 +71,7 @@ public class ClimberService {
         if (resultClimber == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
-        return new ClimberResponseDto(resultClimber);
+        return ClimberSimpleInfo.toDTO(resultClimber);
 
 
     }
@@ -87,7 +96,6 @@ public class ClimberService {
     public Climber signUp(String socialType, @RequestBody CreateClimberRequest climberRequestDto,
         String socialId, String profileImg) {
 
-
         if (climberRequestDto == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
@@ -103,18 +111,20 @@ public class ClimberService {
             climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
         }
 
-        userService.updateNotification(climber, climberRequestDto.getIsAllowFollowNotification(), climberRequestDto.getIsAllowLikeNotification(), climberRequestDto.getIsAllowCommentNotification(), climberRequestDto.getIsAllowAdNotification());
+        userService.updateNotification(climber, climberRequestDto.getIsAllowFollowNotification(),
+            climberRequestDto.getIsAllowLikeNotification(),
+            climberRequestDto.getIsAllowCommentNotification(),
+            climberRequestDto.getIsAllowAdNotification());
         updateClimber(climber, accessToken, refreshToken, climberRequestDto);
-
 
         //가입 시 암장 팔로우
         List<Long> gymFollowList = climberRequestDto.getGymFollowList();
-        for(Long gymId : gymFollowList){
+        for (Long gymId : gymFollowList) {
             ClimbingGym optionalGym = climbingGymRepository.findById(gymId)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
             Manager manager = managerRepository.findByClimbingGym(optionalGym)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
+                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
             followRelationshipService.createFollowRelationship(manager, climber);
             manager.increaseFollwerCount();
 
@@ -191,10 +201,32 @@ public class ClimberService {
 
 
     @Transactional
-    public boolean checkNicknameDuplication(String nickName){
+    public boolean checkNicknameDuplication(String nickName) {
         return userRepository.findByprofileName(nickName).isPresent();
     }
 
+
+    public PageResponseDto<List<ClimberDetailInfo>> searchClimber(User currentUser,
+        String climberName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Climber> climberSlice = climberRepository.findByProfileNameContaining(climberName,
+            pageable);
+
+        List<ClimberDetailInfo> climberDetailInfoList = climberSlice.stream()
+            .map(climber -> {
+                boolean status = false;
+                if (followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(),
+                    climber.getId()).isPresent()) {
+                    status = true;
+                }
+                return ClimberDetailInfo.toDTO(climber, status);
+
+            }).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), climberSlice.hasNext(),
+            climberDetailInfoList);
+
+    }
 
 
 }

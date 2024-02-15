@@ -20,8 +20,9 @@ public class RouteResponseDto {
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private String routeImageUrl;
+        private String holdColor;
 
-        public static RouteDetailResponse toDto(Route route) {
+        public static RouteDetailResponse toDTO(Route route) {
             return RouteDetailResponse.builder()
                 .routeId(route.getId())
                 .sectorId(route.getSector().getId())
@@ -31,6 +32,7 @@ public class RouteResponseDto {
                 .gymDifficultyName(route.getDifficultyMapping().getGymDifficultyName())
                 .gymDifficultyColor(route.getDifficultyMapping().getGymDifficultyColor())
                 .routeImageUrl(route.getRouteImageUrl())
+                .holdColor(route.getHoldColor())
                 .build();
         }
     }
@@ -43,7 +45,7 @@ public class RouteResponseDto {
 
         private Long routeId;
 
-        public static RouteSimpleResponse toDto(Route route) {
+        public static RouteSimpleResponse toDTO(Route route) {
             return RouteSimpleResponse.builder()
                 .routeId(route.getId())
                 .build();

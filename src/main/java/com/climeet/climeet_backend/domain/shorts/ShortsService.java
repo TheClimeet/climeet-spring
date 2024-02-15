@@ -18,22 +18,25 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSim
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
-import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ShortsService {
 
     private final ShortsRepository shortsRepository;
@@ -74,6 +77,13 @@ public class ShortsService {
             createShortsRequest);
 
         shortsRepository.save(shorts);
+
+        //팔로워 관계 isUploadShortsRecent update
+        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowingId(shorts.getUser()
+            .getId());
+        for(FollowRelationship f : followRelationshipList){
+            f.updateUploadStatus(true);
+        }
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
@@ -212,7 +222,7 @@ public class ShortsService {
         }
 
         return ShortsDetailInfo.toDTO(shorts.getUser(), shorts, shorts.getClimbingGym(),
-            shorts.getSector(), isLiked, isBookmarked, gymDifficultyColor, gymDifficultyName);
+            shorts.getSector(), isLiked, isBookmarked, gymDifficultyName, gymDifficultyColor);
     }
 
     public void updateShortsViewCount(User user, Long shortsId) {
@@ -234,5 +244,32 @@ public class ShortsService {
             }).toList();
 
         return shortsProfileSimpleInfos;
+    }
+
+
+    @Transactional
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24) //하루마다 시행
+    public void updateVideoStatus(){
+
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        List<Shorts> shortsList = shortsRepository.findByCreatedAtBefore(threeDaysAgo);
+        for(Shorts shorts : shortsList) {
+            List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowingId(
+                shorts.getUser().getId());
+
+            for(FollowRelationship relationship : followRelationship){
+                relationship.updateUploadStatus(false);
+            }
+
+        }
+
+
+    }
+
+    @Transactional
+    public void updateShortsIsRead(User currentUser, Long userId){
+        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), userId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
+        followRelationship.updateUploadStatus(false);
     }
 }

@@ -35,6 +35,8 @@ public class Route extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private DifficultyMapping difficultyMapping;
 
+    private String holdColor;
+
     private String routeImageUrl;
 
 
@@ -46,19 +48,20 @@ public class Route extends BaseTimeEntity {
     private int selectionCount;
 
     public static Route toEntity(Sector sector,
-        String routeImageUrl, DifficultyMapping difficultyMapping) {
+        String routeImageUrl, DifficultyMapping difficultyMapping, String holdColor) {
         return Route.builder()
             .sector(sector)
             .difficultyMapping(difficultyMapping)
             .routeImageUrl(routeImageUrl)
+            .holdColor(holdColor)
             .build();
     }
 
-    public void thisWeekSelectionCountUp(){
+    public void thisWeekSelectionCountUp() {
         this.thisWeekSelectionCount++;
     }
 
-    public void thisWeekSelectionCountDown(){
+    public void thisWeekSelectionCountDown() {
         this.thisWeekSelectionCount--;
     }
 }

@@ -9,20 +9,21 @@ import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @Tag(name = "DifficultyMapping", description = "암장 난이도 매핑 ")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/gym")
+@RequestMapping("api/gyms")
 public class DifficultyMappingController {
 
     private final DifficultyMappingService difficultyMappingService;
@@ -40,11 +41,20 @@ public class DifficultyMappingController {
     @Operation(summary = "클밋, 암장 난이도 매핑 조회")
     @SwaggerApiError({ErrorStatus._INVALID_DIFFICULTY, ErrorStatus._EMPTY_CLIMBING_GYM,
         ErrorStatus._EMPTY_DIFFICULTY_LIST})
-    @GetMapping("/difficulty")
+    @GetMapping("/{gymId}/difficulty")
     public ResponseEntity<List<DifficultyMappingDetailResponse>> getDifficultyMappingList(
-        @CurrentUser User user, @RequestParam Long gymId
+        @CurrentUser User user, @PathVariable Long gymId
     ) {
         return ResponseEntity.ok(difficultyMappingService.getDifficultyMapping(gymId));
+    }
+
+    @Operation(summary = "암장 색 코드 목록 조회")
+    @SwaggerApiError({})
+    @GetMapping("/difficulty/color")
+    public ResponseEntity<Map<String, String>> getGymDifficultyColorList(
+        @CurrentUser User user
+    ) {
+        return ResponseEntity.ok(difficultyMappingService.getGymDifficultyColorList());
     }
 
 }

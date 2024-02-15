@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
@@ -14,7 +15,6 @@ import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.awt.Image;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +61,7 @@ public class ClimbingGymController {
         @PathVariable Long gymId, @CurrentUser User user) {
         return ResponseEntity.ok(climbingGymService.getClimbingGymInfo(gymId));
     }
+
 
     @Operation(summary = "암장 프로필 정보 (탭) 불러오기")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._ERROR_JSON_PARSE})
@@ -112,5 +113,15 @@ public class ClimbingGymController {
         climbingGymService.updateClimbingGymService(user, updateClimbingGymServiceRequest);
         return ResponseEntity.ok("암장 제공 서비스를 정상적으로 수정했습니다.");
     }
+    @Operation(summary = "Manager가 등록된 암장 검색 기능 + 팔로잉 여부")
+    @GetMapping("/search/follow")
+    public ResponseEntity<PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>>> getAcceptedClimbingGymSearchingListWithFollow(
+        @RequestParam("gymname") String gymName, @RequestParam int page, @RequestParam int size,
+        @CurrentUser User user
+    ) {
+        return ResponseEntity.ok(
+            climbingGymService.searchAcceptedClimbingGymWithFollow(gymName, page, size, user));
+    }
+
 
 }

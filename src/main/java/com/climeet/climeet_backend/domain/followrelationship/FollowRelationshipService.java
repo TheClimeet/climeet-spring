@@ -1,10 +1,13 @@
 package com.climeet.climeet_backend.domain.followrelationship;
 
 
+import com.climeet.climeet_backend.domain.manager.Manager;
+import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ public class FollowRelationshipService {
 
     private final FollowRelationshipRepository followRelationshipRepository;
     private final UserRepository userRepository;
+    private final ManagerRepository managerRepository;
 
     public User findByUserId(Long userId){
         return userRepository.findById(userId)
@@ -24,6 +28,8 @@ public class FollowRelationshipService {
             following.getId()).isPresent()){
             throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
         }
+        Optional<Manager> manager = managerRepository.findById(following.getId());
+        manager.ifPresent(value -> value.getClimbingGym().thisWeekFollowCountUp());
         FollowRelationship followRelationship = FollowRelationship.toEntity(follower, following);
         followRelationshipRepository.save(followRelationship);
         follower.increaseFollwerCount();
@@ -32,6 +38,8 @@ public class FollowRelationshipService {
     public void deleteFollowRelationship(User following, User follower){
         FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(follower.getId(), following.getId())
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
+        Optional<Manager> manager = managerRepository.findById(following.getId());
+        manager.ifPresent(value -> value.getClimbingGym().thisWeekFollowCountDown());
         followRelationshipRepository.deleteById(followRelationship.getId());
         followRelationship.getFollower().decreaseFollwerCount();
     }

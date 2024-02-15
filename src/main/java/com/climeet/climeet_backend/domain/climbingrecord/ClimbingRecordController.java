@@ -73,7 +73,7 @@ public class ClimbingRecordController {
 
     @Operation(summary = "나의 클라이밍 기록 날짜 조회")
     @GetMapping("/between-dates")
-    @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE, ErrorStatus._EMPTY_CLIMBING_RECORD,
+    @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE,
         ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordListBetweenDates(
         @CurrentUser User user,

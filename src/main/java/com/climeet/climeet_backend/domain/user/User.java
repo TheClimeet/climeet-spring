@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -42,16 +43,16 @@ public class User {
 
     private Boolean isAllowAdNotification;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long followerCount = 0L;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long followingCount = 0L;
 
     @ColumnDefault("0")
     private int thisWeekCompleteCount = 0;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long thisWeekTotalClimbingTime = 0L;
 
     @CreatedDate
@@ -73,26 +74,28 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
-    public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
+    public void updateNotification(boolean isAllowFollowNotification,
+        boolean isAllowLikeNotification, boolean isAllowCommentNotification,
+        boolean isAllowAdNotification) {
         this.isAllowFollowNotification = isAllowFollowNotification;
         this.isAllowLikeNotification = isAllowLikeNotification;
         this.isAllowCommentNotification = isAllowCommentNotification;
         this.isAllowAdNotification = isAllowAdNotification;
     }
 
-    public void thisWeekTotalClimbingTimeUp(Long sec){
+    public void thisWeekTotalClimbingTimeUp(Long sec) {
         this.thisWeekTotalClimbingTime += sec;
     }
 
-    public void thisWeekTotalClimbingTimeDown(Long sec){
+    public void thisWeekTotalClimbingTimeDown(Long sec) {
         this.thisWeekTotalClimbingTime -= sec;
     }
 
-    public void increaseFollwerCount(){
+    public void increaseFollwerCount() {
         this.followerCount++;
     }
 
-    public void decreaseFollwerCount(){
+    public void decreaseFollwerCount() {
         this.followerCount++;
     }
 

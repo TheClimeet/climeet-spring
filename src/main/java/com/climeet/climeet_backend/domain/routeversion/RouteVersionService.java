@@ -139,13 +139,13 @@ public class RouteVersionService {
         }
 
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
-            .map(SectorDetailResponse::toDto).toList();
+            .map(SectorDetailResponse::toDTO).toList();
         List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
-            .map(DifficultyMappingDetailResponse::toDto).toList();
+            .map(DifficultyMappingDetailResponse::toDTO).toList();
         int maxFloor = sectorList.stream()
             .mapToInt(Sector::getFloor).max().orElse(0);
 
-        return RouteVersionFilteringKeyResponse.toDto(climbingGym, sectorDetailResponses,
+        return RouteVersionFilteringKeyResponse.toDTO(climbingGym, sectorDetailResponses,
             difficultyMappingDetailResponses, maxFloor, routeVersion);
     }
 
@@ -199,7 +199,7 @@ public class RouteVersionService {
             .skip(
                 getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
             .limit(getFilteredRouteVersionRequest.getSize())
-            .map(RouteDetailResponse::toDto)
+            .map(RouteDetailResponse::toDTO)
             .toList();
 
         boolean hasNextPage = (getFilteredRouteVersionRequest.getPage() + 1)
@@ -207,6 +207,30 @@ public class RouteVersionService {
 
         return new PageResponseDto<>(getFilteredRouteVersionRequest.getPage(), hasNextPage,
             routeDetailResponseList);
+    }
+
+    public List<Route> getRouteVersionRouteList(Long gymId) {
+
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+
+        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
+                climbingGym, LocalDate.now())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
+
+        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
+            routeVersion.getRouteList());
+        if (routeIdList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
+        }
+
+        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
+        if (routeList.size() != routeIdList.size()) {
+            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
+        }
+
+
+        return routeList;
     }
 }
 

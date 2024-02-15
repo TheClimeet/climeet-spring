@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "ClimbingSector", description = "클라이밍 섹터 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/gym")
+@RequestMapping("api/gyms")
 public class SectorController {
 
     private final SectorService sectorService;
