@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 
 import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.convertBitmaskToServiceList;
@@ -26,6 +27,7 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -134,8 +136,12 @@ public class ClimbingGymService {
                 climbingGym.getBusinessHours(),
                 new TypeReference<Map<String, List<String>>>() {
                 });
+            Map<String, String> priceList = objectMapper.readValue(
+                climbingGym.getPriceList(),
+                new TypeReference<Map<String, String>>() {
+                });
             return ClimbingGymTabInfoResponse.toDTO(climbingGymRepository.save(climbingGym),
-                businessHoursMap, serviceList);
+                businessHoursMap, serviceList, priceList);
         } catch (Exception e) {
             throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
         }
@@ -242,23 +248,20 @@ public class ClimbingGymService {
         climbingGymRepository.save(climbingGym);
     }
 
-    private DifficultyMapping getClosestGymDifficulty(Integer level,
-        List<DifficultyMapping> difficultyMappingList) {
-        DifficultyMapping difficulty = null;
-        int minDifference = Integer.MAX_VALUE;
-        int closestDifficulty = Integer.MAX_VALUE;
+    public void updateClimbingGymPrice(User user,
+        UpdateClimbingGymPriceRequest updateClimbingGymPriceRequest) {
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+        ClimbingGym climbingGym = manager.getClimbingGym();
 
-        for (DifficultyMapping mapping : difficultyMappingList) {
-            int difference = Math.abs(level - mapping.getDifficulty());
-            if (difference < minDifference || (difference == minDifference
-                && mapping.getDifficulty() < closestDifficulty)) {
-                minDifference = difference;
-                closestDifficulty = mapping.getDifficulty();
-                difficulty = mapping;
-            }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            climbingGym.updateGymPriceList(objectMapper.writeValueAsString(
+                updateClimbingGymPriceRequest.getPriceMapList()));
+            climbingGymRepository.save(climbingGym);
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus._ERROR_JSON_PARSE);
         }
-
-        return difficulty;
     }
 
     public PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>> searchAcceptedClimbingGymWithFollow(
@@ -300,6 +303,25 @@ public class ClimbingGymService {
         return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
             climbingGymList);
 
+    }
+
+    private DifficultyMapping getClosestGymDifficulty(Integer level,
+        List<DifficultyMapping> difficultyMappingList) {
+        DifficultyMapping difficulty = null;
+        int minDifference = Integer.MAX_VALUE;
+        int closestDifficulty = Integer.MAX_VALUE;
+
+        for (DifficultyMapping mapping : difficultyMappingList) {
+            int difference = Math.abs(level - mapping.getDifficulty());
+            if (difference < minDifference || (difference == minDifference
+                && mapping.getDifficulty() < closestDifficulty)) {
+                minDifference = difference;
+                closestDifficulty = mapping.getDifficulty();
+                difficulty = mapping;
+            }
+        }
+
+        return difficulty;
     }
 
 }

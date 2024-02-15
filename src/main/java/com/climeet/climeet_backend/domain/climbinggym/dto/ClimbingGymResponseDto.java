@@ -104,9 +104,11 @@ public class ClimbingGymResponseDto {
         private String tel;
         private Map<String, List<String>> businessHours;
         private List<String> serviceList;
+        private Map<String, String> priceList;
 
         public static ClimbingGymTabInfoResponse toDTO(ClimbingGym climbingGym,
-            Map<String, List<String>> businessHours, List<String> serviceList) {
+            Map<String, List<String>> businessHours, List<String> serviceList,
+            Map<String, String> priceList) {
             return ClimbingGymTabInfoResponse.builder()
                 .gymId(climbingGym.getId())
                 .address(climbingGym.getAddress())
@@ -114,6 +116,7 @@ public class ClimbingGymResponseDto {
                 .tel(climbingGym.getTel())
                 .businessHours(businessHours)
                 .serviceList(serviceList)
+                .priceList(priceList)
                 .build();
         }
     }

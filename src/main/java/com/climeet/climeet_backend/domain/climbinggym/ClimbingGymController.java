@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
@@ -110,7 +111,16 @@ public class ClimbingGymController {
     public ResponseEntity<String> updateClimbingGymService(@CurrentUser User user,
         @RequestBody UpdateClimbingGymServiceRequest updateClimbingGymServiceRequest) {
         climbingGymService.updateClimbingGymService(user, updateClimbingGymServiceRequest);
-        return ResponseEntity.ok("암장 제공 서비스를 정상적으로 수정했습니다.");
+        return ResponseEntity.ok("암장 제공 서비스를 정상적으로 변경했습니다.");
+    }
+
+    @Operation(summary = "기본 가격(제공) 추가 & 수정")
+    @SwaggerApiError({})
+    @PostMapping("/price")
+    public ResponseEntity<String> updateClimbingGymPrice(@CurrentUser User user,
+        @RequestBody UpdateClimbingGymPriceRequest updateClimbingGymPriceRequest) {
+        climbingGymService.updateClimbingGymPrice(user, updateClimbingGymPriceRequest);
+        return ResponseEntity.ok("암장 기본 제공을 정상적으로 변경했습니다.");
     }
 
     @Operation(summary = "Manager가 등록된 암장 검색 기능 + 팔로잉 여부")
@@ -122,6 +132,5 @@ public class ClimbingGymController {
         return ResponseEntity.ok(
             climbingGymService.searchAcceptedClimbingGymWithFollow(gymName, page, size, user));
     }
-
 
 }

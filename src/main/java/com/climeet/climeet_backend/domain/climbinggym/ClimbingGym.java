@@ -60,10 +60,17 @@ public class ClimbingGym extends BaseTimeEntity {
     @Column(columnDefinition = "json")
     private String businessHours;
 
+    @Column(columnDefinition = "json")
+    private String priceList;
+
     public void updateGymInfo(String tel, String address, String businessHours) {
         this.tel = tel;
         this.address = address;
         this.businessHours = businessHours;
+    }
+
+    public void updateGymPriceList(String priceList) {
+        this.priceList = priceList;
     }
 
 
