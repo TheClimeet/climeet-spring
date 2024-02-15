@@ -35,5 +35,8 @@ public class ClimbingGymBackgroundImage extends BaseTimeEntity {
     @NotNull
     private String imgUrl;
 
+    public void changeImgUrl(String url){
+        this.imgUrl = url;
+    }
 
 }

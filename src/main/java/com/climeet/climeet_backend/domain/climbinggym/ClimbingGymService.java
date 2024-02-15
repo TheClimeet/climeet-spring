@@ -1,7 +1,9 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
+
 import static com.climeet.climeet_backend.domain.climbinggym.BitmaskConverter.convertBitmaskToServiceList;
+
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
@@ -209,8 +211,15 @@ public class ClimbingGymService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
+        ClimbingGymBackgroundImage climbingGymBackgroundImage = climbingGymBackgroundImageRepository.findByClimbingGym(
+                manager.getClimbingGym())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
+
         String backgroundImageUrl = s3Service.uploadFile(image).getImgUrl();
-        return null;
+        climbingGymBackgroundImage.changeImgUrl(backgroundImageUrl);
+        climbingGymBackgroundImageRepository.save(climbingGymBackgroundImage);
+
+        return backgroundImageUrl;
     }
 
     public String changeClimbingGymProfileImage(User user, MultipartFile image) {
@@ -218,7 +227,6 @@ public class ClimbingGymService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
         ClimbingGym climbingGym = manager.getClimbingGym();
         String profileImageUrl = s3Service.uploadFile(image).getImgUrl();
-        s3Service.deleteFile(climbingGym.getProfileImageUrl());
         climbingGym.updateProfileImageUrl(profileImageUrl);
         climbingGymRepository.save(climbingGym);
         return profileImageUrl;

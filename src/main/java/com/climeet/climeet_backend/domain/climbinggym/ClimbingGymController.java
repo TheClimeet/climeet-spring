@@ -63,7 +63,7 @@ public class ClimbingGymController {
     }
 
 
-    @Operation(summary = "암장 프로필 정보 (탭) 불러오기")
+    @Operation(summary = "암장 프로필 정보 (탭) 불러오기", description = "탭에 들어가는 데이터는 null이 존재할 가능성이 상당히 높습니다.\n 또한 영업시간에서 특정 요일만 값이 없다면 정기휴일입니다.")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._ERROR_JSON_PARSE})
     @GetMapping("/{gymId}/tab")
     public ResponseEntity<ClimbingGymTabInfoResponse> getClimbingGymTabInfo(
@@ -81,38 +81,38 @@ public class ClimbingGymController {
 
     @Operation(summary = "암장 실력분포 조회")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_AVERAGE_LEVEL_DATA})
-    @GetMapping("/{gymId}/graph/level")
+    @GetMapping("/{gymId}/skill-distribution")
     public ResponseEntity<List<ClimbingGymAverageLevelDetailResponse>> getFollowingUserAverageLevelInClimbingGym(
         @PathVariable Long gymId, @CurrentUser User user) {
         return ResponseEntity.ok(
             climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId));
     }
 
-    @Operation(summary = "암장 배경사진 변경")
-    @SwaggerApiError({})
-    @PatchMapping("/{gymId}/background-image")
-    public ResponseEntity<String> changeClimbingGymBackgroundImage(@PathVariable Long gymId,
-        @CurrentUser User user, @RequestPart MultipartFile image) {
+    @Operation(summary = "암장 배경사진 변경 (1개만 등록 가능)")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
+    @PatchMapping("/background-image")
+    public ResponseEntity<String> changeClimbingGymBackgroundImage(@CurrentUser User user,
+        @RequestPart MultipartFile image) {
         return ResponseEntity.ok(climbingGymService.changeClimbingGymBackgroundImage(user, image));
     }
 
-    @Operation(summary = "암장 프로필 이미지 변경")
+    @Operation(summary = "암장 프로필 이미지 변경 (1개만 등록 가능)")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
-    @PatchMapping("/{gymId}/background-image")
-    public ResponseEntity<String> changeClimbingGymProfileImage(@PathVariable Long gymId,
-        @CurrentUser User user, @RequestPart MultipartFile image) {
+    @PatchMapping("/profile-image")
+    public ResponseEntity<String> changeClimbingGymProfileImage(@CurrentUser User user,
+        @RequestPart MultipartFile image) {
         return ResponseEntity.ok(climbingGymService.changeClimbingGymProfileImage(user, image));
     }
 
-    @Operation(summary = "암장 제공 서비스 수정")
+    @Operation(summary = "암장 제공 서비스 수정", description = "**Enum 설명**\n\n**ServiceBitmask** :  샤워\\_시설,  샤워\\_용품,  수건\\_제공,  간이\\_세면대,  초크\\_대여,  암벽화\\_대여,  삼각대\\_대여,  운동복\\_대여")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
-    @PatchMapping("/{gymId}/service")
-    public ResponseEntity<String> updateClimbingGymService(@PathVariable Long gymId,
-        @CurrentUser User user,
+    @PatchMapping("/service")
+    public ResponseEntity<String> updateClimbingGymService(@CurrentUser User user,
         @RequestBody UpdateClimbingGymServiceRequest updateClimbingGymServiceRequest) {
         climbingGymService.updateClimbingGymService(user, updateClimbingGymServiceRequest);
         return ResponseEntity.ok("암장 제공 서비스를 정상적으로 수정했습니다.");
     }
+
     @Operation(summary = "Manager가 등록된 암장 검색 기능 + 팔로잉 여부")
     @GetMapping("/search/follow")
     public ResponseEntity<PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>>> getAcceptedClimbingGymSearchingListWithFollow(

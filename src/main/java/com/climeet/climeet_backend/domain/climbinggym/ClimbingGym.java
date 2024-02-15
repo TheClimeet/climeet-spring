@@ -55,6 +55,8 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String address;
 
+    private String location;
+
     @Column(columnDefinition = "json")
     private String businessHours;
 
