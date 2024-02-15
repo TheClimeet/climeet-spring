@@ -56,6 +56,7 @@ public class ShortsCommentService {
             }
             parentComment.updateChildCommentCount();
             shortsComment.updateParentComment(parentComment);
+            shortsComment.updateIsPrentFalse();
         }
 
         shortsCommentRepository.save(shortsComment);
@@ -81,7 +82,7 @@ public class ShortsCommentService {
                 comment.getUser().getProfileImageUrl(),
                 comment.getContent(),
                 likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
-                comment.isParentComment(),
+                comment.getIsParent(),
                 comment.getLikeCount(),
                 comment.getDislikeCount(),
                 fetchParentCommentId(comment),
