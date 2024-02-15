@@ -53,10 +53,12 @@ public class ShortsCommentService {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
+            if(parentComment.getChildCommentCount() != 0) {
+                shortsComment.updateIsFirstChildFalse();
+            }
             parentComment.updateChildCommentCount();
-            shortsComment.updateIsFirstChildFalse();
             shortsComment.updateParentComment(parentComment);
-            shortsComment.updateIsPrentFalse();
+            shortsComment.updateIsParentFalse();
         }
 
         shortsCommentRepository.save(shortsComment);

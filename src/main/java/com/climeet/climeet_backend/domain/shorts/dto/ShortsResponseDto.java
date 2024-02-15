@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.shorts.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.sector.Sector;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
@@ -118,13 +117,18 @@ public class ShortsResponseDto {
         private String followingUserName;
         private String followingUserProfileUrl;
         private Boolean isUploadRecent;
+        private Boolean isGym;
+        private Long gymId;
 
         public static ShortsProfileSimpleInfo toDTO(User user,
-            FollowRelationship followRelationship) {
+            FollowRelationship followRelationship, Boolean isGym, Long gymId) {
             return ShortsProfileSimpleInfo.builder().followingUserId(user.getId())
                 .followingUserName(user.getProfileName())
                 .followingUserProfileUrl(user.getProfileImageUrl())
-                .isUploadRecent(followRelationship.getIsUploadShortsRecent()).build();
+                .isUploadRecent(followRelationship.getIsUploadShortsRecent())
+                .isGym(isGym)
+                .gymId(gymId)
+                .build();
 
         }
 
