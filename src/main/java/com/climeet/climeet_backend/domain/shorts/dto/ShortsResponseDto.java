@@ -118,13 +118,18 @@ public class ShortsResponseDto {
         private String followingUserName;
         private String followingUserProfileUrl;
         private Boolean isUploadRecent;
+        private Boolean isGym;
+        private Long gymId;
 
         public static ShortsProfileSimpleInfo toDTO(User user,
-            FollowRelationship followRelationship) {
+            FollowRelationship followRelationship, Boolean isGym, Long gymId) {
             return ShortsProfileSimpleInfo.builder().followingUserId(user.getId())
                 .followingUserName(user.getProfileName())
                 .followingUserProfileUrl(user.getProfileImageUrl())
-                .isUploadRecent(followRelationship.getIsUploadShortsRecent()).build();
+                .isUploadRecent(followRelationship.getIsUploadShortsRecent())
+                .isGym(isGym)
+                .gymId(gymId)
+                .build();
 
         }
 

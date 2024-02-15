@@ -62,7 +62,7 @@ public class ShortsComment extends BaseTimeEntity {
             .build();
     }
 
-    public void updateIsPrentFalse() {
+    public void updateIsParentFalse() {
         this.isParent = false;
     }
 

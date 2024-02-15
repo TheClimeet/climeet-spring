@@ -239,8 +239,15 @@ public class ShortsService {
             currentUserId);
         List<ShortsProfileSimpleInfo> shortsProfileSimpleInfos = followingUserList.stream()
             .map(followRelationship -> {
+
+                Long gymId = null;
+                Boolean isGym = followRelationship.getFollowing() instanceof Manager;
+                if(isGym) {
+                    gymId = ((Manager) followRelationship.getFollowing()).getClimbingGym().getId();
+                }
+
                 return ShortsProfileSimpleInfo.toDTO(followRelationship.getFollowing(),
-                    followRelationship);
+                    followRelationship, isGym, gymId);
             }).toList();
 
         return shortsProfileSimpleInfos;
