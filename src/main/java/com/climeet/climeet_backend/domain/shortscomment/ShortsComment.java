@@ -14,9 +14,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor
@@ -47,7 +47,8 @@ public class ShortsComment extends BaseTimeEntity {
 
     private int dislikeCount = 0;
 
-    private Boolean isFirstChild = false;
+    @Default
+    private Boolean isFirstChild = true;
 
     public static ShortsComment toEntity(User user, CreateShortsCommentRequest createShortsCommentRequest,
         Shorts shorts) {
@@ -66,8 +67,8 @@ public class ShortsComment extends BaseTimeEntity {
         this.childCommentCount++;
     }
 
-    public void updateIsFirstChildTrue() {
-        this.isFirstChild = true;
+    public void updateIsFirstChildFalse() {
+        this.isFirstChild = false;
     }
 
     public boolean isParentComment() {

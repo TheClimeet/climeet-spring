@@ -51,10 +51,9 @@ public class ShortsCommentService {
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
-            if (parentComment.getChildCommentCount() == 0) {
-                shortsComment.updateIsFirstChildTrue();
-            }
+
             parentComment.updateChildCommentCount();
+            shortsComment.updateIsFirstChildFalse();
             shortsComment.updateParentComment(parentComment);
         }
 
