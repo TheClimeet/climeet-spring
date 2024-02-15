@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.shortscomment.dto;
 
 import com.climeet.climeet_backend.domain.shortscomment.CommentLikeStatus;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsComment;
+import com.climeet.climeet_backend.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,20 +26,20 @@ public class ShortsCommentResponseDto {
         int childCommentCount;
         String createdDate;
 
-        public static ShortsCommentParentResponse toDTO(Long commentId, String nickname,
-            String profileImageUrl,
-            String content, CommentLikeStatus commentLikeStatus, Boolean isParent,
-            int likeCount, int dislikeCount,
-            Long parentCommentId, int childCommentCount, String createdDate) {
+        public static ShortsCommentParentResponse toDTO(
+            User user, ShortsComment shortsComment,
+            CommentLikeStatus commentLikeStatus, Long parentCommentId,
+            int childCommentCount,
+            String createdDate) {
             return ShortsCommentParentResponse.builder()
-                .commentId(commentId)
-                .nickname(nickname)
-                .profileImageUrl(profileImageUrl)
-                .content(content)
+                .commentId(shortsComment.getId())
+                .nickname(user.getProfileName())
+                .profileImageUrl(user.getProfileImageUrl())
+                .content(shortsComment.getContent())
                 .commentLikeStatus(commentLikeStatus)
-                .likeCount(likeCount)
-                .dislikeCount(dislikeCount)
-                .isParent(isParent)
+                .likeCount(shortsComment.getLikeCount())
+                .dislikeCount(shortsComment.getDislikeCount())
+                .isParent(shortsComment.getIsParent())
                 .parentCommentId(parentCommentId)
                 .childCommentCount(childCommentCount)
                 .createdDate(createdDate)

@@ -34,14 +34,14 @@ public class ShortsCommentController {
     @Operation(summary = "숏츠 댓글 작성")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS, ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PostMapping("/shorts/{shortsId}/shortsComments")
-    public ResponseEntity<String> createShortsComment(
+    public ResponseEntity<ShortsCommentParentResponse> createShortsComment(
         @CurrentUser User user,
         @PathVariable Long shortsId,
         @RequestBody CreateShortsCommentRequest createShortsCommentRequest,
         @RequestParam(required = false) Long parentCommentId) {
-        shortsCommentService.createShortsComment(user, shortsId, createShortsCommentRequest,
-            parentCommentId, parentCommentId != null);
-        return ResponseEntity.ok("댓글 작성에 성공했습니다.");
+
+        return ResponseEntity.ok(shortsCommentService.createShortsComment(user, shortsId, createShortsCommentRequest,
+            parentCommentId, parentCommentId != null));
     }
 
     @Operation(summary = "숏츠 댓글 조회")
