@@ -41,6 +41,10 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String profileImageUrl;
 
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     private Float AverageRating = 0.0F;
 
     private Float sumRating = 0.0F;
@@ -51,13 +55,22 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private String address;
 
+    private String location;
+
     @Column(columnDefinition = "json")
     private String businessHours;
+
+    @Column(columnDefinition = "json")
+    private String priceList;
 
     public void updateGymInfo(String tel, String address, String businessHours) {
         this.tel = tel;
         this.address = address;
         this.businessHours = businessHours;
+    }
+
+    public void updateGymPriceList(String priceList) {
+        this.priceList = priceList;
     }
 
 
@@ -90,7 +103,7 @@ public class ClimbingGym extends BaseTimeEntity {
 
     private int serviceBitMask = 0;
 
-    public void updateServiceBitMask(int value){
+    public void updateServiceBitMask(int value) {
         this.serviceBitMask = value;
     }
 
