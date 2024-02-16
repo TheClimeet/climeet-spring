@@ -94,10 +94,14 @@ public enum ErrorStatus implements BaseErrorCode {
     _EXIST_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_RELATION_002", "이미 존재하는 팔로우 관계입니다."),
   
     //암장 회원가입 관련
-    _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 안는 암장입니다.");
+    _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 안는 암장입니다."),
+
+    //공지사항 관련
+    _BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD_001", "존재하지 않는 공지사항입니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
+
 
     @Override
     public ErrorReasonDto getReasonHttpStatus() {
