@@ -24,6 +24,7 @@ public class ManagerRequestDto {
         private Boolean isAllowLikeNotification;
         private Boolean isAllowCommentNotification;
         private Boolean isAllowAdNotification;
+        private String fcmToken;
     }
 
     @Getter
@@ -31,6 +32,7 @@ public class ManagerRequestDto {
     public static class CreateAccessTokenRequest{
         private String loginId;
         private String password;
+        private String fcmToken;
     }
 
 
