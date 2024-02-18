@@ -13,6 +13,6 @@ public class EvaluationService {
 
     public ResponseEntity<String> createEvaluation(User user, CreateEvaluation requestDto){
         evaluationRepository.save(Evaluation.toEntity(user, requestDto));
-        return ResponseEntity.ok("소중한 리뷰 감사합니다! \n 더 좋은 서비스 만들겠습니다:)");
+        return ResponseEntity.ok("소중한 리뷰 감사합니다! \n더 좋은 서비스 만들겠습니다:)");
     }
 }
