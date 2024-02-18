@@ -177,5 +177,11 @@ public class UserService {
             }).toList();
     }
 
+    public void updateUserFcmToken(User user, String token){
+        if(token==null){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+        user.updateFCMToken(token);
+    }
 
 }

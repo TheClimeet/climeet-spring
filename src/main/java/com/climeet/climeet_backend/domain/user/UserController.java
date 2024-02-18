@@ -14,7 +14,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,5 +66,12 @@ public class UserController {
     @Operation(summary = "팔로우하는 암장 정보 조회(검색창 하단)")
     public ResponseEntity<List<UserHomeGymDetailInfo>> getGymsFollowing(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getGymsFollowing(currentUser));
+    }
+
+    @PostMapping("/users/fcmToken")
+    @Operation(summary = "사용자 FCM 토큰 업데이트")
+    public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody String fcmToken){
+        userService.updateUserFcmToken(currentUser, fcmToken);
+        return ResponseEntity.ok("업데이트 성공");
     }
 }
