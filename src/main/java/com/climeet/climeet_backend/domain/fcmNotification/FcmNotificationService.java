@@ -27,27 +27,27 @@ public class FcmNotificationService {
     private String API_URL;
 
 
-    public void sendSingleUser(CreatePushNotificationRequest createPushNotificationRequest)
+    public void sendSingleUser(Long userId, String title, String body)
         throws FirebaseMessagingException{
-        User user = userRepository.findById(createPushNotificationRequest.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
         Message message = Message.builder()
             .setToken(user.getFcmToken())
-            .putData("title", createPushNotificationRequest.getTitle())
-            .putData("body", createPushNotificationRequest.getMessage())
+            .putData("title", title)
+            .putData("body", body)
             .build();
         String response = FirebaseMessaging.getInstance().send(message);
     }
 
-    public void sendMultipleUser(CreateMultiplePushNotificationRequest createMultiplePushNotificationRequest)
+    public void sendMultipleUser(List<Long> userIdLists, String title, String body)
         throws FirebaseMessagingException {
-        List<String> registrationToken = createMultiplePushNotificationRequest.getUserIdList().stream()
+        List<String> registrationToken = userIdLists.stream()
             .filter(userId-> userRepository.findById(userId).isPresent())
             .map(userId -> userRepository.findById(userId).get().getFcmToken()).toList();
 
         MulticastMessage message = MulticastMessage.builder()
-            .putData("title" ,createMultiplePushNotificationRequest.getTitle())
-            .putData("body", createMultiplePushNotificationRequest.getMessage())
+            .putData("title" , title)
+            .putData("body", body)
             .addAllTokens(registrationToken)
             .build();
 
