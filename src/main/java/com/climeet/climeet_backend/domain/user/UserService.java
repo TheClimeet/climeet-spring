@@ -59,7 +59,7 @@ public class UserService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_JWT));
         String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
         String newAccesstoken = jwtTokenProvider.refreshAccessToken(refreshToken);
-        user.updateToken(newRefreshToken, newAccesstoken);
+        user.updateToken(newAccesstoken, newRefreshToken);
 
         return new UserTokenSimpleInfo(user);
 

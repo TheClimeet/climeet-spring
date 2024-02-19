@@ -66,6 +66,9 @@ public class ClimberService {
         }
         //login
         if (optionalClimber.isPresent()) {
+//            if(climberRequestDto!=null){
+//                throw new GeneralException(ErrorStatus._EXIST_USER);
+//            }
             resultClimber = login(optionalClimber.get());
         }
         if (resultClimber == null) {
