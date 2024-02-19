@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -131,6 +130,7 @@ public class ClimbingRecordResponseDto {
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private Long count;
+        private int difficulty;
         public static GymDifficultyMappingInfo toDTO(
             DifficultyMapping difficultyMapping,
             Long count
@@ -140,6 +140,7 @@ public class ClimbingRecordResponseDto {
                 .gymDifficultyName(difficultyMapping.getGymDifficultyName())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
                 .count(count)
+                .difficulty(difficultyMapping.getDifficulty())
                 .build();
         }
     }
