@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -69,14 +68,19 @@ public class User {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @NotNull
+    private String fcmToken;
+
     public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
 
-    public void updateNotification(boolean isAllowFollowNotification,
-        boolean isAllowLikeNotification, boolean isAllowCommentNotification,
-        boolean isAllowAdNotification) {
+    public void updateFCMToken(String fcmToken){
+        this.fcmToken = fcmToken;
+    }
+
+    public void updateNotification(boolean isAllowFollowNotification, boolean isAllowLikeNotification, boolean isAllowCommentNotification, boolean isAllowAdNotification){
         this.isAllowFollowNotification = isAllowFollowNotification;
         this.isAllowLikeNotification = isAllowLikeNotification;
         this.isAllowCommentNotification = isAllowCommentNotification;

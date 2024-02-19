@@ -133,7 +133,7 @@ public class UserService {
                 }).toList();
 
         }
-        if (userCategory.equals("Manager")) {
+        if(userCategory.equals("Manager")){
             userFollowDetailResponseList = targetUserFollowerList.stream()
                 .filter(followRelationship -> followRelationship.getFollowing() instanceof Manager)
                 .map(followRelationship -> {
@@ -249,5 +249,12 @@ public class UserService {
         return UserProfileDetailInfo.toDTO(user, status);
 
     }
+    public void updateUserFcmToken(User user, String token){
+        if(token==null){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+        user.updateFCMToken(token);
+    }
+
 
 }

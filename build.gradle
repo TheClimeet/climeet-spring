@@ -52,6 +52,9 @@ dependencies {
     //oauth 2.0
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
+    //firebase
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('test') {
@@ -63,5 +66,6 @@ tasks.register('copyGitSubmodule', Copy) {
     from './config'
     include '*.yml'
     include '*.p12'
+    include 'firebase/*'
     into 'src/main/resources'
 }

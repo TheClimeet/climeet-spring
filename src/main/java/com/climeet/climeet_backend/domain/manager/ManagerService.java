@@ -47,6 +47,7 @@ public class ManagerService {
         if(!IdManager.checkPassword(password, passwordEncoder)){
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
+
         String accessToken = jwtTokenProvider.createAccessToken(IdManager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);

@@ -17,19 +17,19 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @Tag(name = "User")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class UserController {
-
     private final UserService userService;
 
     @PostMapping("/refresh-token")
@@ -40,7 +40,6 @@ public class UserController {
 
 
     }
-
     @GetMapping("/followers")
     @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
@@ -59,7 +58,7 @@ public class UserController {
 
     @GetMapping("/home/homegyms")
     @Operation(summary = "홈 화면 홈짐 바로가기")
-    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser) {
+    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getHomeGyms(currentUser));
     }
 
@@ -89,6 +88,13 @@ public class UserController {
     @Operation(summary = "팔로우하는 암장 정보 조회(검색창 하단)")
     public ResponseEntity<List<UserHomeGymDetailInfo>> getGymsFollowing(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getGymsFollowing(currentUser));
+    }
+
+    @PostMapping("/users/fcmToken")
+    @Operation(summary = "사용자 FCM 토큰 업데이트")
+    public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody String fcmToken){
+        userService.updateUserFcmToken(currentUser, fcmToken);
+        return ResponseEntity.ok("업데이트 성공");
     }
 
     @GetMapping("/profile")
