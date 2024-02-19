@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +41,13 @@ public class FollowRelationship extends BaseTimeEntity {
         return FollowRelationship.builder()
             .follower(follower)
             .following(following)
+            .isUploadShortsRecent(false)
             .build();
+    }
+
+    @Transactional
+    public void updateUploadStatus(boolean status){
+        this.isUploadShortsRecent = status;
     }
 
 }

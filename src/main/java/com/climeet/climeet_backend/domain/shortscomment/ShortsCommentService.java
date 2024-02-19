@@ -37,7 +37,7 @@ public class ShortsCommentService {
     private static final int ADJUSTED_CHILD_COUNT = 1;
 
     @Transactional
-    public void createShortsComment(User user, Long shortsId,
+    public ShortsCommentParentResponse createShortsComment(User user, Long shortsId,
         CreateShortsCommentRequest createShortsCommentRequest, Long parentCommentId,
         boolean isReply) {
 
@@ -46,25 +46,36 @@ public class ShortsCommentService {
 
         shorts.updateViewCountUp();
 
-        ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest, shorts);
+        ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest,
+            shorts);
 
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
-            if (parentComment.getChildCommentCount() == 0) {
-                shortsComment.updateIsFirstChildTrue();
+
+            if(parentComment.getChildCommentCount() != 0) {
+                shortsComment.updateIsFirstChildFalse();
             }
             parentComment.updateChildCommentCount();
             shortsComment.updateParentComment(parentComment);
+            shortsComment.updateIsParentFalse();
         }
 
         shortsCommentRepository.save(shortsComment);
+
+        return ShortsCommentParentResponse.toDTO(
+            shortsComment.getUser(), shortsComment,
+            CommentLikeStatus.NONE,
+            fetchParentCommentId(shortsComment),
+            shortsComment.getChildCommentCount() - ADJUSTED_CHILD_COUNT,
+            convertToDisplayTime(shortsComment.getCreatedAt())
+        );
     }
 
     public PageResponseDto<List<ShortsCommentParentResponse>> findShortsCommentList(User user,
         Long shortsId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<ShortsComment> parentCommentList = shortsCommentRepository.findParentCommentsByShortsIdOrderedByCreatedAtAsc(
+        Slice<ShortsComment> parentCommentList = shortsCommentRepository.findParentCommentsByShortsIdOrderedByCreatedAtDesc(
                 shortsId, pageable)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
@@ -75,15 +86,9 @@ public class ShortsCommentService {
             user, shortsCommentIncludeChildList);
 
         List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
-            .map(comment -> ShortsCommentParentResponse.toDto(
-                comment.getId(),
-                comment.getUser().getProfileName(),
-                comment.getUser().getProfileImageUrl(),
-                comment.getContent(),
+            .map(comment -> ShortsCommentParentResponse.toDTO(
+                comment.getUser(), comment,
                 likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
-                comment.isParentComment(),
-                comment.getLikeCount(),
-                comment.getDislikeCount(),
                 fetchParentCommentId(comment),
                 comment.getChildCommentCount() - ADJUSTED_CHILD_COUNT,
                 convertToDisplayTime(comment.getCreatedAt())
@@ -97,7 +102,7 @@ public class ShortsCommentService {
     public PageResponseDto<List<ShortsCommentChildResponse>> findShortsChildCommentList(User user,
         Long shortsId, Long parentCommentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<ShortsComment> childCommentList = shortsCommentRepository.findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtAsc(
+        Slice<ShortsComment> childCommentList = shortsCommentRepository.findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtDesc(
                 shortsId, parentCommentId, pageable)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
@@ -105,7 +110,7 @@ public class ShortsCommentService {
             user, childCommentList.getContent());
 
         List<ShortsCommentChildResponse> responses = childCommentList.stream()
-            .map(comment -> ShortsCommentChildResponse.toDto(
+            .map(comment -> ShortsCommentChildResponse.toDTO(
                 comment.getId(),
                 comment.getUser().getProfileName(),
                 comment.getUser().getProfileImageUrl(),
@@ -123,7 +128,8 @@ public class ShortsCommentService {
     }
 
     @Transactional
-    public void changeShortsCommentLikeStatus(User user, Long shortsCommentId, boolean isLike,
+    public CommentLikeStatus changeShortsCommentLikeStatus(User user, Long shortsCommentId,
+        boolean isLike,
         boolean isDislike) {
         ShortsComment shortsComment = shortsCommentRepository.findById(shortsCommentId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
@@ -144,6 +150,8 @@ public class ShortsCommentService {
             shortsCommentLikeService.updateCountsForNewLike(newShortsCommentLike, shortsComment);
             shortsCommentLikeRepository.save(newShortsCommentLike);
         }
+
+        return commentLikeStatus;
     }
 
     private List<ShortsComment> fetchParentAndFirstChildComments(

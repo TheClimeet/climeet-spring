@@ -42,16 +42,16 @@ public class User {
 
     private Boolean isAllowAdNotification;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long followerCount = 0L;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long followingCount = 0L;
 
     @ColumnDefault("0")
     private int thisWeekCompleteCount = 0;
 
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long thisWeekTotalClimbingTime = 0L;
 
     @CreatedDate
@@ -87,19 +87,19 @@ public class User {
         this.isAllowAdNotification = isAllowAdNotification;
     }
 
-    public void thisWeekTotalClimbingTimeUp(Long sec){
+    public void thisWeekTotalClimbingTimeUp(Long sec) {
         this.thisWeekTotalClimbingTime += sec;
     }
 
-    public void thisWeekTotalClimbingTimeDown(Long sec){
+    public void thisWeekTotalClimbingTimeDown(Long sec) {
         this.thisWeekTotalClimbingTime -= sec;
     }
 
-    public void increaseFollwerCount(){
+    public void increaseFollwerCount() {
         this.followerCount++;
     }
 
-    public void decreaseFollwerCount(){
+    public void decreaseFollwerCount() {
         this.followerCount++;
     }
 

@@ -36,7 +36,7 @@ public class Sector extends BaseTimeEntity {
 
     private String sectorImageUrl;
 
-    private int floor = 0;
+    private int floor = 1;
 
     public static Sector toEntity(CreateSectorRequest requestDto, ClimbingGym climbingGym,
         String sectorImageUrl) {

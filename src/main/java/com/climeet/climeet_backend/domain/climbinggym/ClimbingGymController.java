@@ -1,7 +1,9 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
-import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymInfoRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponseWithFollow;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymAverageLevelDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymDetailResponse;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.ClimbingGymInfoResponse;
@@ -18,12 +20,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "ClimbingGym", description = "암장 관련 API")
 @RestController
@@ -58,7 +63,8 @@ public class ClimbingGymController {
         return ResponseEntity.ok(climbingGymService.getClimbingGymInfo(gymId));
     }
 
-    @Operation(summary = "암장 프로필 정보 (탭) 불러오기")
+
+    @Operation(summary = "암장 프로필 정보 (탭) 불러오기", description = "탭에 들어가는 데이터는 null이 존재할 가능성이 상당히 높습니다.\n 또한 영업시간에서 특정 요일만 값이 없다면 정기휴일입니다.")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._ERROR_JSON_PARSE})
     @GetMapping("/{gymId}/tab")
     public ResponseEntity<ClimbingGymTabInfoResponse> getClimbingGymTabInfo(
@@ -67,20 +73,65 @@ public class ClimbingGymController {
     }
 
     @Operation(summary = "암장 크롤링 정보 입력")
-    @PostMapping("/info")
+    @PostMapping("/{gymId}/info")
     public ResponseEntity<ClimbingGymInfoResponse> updateClimbingGymInfo(
-        @RequestBody UpdateClimbingGymInfoRequest updateClimbingGymInfoRequest) {
+        @PathVariable Long gymId) {
         return ResponseEntity.ok(
-            climbingGymService.updateClimbingGymInfo(updateClimbingGymInfoRequest));
+            climbingGymService.updateClimbingGymInfo(gymId));
     }
 
     @Operation(summary = "암장 실력분포 조회")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_AVERAGE_LEVEL_DATA})
-    @GetMapping("/{gymId}/graph/level")
+    @GetMapping("/{gymId}/skill-distribution")
     public ResponseEntity<List<ClimbingGymAverageLevelDetailResponse>> getFollowingUserAverageLevelInClimbingGym(
         @PathVariable Long gymId, @CurrentUser User user) {
         return ResponseEntity.ok(
             climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId));
+    }
+
+    @Operation(summary = "암장 배경사진 변경 (1개만 등록 가능)")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._EMPTY_BACKGROUND_IMAGE})
+    @PatchMapping("/background-image")
+    public ResponseEntity<String> changeClimbingGymBackgroundImage(@CurrentUser User user,
+        @RequestPart MultipartFile image) {
+        return ResponseEntity.ok(climbingGymService.changeClimbingGymBackgroundImage(user, image));
+    }
+
+    @Operation(summary = "암장 프로필 이미지 변경 (1개만 등록 가능)")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
+    @PatchMapping("/profile-image")
+    public ResponseEntity<String> changeClimbingGymProfileImage(@CurrentUser User user,
+        @RequestPart MultipartFile image) {
+        return ResponseEntity.ok(climbingGymService.changeClimbingGymProfileImage(user, image));
+    }
+
+    @Operation(summary = "암장 제공 서비스 수정", description = "**Enum 설명**\n\n**ServiceBitmask** :  샤워\\_시설,  샤워\\_용품,  수건\\_제공,  간이\\_세면대,  초크\\_대여,  암벽화\\_대여,  삼각대\\_대여,  운동복\\_대여")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
+    @PatchMapping("/service")
+    public ResponseEntity<String> updateClimbingGymService(@CurrentUser User user,
+        @RequestBody UpdateClimbingGymServiceRequest updateClimbingGymServiceRequest) {
+        climbingGymService.updateClimbingGymService(user, updateClimbingGymServiceRequest);
+        return ResponseEntity.ok("암장 제공 서비스를 정상적으로 변경했습니다.");
+    }
+
+    @Operation(summary = "기본 가격(제공) 추가 & 수정")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._ERROR_JSON_PARSE})
+    @PostMapping("/price")
+    public ResponseEntity<String> updateClimbingGymPrice(@CurrentUser User user,
+        @RequestBody UpdateClimbingGymPriceRequest updateClimbingGymPriceRequest) {
+        climbingGymService.updateClimbingGymPrice(user, updateClimbingGymPriceRequest);
+        return ResponseEntity.ok("암장 기본 제공을 정상적으로 변경했습니다.");
+    }
+
+    @Operation(summary = "Manager가 등록된 암장 검색 기능 + 팔로잉 여부")
+    @SwaggerApiError({})
+    @GetMapping("/search/follow")
+    public ResponseEntity<PageResponseDto<List<AcceptedClimbingGymSimpleResponseWithFollow>>> getAcceptedClimbingGymSearchingListWithFollow(
+        @RequestParam("gymname") String gymName, @RequestParam int page, @RequestParam int size,
+        @CurrentUser User user
+    ) {
+        return ResponseEntity.ok(
+            climbingGymService.searchAcceptedClimbingGymWithFollow(gymName, page, size, user));
     }
 
 }

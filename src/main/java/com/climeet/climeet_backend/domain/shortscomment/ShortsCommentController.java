@@ -34,14 +34,14 @@ public class ShortsCommentController {
     @Operation(summary = "숏츠 댓글 작성")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS, ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PostMapping("/shorts/{shortsId}/shortsComments")
-    public ResponseEntity<String> createShortsComment(
+    public ResponseEntity<ShortsCommentParentResponse> createShortsComment(
         @CurrentUser User user,
         @PathVariable Long shortsId,
         @RequestBody CreateShortsCommentRequest createShortsCommentRequest,
         @RequestParam(required = false) Long parentCommentId) {
-        shortsCommentService.createShortsComment(user, shortsId, createShortsCommentRequest,
-            parentCommentId, parentCommentId != null);
-        return ResponseEntity.ok("댓글 작성에 성공했습니다.");
+
+        return ResponseEntity.ok(shortsCommentService.createShortsComment(user, shortsId, createShortsCommentRequest,
+            parentCommentId, parentCommentId != null));
     }
 
     @Operation(summary = "숏츠 댓글 조회")
@@ -72,13 +72,12 @@ public class ShortsCommentController {
     @Operation(summary = "숏츠 댓글 상호작용", description = "**shortsVisibility** : LIKE, DISLIKE, NONE")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PatchMapping("/shortsComments/{shortsCommentId}")
-    public ResponseEntity<String> changeShortsCommentLikeStatus(
+    public ResponseEntity<CommentLikeStatus> changeShortsCommentLikeStatus(
         @CurrentUser User user,
         @PathVariable Long shortsCommentId,
         @RequestParam Boolean isLike, @RequestParam Boolean isDislike
     ) {
-        shortsCommentService.changeShortsCommentLikeStatus(user, shortsCommentId, isLike,
-            isDislike);
-        return ResponseEntity.ok("숏츠 댓글 상호작용에 성공했습니다.");
+        return ResponseEntity.ok(shortsCommentService.changeShortsCommentLikeStatus(user, shortsCommentId, isLike,
+            isDislike));
     }
 }

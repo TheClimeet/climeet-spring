@@ -20,7 +20,7 @@ public class ReviewResponseDto {
         private ReviewSummaryResponse summary;
         private List<ReviewDetailResponse> reviewList;
 
-        public static ReviewDetailListResponse toDto(ReviewSummaryResponse summary,
+        public static ReviewDetailListResponse toDTO(ReviewSummaryResponse summary,
             List<ReviewDetailResponse> reviewList) {
             return ReviewDetailListResponse.builder()
                 .summary(summary)

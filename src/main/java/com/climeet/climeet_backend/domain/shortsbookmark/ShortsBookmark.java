@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,7 +32,8 @@ public class ShortsBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shorts shorts;
 
-    private Boolean isBookmarked;
+    @Default
+    private Boolean isBookmarked = true;
 
     public static ShortsBookmark toEntity(User user, Shorts shorts) {
         return ShortsBookmark.builder()

@@ -28,8 +28,10 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //thymeleaf
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //mailSender
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     //kakao access token을 가져오기 위한 Oauth 서버와의 통신을 위한 webclient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     //jwt
@@ -64,5 +66,6 @@ tasks.register('copyGitSubmodule', Copy) {
     from './config'
     include '*.yml'
     include '*.p12'
+    include 'firebase/*'
     into 'src/main/resources'
 }

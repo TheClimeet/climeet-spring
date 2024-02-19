@@ -68,6 +68,7 @@ public class ClimbingGymResponseDto {
     @AllArgsConstructor
     public static class ClimbingGymDetailResponse {
 
+        private Long gymId;
         private String gymProfileImageUrl;
         private String gymBackGroundImageUrl;
         private String gymName;
@@ -76,9 +77,10 @@ public class ClimbingGymResponseDto {
         private float averageRating;
         private int reviewCount;
 
-        public static ClimbingGymDetailResponse toDto(ClimbingGym climbingGym, Manager manager,
+        public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym, Manager manager,
             String gymBackGroundImageUrl) {
             return ClimbingGymDetailResponse.builder()
+                .gymId(climbingGym.getId())
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
                 .gymBackGroundImageUrl(gymBackGroundImageUrl)
                 .gymName(climbingGym.getName())
@@ -98,18 +100,23 @@ public class ClimbingGymResponseDto {
 
         private Long gymId;
         private String address;
+        private String location;
         private String tel;
         private Map<String, List<String>> businessHours;
         private List<String> serviceList;
+        private Map<String, String> priceList;
 
-        public static ClimbingGymTabInfoResponse toDto(ClimbingGym climbingGym,
-            Map<String, List<String>> businessHours, List<String> serviceList) {
+        public static ClimbingGymTabInfoResponse toDTO(ClimbingGym climbingGym,
+            Map<String, List<String>> businessHours, List<String> serviceList,
+            Map<String, String> priceList) {
             return ClimbingGymTabInfoResponse.builder()
                 .gymId(climbingGym.getId())
                 .address(climbingGym.getAddress())
+                .location(climbingGym.getLocation())
                 .tel(climbingGym.getTel())
                 .businessHours(businessHours)
                 .serviceList(serviceList)
+                .priceList(priceList)
                 .build();
         }
     }
@@ -120,14 +127,16 @@ public class ClimbingGymResponseDto {
     @AllArgsConstructor
     public static class ClimbingGymInfoResponse {
 
+        private Long gymId;
         private String name;
         private String address;
         private String tel;
         private Map<String, List<String>> businessHours;
 
-        public static ClimbingGymInfoResponse toDto(ClimbingGym climbingGym,
+        public static ClimbingGymInfoResponse toDTO(ClimbingGym climbingGym,
             Map<String, List<String>> businessHours) {
             return ClimbingGymInfoResponse.builder()
+                .gymId(climbingGym.getId())
                 .name(climbingGym.getName())
                 .address(climbingGym.getAddress())
                 .tel(climbingGym.getTel())
@@ -142,20 +151,50 @@ public class ClimbingGymResponseDto {
     @AllArgsConstructor
     public static class ClimbingGymAverageLevelDetailResponse {
 
+        private Long gymId;
         private int difficulty;
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private double percentage;
 
-        public static ClimbingGymAverageLevelDetailResponse toDto(
+        public static ClimbingGymAverageLevelDetailResponse toDTO(
             DifficultyMapping difficultyMapping, double percentage) {
             return ClimbingGymAverageLevelDetailResponse.builder()
+                .gymId(difficultyMapping.getClimbingGym().getId())
                 .difficulty(difficultyMapping.getDifficulty())
                 .gymDifficultyName(difficultyMapping.getGymDifficultyName())
                 .gymDifficultyColor(difficultyMapping.getGymDifficultyColor())
                 .percentage(percentage)
                 .build();
         }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AcceptedClimbingGymSimpleResponseWithFollow {
+
+        private Long gymId;
+        private String name;
+        private Long managerId;
+        private Long follower;
+        private String profileImageUrl;
+        private Boolean isFollow;
+
+        public static AcceptedClimbingGymSimpleResponseWithFollow toDTO(ClimbingGym climbingGym,
+            Long managerId, Long follower, String profileImageUrl, boolean isFollow) {
+
+            return AcceptedClimbingGymSimpleResponseWithFollow.builder()
+                .gymId(climbingGym.getId())
+                .name(climbingGym.getName())
+                .managerId(managerId)
+                .follower(follower)
+                .profileImageUrl(profileImageUrl)
+                .isFollow(isFollow)
+                .build();
+        }
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user.dto;
 
+import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
@@ -36,7 +37,7 @@ public class UserResponseDto {
         private String profileImgUrl;
         private String profileName;
 
-        public static UserShortsSimpleInfo toDto(User user) {
+        public static UserShortsSimpleInfo toDTO(User user) {
             return UserShortsSimpleInfo.builder()
                 .profileImgUrl(user.getProfileImageUrl())
                 .profileName(user.getProfileName())
@@ -151,5 +152,52 @@ public class UserResponseDto {
                 .routeSimpleInfos(routeInfo)
                 .build();
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserAccountDetailInfo{
+        private Long userId;
+        private String userName;
+        private String userProfileUrl;
+        private Boolean isManager;
+        private SocialType socialType;
+
+        public static UserAccountDetailInfo toDTO(User user,boolean isManager, SocialType socialType){
+            return UserAccountDetailInfo.builder()
+                .userId(user.getId())
+                .userName(user.getProfileName())
+                .userProfileUrl(user.getProfileImageUrl())
+                .isManager(isManager)
+                .socialType(socialType)
+                .build();
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserProfileDetailInfo{
+        private Long userId;
+        private String userName;
+        private String profileImgUrl;
+        private Long followerCount;
+        private Long followingCount;
+        private Boolean isManager;
+
+        public static UserProfileDetailInfo toDTO(User user, Boolean isManager){
+            return UserProfileDetailInfo.builder()
+                .userId(user.getId())
+                .userName(user.getProfileName())
+                .profileImgUrl(user.getProfileImageUrl())
+                .followerCount(user.getFollowerCount())
+                .followingCount(user.getFollowingCount())
+                .isManager(isManager)
+                .build();
+        }
+
     }
 }

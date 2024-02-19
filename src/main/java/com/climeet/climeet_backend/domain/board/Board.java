@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class Board extends BaseTimeEntity {
 
     @Id
@@ -38,5 +40,16 @@ public class Board extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
+    private int viewCount = 0;
+
     private int likeCount = 0;
+
+    public static Board toEntity(User user, String title, String content, BoardType boardType) {
+        return Board.builder()
+            .user(user)
+            .title(title)
+            .content(content)
+            .boardType(boardType)
+            .build();
+    }
 }
