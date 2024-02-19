@@ -20,7 +20,6 @@ public class ClimberRequestDto {
         private Boolean isAllowLikeNotification;
         private Boolean isAllowCommentNotification;
         private Boolean isAllowAdNotification;
-        private String fcmToken;
 
 
     }

@@ -37,7 +37,6 @@ public class ManagerService {
     public ManagerSimpleInfo login(@RequestBody CreateAccessTokenRequest createAccessTokenRequest){
         String loginId = createAccessTokenRequest.getLoginId();
         String password = createAccessTokenRequest.getPassword();
-        String fcmToken = createAccessTokenRequest.getFcmToken();
         managerRepository.findByLoginId(loginId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD));
 
@@ -49,9 +48,6 @@ public class ManagerService {
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
 
-        if(fcmToken!=null){
-            IdManager.updateFCMToken(fcmToken);
-        }
         String accessToken = jwtTokenProvider.createAccessToken(IdManager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);
@@ -91,7 +87,6 @@ public class ManagerService {
         saveClimbingGymBackgroundImage(createManagerRequest, manager.getClimbingGym());
         //관리자 등록
         manager.updateClimbingGym(gym);
-        manager.updateFCMToken(createManagerRequest.getFcmToken());
         manager.updateNotification(createManagerRequest.getIsAllowFollowNotification(),
             createManagerRequest.getIsAllowLikeNotification(),
             createManagerRequest.getIsAllowCommentNotification(),
