@@ -74,7 +74,7 @@ jobs:
             sudo docker stop $(sudo docker ps -a -q)
             sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull gourderased/spring-project:latest
-            sudo docker run -d -p 8080:8080 --name climeet-prod-server gourderased/spring-project:latest
+            sudo docker run -d -p 8080:8080 --name climeet-prod-server -e SPRING_PROFILE=prod -e TZ=Asia/Seoul gourderased/spring-project:latest
 
       # Deploy to EC2 (Release Branch)
       - name: Deploy to EC2 (Release Branch)
@@ -88,4 +88,4 @@ jobs:
             sudo docker stop $(sudo docker ps -a -q)
             sudo docker rm $(sudo docker ps -a -q)
             sudo docker pull gourderased/spring-project:latest
-            sudo docker run -d -p 8080:8080 --name climeet-dev-server -e SPRING_PROFILE=dev gourderased/spring-project:latest
+            sudo docker run -d -p 8080:8080 --name climeet-dev-server -e SPRING_PROFILE=dev -e TZ=Asia/Seoul gourderased/spring-project:latest
