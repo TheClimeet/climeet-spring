@@ -1,4 +1,4 @@
-package com.climeet.climeet_backend.domain.fcmMessage;
+package com.climeet.climeet_backend.domain.fcmNotification;
 
 import com.google.firebase.messaging.Notification;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 @Getter
-public class FcmMessage {
+public class FcmNotification {
     private boolean validateOnly;
     private Message message;
 

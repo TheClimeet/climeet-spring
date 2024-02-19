@@ -1,7 +1,7 @@
-package com.climeet.climeet_backend.domain.fcmMessage;
+package com.climeet.climeet_backend.domain.fcmNotification;
 
-import com.climeet.climeet_backend.domain.fcmMessage.dto.FCMNotificationRequestDto.CreateMultiplePushNotificationRequest;
-import com.climeet.climeet_backend.domain.fcmMessage.dto.FCMNotificationRequestDto.CreatePushNotificationRequest;
+import com.climeet.climeet_backend.domain.fcmNotification.dto.FcmNotificationRequestDto.CreateMultiplePushNotificationRequest;
+import com.climeet.climeet_backend.domain.fcmNotification.dto.FcmNotificationRequestDto.CreatePushNotificationRequest;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;

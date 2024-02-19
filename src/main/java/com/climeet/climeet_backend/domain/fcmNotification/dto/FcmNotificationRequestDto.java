@@ -1,4 +1,4 @@
-package com.climeet.climeet_backend.domain.fcmMessage.dto;
+package com.climeet.climeet_backend.domain.fcmNotification.dto;
 
 import java.util.List;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class FCMNotificationRequestDto {
+public class FcmNotificationRequestDto {
 
     @Getter
     @NoArgsConstructor
