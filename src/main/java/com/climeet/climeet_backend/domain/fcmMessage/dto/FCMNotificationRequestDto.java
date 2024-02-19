@@ -1,7 +1,5 @@
-package com.climeet.climeet_backend.domain.FcmMessage.dto;
+package com.climeet.climeet_backend.domain.fcmMessage.dto;
 
-import com.climeet.climeet_backend.domain.FcmMessage.FcmMessage.Message;
-import com.climeet.climeet_backend.domain.user.User;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;

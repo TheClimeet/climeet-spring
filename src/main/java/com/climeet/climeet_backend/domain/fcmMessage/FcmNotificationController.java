@@ -1,7 +1,7 @@
-package com.climeet.climeet_backend.domain.FcmMessage;
+package com.climeet.climeet_backend.domain.fcmMessage;
 
-import com.climeet.climeet_backend.domain.FcmMessage.dto.FCMNotificationRequestDto.CreateMultiplePushNotificationRequest;
-import com.climeet.climeet_backend.domain.FcmMessage.dto.FCMNotificationRequestDto.CreatePushNotificationRequest;
+import com.climeet.climeet_backend.domain.fcmMessage.dto.FCMNotificationRequestDto.CreateMultiplePushNotificationRequest;
+import com.climeet.climeet_backend.domain.fcmMessage.dto.FCMNotificationRequestDto.CreatePushNotificationRequest;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.concurrent.ExecutionException;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/messaging")
-public class FCMNotificationController {
-    private final FCMNotificationService fcmNotificationService;
+public class FcmNotificationController {
+    private final FcmNotificationService fcmNotificationService;
 
     @PostMapping("/push-notification-singleuser")
     @Operation(summary = "Firebase Cloud로 메시지 요청(single user)")

@@ -1,7 +1,7 @@
-package com.climeet.climeet_backend.domain.FcmMessage;
+package com.climeet.climeet_backend.domain.fcmMessage;
 
-import com.climeet.climeet_backend.domain.FcmMessage.dto.FCMNotificationRequestDto.CreateMultiplePushNotificationRequest;
-import com.climeet.climeet_backend.domain.FcmMessage.dto.FCMNotificationRequestDto.CreatePushNotificationRequest;
+import com.climeet.climeet_backend.domain.fcmMessage.dto.FCMNotificationRequestDto.CreateMultiplePushNotificationRequest;
+import com.climeet.climeet_backend.domain.fcmMessage.dto.FCMNotificationRequestDto.CreatePushNotificationRequest;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @PropertySource("classpath:application-dev.yml")
-public class FCMNotificationService {
+public class FcmNotificationService {
     private final UserRepository userRepository;
 
     @Value("${firebase:send}")

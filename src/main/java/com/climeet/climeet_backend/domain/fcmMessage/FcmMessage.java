@@ -1,7 +1,5 @@
-package com.climeet.climeet_backend.domain.FcmMessage;
+package com.climeet.climeet_backend.domain.fcmMessage;
 
-import com.climeet.climeet_backend.domain.manager.Manager;
-import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
