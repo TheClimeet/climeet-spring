@@ -14,7 +14,8 @@ public enum NotificationType {
     HEARTS_MY_SHORTS_WITHOUT_COUNT("%s님이 내 숏츠에 좋아요를 눌렀어요", "다른 클라이머들의 반응을 확인해보세요"),
     PARENT_COMMENT_MY_SHORTS("%s님이 내 숏츠에 댓글을 남겼어요", ""),
     CHILD_COMMENT_MY_SHORTS("%s님이 내 숏츠에 답글을 남겼어요", ""),
-    BEST_CLIMBER_UPDATE("%s월 %째주 BEST 순위가 업데이트 되었어요!", "지금 바로 순위를 확인해보세요!");
+    BEST_CLIMBER_UPDATE("%s월 %째주 BEST 순위가 업데이트 되었어요!", "지금 바로 순위를 확인해보세요!"),
+    NEW_FOLLOWER("%s님이 팔로우하였습니다!", "%s님의 프로필을 확인해보세요!");
 
 
     @Getter
