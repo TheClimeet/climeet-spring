@@ -18,6 +18,7 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSim
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
@@ -48,6 +49,7 @@ public class ShortsService {
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
     private final FollowRelationshipRepository followRelationshipRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void uploadShorts(User user, MultipartFile video,
@@ -321,5 +323,52 @@ public class ShortsService {
             findShorts(user, shorts.getId(), difficultyMapping), gymDifficultyName,
             gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
 
+    }
+
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsByUserId(User user, Long uploaderId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<ShortsVisibility> shortsVisibilities = ShortsVisibility.getPublicAndFollowersOnlyList();
+
+        Slice<Shorts> shortsSlice = null;
+
+        User uploader = userRepository.findById(uploaderId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+
+        shortsSlice = shortsRepository.findByUserAndShortsVisibilityInOrderByCreatedAtDesc(uploader,
+                ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
+
+        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
+            //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
+            .filter(shorts -> {
+                if (shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
+                    return followRelationshipRepository.existsByFollowerIdAndFollowingId(
+                        user.getId(), shorts.getUser().getId());
+                }
+                //public이면 통과
+                return true;
+            }).map(shorts -> {
+                DifficultyMapping difficultyMapping = null;
+                String gymDifficultyName = null;
+                String gymDifficultyColor = null;
+                String climeetDifficultyName = null;
+
+                if (shorts.getRoute() != null) {
+                    difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                        shorts.getClimbingGym(),
+                        shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+                    gymDifficultyName = difficultyMapping.getGymDifficultyName();
+                    gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+                    climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+                }
+
+                return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
+                    shorts.getClimbingGym(),
+                    findShorts(user, shorts.getId(), difficultyMapping), gymDifficultyName,
+                    gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
+            }).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsInfoList);
     }
 }

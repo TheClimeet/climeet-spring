@@ -95,4 +95,21 @@ public class ShortsController {
         @PathVariable Long shortsId) {
         return ResponseEntity.ok(shortsService.findDetailShorts(user, shortsId));
     }
+
+    @GetMapping("/shorts/{uploaderId}")
+    @Operation(summary = "특정 유저가 올린 숏츠 조회")
+    @SwaggerApiError({ErrorStatus._EMPTY_USER})
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByUserId(@CurrentUser User user,
+        @PathVariable Long uploaderId,
+        @RequestParam int page,
+        @RequestParam int size) {
+        return ResponseEntity.ok(shortsService.findShortsByUserId(user, uploaderId, page, size));
+    }
+
+    @GetMapping("/shorts/my-shorts")
+    @Operation(summary = "내 숏츠 조회")
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByLoginUser(@CurrentUser User user,
+        @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(shortsService.findShortsByUserId(user, user.getId(), page, size));
+    }
 }

@@ -45,6 +45,7 @@ public class ShortsCommentService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
 
         shorts.updateViewCountUp();
+        shorts.updateCommentCount();
 
         ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest,
             shorts);
