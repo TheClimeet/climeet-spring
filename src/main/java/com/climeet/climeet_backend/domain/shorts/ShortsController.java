@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.shorts;
 
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsRequestDto.CreateShortsRequest;
+import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDetailInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsProfileSimpleInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
@@ -58,7 +59,8 @@ public class ShortsController {
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
         @RequestParam(required = false) Long routeId) {
-        return ResponseEntity.ok(shortsService.findShortsPopular(user, gymId, sectorId, routeId, page, size));
+        return ResponseEntity.ok(
+            shortsService.findShortsPopular(user, gymId, sectorId, routeId, page, size));
     }
 
     @PatchMapping("/shorts/{shortsId}/viewCount")
@@ -81,8 +83,17 @@ public class ShortsController {
     @PatchMapping("/shorts/isRead")
     @Operation(summary = "숏츠 프로필바 초록불 OFF 처리")
     @SwaggerApiError({ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP})
-    public ResponseEntity<String> updateShortsIsRead(@CurrentUser User user, @RequestParam Long followingUserId){
+    public ResponseEntity<String> updateShortsIsRead(@CurrentUser User user,
+        @RequestParam Long followingUserId) {
         shortsService.updateShortsIsRead(user, followingUserId);
         return ResponseEntity.ok("초록불 OFF 완료");
+    }
+
+    @GetMapping("/shorts/{shortsId}")
+    @Operation(summary = "숏츠 단일 조회")
+    @SwaggerApiError({ErrorStatus._EMPTY_SHORTS, ErrorStatus._SHORTS_ACCESS_DENIED})
+    public ResponseEntity<ShortsSimpleInfo> findShorts(@CurrentUser User user,
+        @PathVariable Long shortsId) {
+        return ResponseEntity.ok(shortsService.findDetailShorts(user, shortsId));
     }
 }
