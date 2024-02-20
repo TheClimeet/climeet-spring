@@ -4,6 +4,8 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
+import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -18,10 +20,12 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSim
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,10 +52,12 @@ public class ShortsService {
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
     private final FollowRelationshipRepository followRelationshipRepository;
+    private final UserRepository userRepository;
+    private final FcmNotificationService fcmNotificationService;
 
     @Transactional
     public void uploadShorts(User user, MultipartFile video,
-        CreateShortsRequest createShortsRequest) {
+        CreateShortsRequest createShortsRequest) throws FirebaseMessagingException {
 
         ClimbingGym climbingGym = null;
         if (createShortsRequest.getClimbingGymId() != null) {
@@ -79,11 +85,18 @@ public class ShortsService {
         shortsRepository.save(shorts);
 
         //팔로워 관계 isUploadShortsRecent update
-        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowingId(shorts.getUser()
-            .getId());
-        for(FollowRelationship f : followRelationshipList){
+        List<FollowRelationship> followRelationshipList = followRelationshipRepository.findByFollowingId(
+            shorts.getUser()
+                .getId());
+        for (FollowRelationship f : followRelationshipList) {
             f.updateUploadStatus(true);
         }
+        List<Long> userIdList = followRelationshipList.stream()
+            .map(followRelationship -> followRelationship.getFollower().getId()
+            ).toList();
+
+
+        fcmNotificationService.sendMultipleUser(userIdList, NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()), NotificationType.UPLOAD_NEW_SHORTS.getMessage());
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
@@ -256,15 +269,15 @@ public class ShortsService {
 
     @Transactional
     @Scheduled(fixedRate = 1000 * 60 * 60 * 24) //하루마다 시행
-    public void updateVideoStatus(){
+    public void updateVideoStatus() {
 
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<Shorts> shortsList = shortsRepository.findByCreatedAtBefore(threeDaysAgo);
-        for(Shorts shorts : shortsList) {
+        for (Shorts shorts : shortsList) {
             List<FollowRelationship> followRelationship = followRelationshipRepository.findByFollowingId(
                 shorts.getUser().getId());
 
-            for(FollowRelationship relationship : followRelationship){
+            for (FollowRelationship relationship : followRelationship) {
                 relationship.updateUploadStatus(false);
             }
 
@@ -274,9 +287,98 @@ public class ShortsService {
     }
 
     @Transactional
-    public void updateShortsIsRead(User currentUser, Long userId){
-        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(currentUser.getId(), userId)
-            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
+    public void updateShortsIsRead(User currentUser, Long userId) {
+        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(
+                currentUser.getId(), userId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
         followRelationship.updateUploadStatus(false);
+    }
+
+    public ShortsSimpleInfo findDetailShorts(User user, Long shortsId) {
+
+        Shorts shorts = shortsRepository.findById(shortsId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
+
+        // 현재 유저가 볼 수 있는지 확인
+        if (shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
+            if (followRelationshipRepository.existsByFollowerIdAndFollowingId(
+                user.getId(), shorts.getUser().getId())) {
+                throw new GeneralException(ErrorStatus._SHORTS_ACCESS_DENIED);
+            }
+        }
+
+        if (shorts.getShortsVisibility() == ShortsVisibility.PRIVATE) {
+            throw new GeneralException(ErrorStatus._SHORTS_ACCESS_DENIED);
+        }
+        DifficultyMapping difficultyMapping = null;
+        String gymDifficultyName = null;
+        String gymDifficultyColor = null;
+        String climeetDifficultyName = null;
+
+        if (shorts.getRoute() != null) {
+            difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                shorts.getClimbingGym(),
+                shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+            gymDifficultyName = difficultyMapping.getGymDifficultyName();
+            gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+            climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+        }
+
+        // 쇼츠 상세 정보 생성 및 반환
+        return ShortsSimpleInfo.toDTO(
+            shorts.getId(),
+            shorts.getThumbnailImageUrl(),
+            shorts.getClimbingGym(),
+            findShorts(user, shorts.getId(), difficultyMapping), gymDifficultyName,
+            gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
+
+    }
+
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsByUserId(User user, Long uploaderId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<ShortsVisibility> shortsVisibilities = ShortsVisibility.getPublicAndFollowersOnlyList();
+
+        Slice<Shorts> shortsSlice = null;
+
+        User uploader = userRepository.findById(uploaderId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+
+        shortsSlice = shortsRepository.findByUserAndShortsVisibilityInOrderByCreatedAtDesc(uploader,
+                ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
+
+        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
+            //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
+            .filter(shorts -> {
+                if (shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
+                    return followRelationshipRepository.existsByFollowerIdAndFollowingId(
+                        user.getId(), shorts.getUser().getId());
+                }
+                //public이면 통과
+                return true;
+            }).map(shorts -> {
+                DifficultyMapping difficultyMapping = null;
+                String gymDifficultyName = null;
+                String gymDifficultyColor = null;
+                String climeetDifficultyName = null;
+
+                if (shorts.getRoute() != null) {
+                    difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                        shorts.getClimbingGym(),
+                        shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+                    gymDifficultyName = difficultyMapping.getGymDifficultyName();
+                    gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+                    climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+                }
+
+                return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
+                    shorts.getClimbingGym(),
+                    findShorts(user, shorts.getId(), difficultyMapping), gymDifficultyName,
+                    gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
+            }).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsInfoList);
     }
 }

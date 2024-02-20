@@ -4,6 +4,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class ShortsLikeController {
     @PatchMapping("/Shorts/{shortsId}/likes")
     public ResponseEntity<String> changeShortsLikeStatus(
         @CurrentUser User user,
-        @PathVariable Long shortsId) {
+        @PathVariable Long shortsId) throws FirebaseMessagingException {
         shortsLikeService.changeShortsLikeStatus(user, shortsId);
         return ResponseEntity.ok("숏츠 좋아요에 성공했습니다.");
     }

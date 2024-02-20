@@ -7,11 +7,13 @@ import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayo
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
+import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
+import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionFilteringKeyResponse;
@@ -43,6 +45,7 @@ public class RouteVersionService {
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
     private final S3Service s3Service;
+    private final FcmNotificationService fcmNotificationService;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)

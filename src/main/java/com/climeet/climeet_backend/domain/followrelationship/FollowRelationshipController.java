@@ -8,6 +8,7 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,8 @@ public class FollowRelationshipController {
     @PostMapping("/follow-relationship")
     @Operation(summary = "유저 팔로우")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
-    public ResponseEntity<String> followUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
+    public ResponseEntity<String> followUser(@RequestParam Long followingUserId, @CurrentUser User currentUser)
+        throws FirebaseMessagingException {
         User following = followRelationshipService.findByUserId(followingUserId);
         followRelationshipService.createFollowRelationship(currentUser, following);
         return ResponseEntity.ok("팔로우 완료");
@@ -44,7 +46,8 @@ public class FollowRelationshipController {
     @PostMapping("/follow-relationship/gym")
     @Operation(summary = "암장 팔로우")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
-    public ResponseEntity<String> followGym(@RequestParam Long gymId, @CurrentUser User currentUser){
+    public ResponseEntity<String> followGym(@RequestParam Long gymId, @CurrentUser User currentUser)
+        throws FirebaseMessagingException {
         User following = followRelationshipService.findManagerByGymID(gymId);
         followRelationshipService.createFollowRelationship(currentUser, following);
         return ResponseEntity.ok("팔로우 완료");

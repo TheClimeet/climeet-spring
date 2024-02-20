@@ -163,6 +163,18 @@ public class UserService {
             }).toList();
 
     }
+    public List<UserHomeGymSimpleInfo> getUserHomeGyms(Long userId) {
+        List<FollowRelationship> followRelationships = followRelationshipRepository.findByFollowerId(
+            userId);
+
+        return followRelationships.stream()
+            .filter(followRelationship -> followRelationship.getFollowing() instanceof Manager)
+            .map(followRelationship -> {
+                ClimbingGym climbingGym = ((Manager) followRelationship.getFollowing()).getClimbingGym();
+                return UserHomeGymSimpleInfo.toDTO(climbingGym);
+            }).toList();
+
+    }
 
 
     public UserAccountDetailInfo getLoginUserProfiles(User currentUser) {
@@ -247,6 +259,22 @@ public class UserService {
         boolean status = user instanceof Manager;
 
         return UserProfileDetailInfo.toDTO(user, status);
+
+    }
+
+    public UserFollowDetailInfo getOtherUserMyPageProfile(User currentUser, Long userId){
+        User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
+
+        boolean status = false;
+        if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+            currentUser.getId(), userId).isPresent()){
+            status = true;
+
+        }
+
+
+        return UserFollowDetailInfo.toDTO(user, status);
 
     }
 
