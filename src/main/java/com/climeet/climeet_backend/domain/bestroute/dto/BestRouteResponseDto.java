@@ -24,6 +24,7 @@ public class BestRouteResponseDto {
         private String climeetDifficultyName;
         private String gymDifficultyName;
         private String gymDifficultyColor;
+        private String holdColor;
 
         public static BestRouteDetailInfo toDTO(BestRoute bestRoute) {
             return BestRouteDetailInfo.builder()
@@ -36,6 +37,7 @@ public class BestRouteResponseDto {
                 .climeetDifficultyName(bestRoute.getClimeetDifficultyName())
                 .gymDifficultyName(bestRoute.getGymDifficultyName())
                 .gymDifficultyColor(bestRoute.getGymDifficultyColor())
+                .holdColor(bestRoute.getRoute().getHoldColor())
                 .build();
         }
     }
