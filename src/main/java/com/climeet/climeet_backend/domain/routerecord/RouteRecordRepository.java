@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -76,5 +75,11 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         "WHERE rr.isCompleted = true AND fr.following = :manager " +
         "GROUP BY rr.user")
     List<Float> getFollowUserSumCountDifficultyInClimbingGym(@Param("manager") User manager);
+
+    @Query("SELECT " +
+        "   AVG(rr.difficulty) as averageDifficulty " +
+        "FROM RouteRecord rr " +
+        "WHERE rr.user = :user ")
+    Float findAverageDifficultyByUser(@Param("user") User user);
 
 }

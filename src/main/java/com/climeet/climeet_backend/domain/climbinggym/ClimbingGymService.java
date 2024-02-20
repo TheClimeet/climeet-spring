@@ -27,7 +27,6 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -177,7 +176,7 @@ public class ClimbingGymService {
     }
 
     public List<ClimbingGymAverageLevelDetailResponse> getFollowingUserAverageLevelInClimbingGym(
-        Long gymId) {
+        Long gymId, User user) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -305,7 +304,18 @@ public class ClimbingGymService {
 
     }
 
-    private DifficultyMapping getClosestGymDifficulty(Integer level,
+    public String getClimberAverageDifficulty(User user, Long gymId) {
+
+        Float userAverageDifficulty = routeRecordRepository.findAverageDifficultyByUser(user);
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+        List<DifficultyMapping> difficultyMapping = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+            climbingGym);
+        return getClosestGymDifficulty(Math.round(userAverageDifficulty),
+            difficultyMapping).getGymDifficultyName();
+    }
+
+    public DifficultyMapping getClosestGymDifficulty(Integer level,
         List<DifficultyMapping> difficultyMappingList) {
         DifficultyMapping difficulty = null;
         int minDifference = Integer.MAX_VALUE;
