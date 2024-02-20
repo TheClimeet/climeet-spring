@@ -15,4 +15,9 @@ public class UserRequestDto {
         private Boolean isAllowAdNotification;
     }
 
+    @Getter
+    public static class UpdateUserFcmToken{
+        private String fcmToken;
+    }
+
 }
