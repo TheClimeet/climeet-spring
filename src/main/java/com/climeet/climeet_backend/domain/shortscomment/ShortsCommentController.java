@@ -8,6 +8,7 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ShortsCommentController {
         @CurrentUser User user,
         @PathVariable Long shortsId,
         @RequestBody CreateShortsCommentRequest createShortsCommentRequest,
-        @RequestParam(required = false) Long parentCommentId) {
+        @RequestParam(required = false) Long parentCommentId) throws FirebaseMessagingException {
 
         return ResponseEntity.ok(shortsCommentService.createShortsComment(user, shortsId, createShortsCommentRequest,
             parentCommentId, parentCommentId != null));

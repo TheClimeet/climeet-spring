@@ -97,11 +97,16 @@ public enum ErrorStatus implements BaseErrorCode {
     //암장 회원가입 관련
     _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 안는 암장입니다."),
 
+    //알림 관련
+    _FAIL_TO_SEND_NOTIFICATION(HttpStatus.CONFLICT, "NOTIFICATION_001", "알림 전송 실패하였습니다"),
+
     //공지사항 관련
     _BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD_001", "존재하지 않는 공지사항입니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
+
+
 
 
     @Override

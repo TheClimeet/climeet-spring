@@ -92,6 +92,7 @@ public class ShortsService {
             .map(followRelationship -> followRelationship.getFollower().getId()
             ).toList();
 
+
         fcmNotificationService.sendMultipleUser(userIdList, NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()), NotificationType.UPLOAD_NEW_SHORTS.getMessage());
     }
 

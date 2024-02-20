@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class FcmNotificationService {
     private String API_URL;
 
 
+    @Transactional
     public void sendSingleUser(Long userId, String title, String body)
         throws FirebaseMessagingException{
         User user = userRepository.findById(userId)
@@ -37,8 +39,10 @@ public class FcmNotificationService {
             .putData("body", body)
             .build();
         String response = FirebaseMessaging.getInstance().send(message);
+        System.out.println(response);
     }
 
+    @Transactional
     public void sendMultipleUser(List<Long> userIdLists, String title, String body)
         throws FirebaseMessagingException {
         List<String> registrationToken = userIdLists.stream()
@@ -52,6 +56,10 @@ public class FcmNotificationService {
             .build();
 
         BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
+        if(response.getFailureCount()!=0){
+            throw new GeneralException(ErrorStatus._FAIL_TO_SEND_NOTIFICATION);
+        }
+        System.out.println(response);
     }
 
 
