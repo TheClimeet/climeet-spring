@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.routerecord;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.User;
 import java.time.LocalDate;
 import java.util.List;
