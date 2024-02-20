@@ -43,7 +43,7 @@ public class FollowRelationshipController {
 
     @PostMapping("/follow-relationship/gym")
     @Operation(summary = "암장 팔로우")
-    @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> followGym(@RequestParam Long gymId, @CurrentUser User currentUser){
         User following = followRelationshipService.findManagerByGymID(gymId);
         followRelationshipService.createFollowRelationship(currentUser, following);
@@ -52,7 +52,7 @@ public class FollowRelationshipController {
 
     @DeleteMapping("/follow-relationship/gym")
     @Operation(summary = "암장 팔로우 취소")
-    @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
+    @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> unfollowGym(@RequestParam Long gymId, @CurrentUser User currentUser){
         User following = followRelationshipService.findManagerByGymID(gymId);
         followRelationshipService.deleteFollowRelationship(following, currentUser);
