@@ -50,4 +50,10 @@ src/test/resources/application.yml
 
 ### keystore.p12 ###
 src/main/resources/keystore.p12
+src/main/resources/keystore-dev.p12
+src/main/resources/keystore-prod.p12
+
 src/test/resources/keystore.p12
+
+### firebase ###
+src/main/resources/firebase/

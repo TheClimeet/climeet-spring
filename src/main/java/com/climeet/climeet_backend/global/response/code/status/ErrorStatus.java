@@ -77,6 +77,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //숏츠 관련
     _EMPTY_SHORTS(HttpStatus.CONFLICT, "SHORTS_001", "존재하지 않는 쇼츠입니다."),
+    _SHORTS_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "SHORTS_002", "비공개 영상입니다."),
 
     //암장 리뷰 관련
     _RATING_OUT_OF_RANGE(HttpStatus.CONFLICT, "REVIEW_001", "rating의 범위가 올바르지 않습니다."),
@@ -92,9 +93,10 @@ public enum ErrorStatus implements BaseErrorCode {
     //팔로우 관련
     _EMPTY_FOLLOW_RELATIONSHIP(HttpStatus.NOT_FOUND, "FOLLOW_RELATION_001", "존재하지 않는 팔로우 관계입니다."),
     _EXIST_FOLLOW_RELATIONSHIP(HttpStatus.CONFLICT, "FOLLOW_RELATION_002", "이미 존재하는 팔로우 관계입니다."),
-  
+
+
     //암장 회원가입 관련
-    _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 안는 암장입니다."),
+    _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 않는 암장입니다."),
 
     //공지사항 관련
     _BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD_001", "존재하지 않는 공지사항입니다.");
