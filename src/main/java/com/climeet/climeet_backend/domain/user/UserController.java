@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.user;
 
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
+import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserFcmToken;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
@@ -92,8 +93,9 @@ public class UserController {
 
     @PostMapping("/users/fcmToken")
     @Operation(summary = "사용자 FCM 토큰 업데이트")
-    public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody String fcmToken){
-        userService.updateUserFcmToken(currentUser, fcmToken);
+    public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody
+        UpdateUserFcmToken updateUserFcmToken){
+        userService.updateUserFcmToken(currentUser, updateUserFcmToken.getFcmToken());
         return ResponseEntity.ok("업데이트 성공");
     }
 
@@ -102,5 +104,18 @@ public class UserController {
     @Operation(summary = "마이페이지 유저 프로필 조회")
     public ResponseEntity<UserProfileDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getUserMyPageProfile(currentUser));
+    }
+
+    @GetMapping("/profile/{userId}")
+    @SwaggerApiError({ErrorStatus._EMPTY_USER})
+    @Operation(summary = "특정 유저 프로필 조회")
+    public ResponseEntity<UserFollowDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser, @PathVariable Long userId){
+        return ResponseEntity.ok(userService.getOtherUserMyPageProfile(currentUser, userId));
+    }
+
+    @GetMapping("/home/homegyms/{userId}")
+    @Operation(summary = "특정 유저 홈짐 조회")
+    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser, @PathVariable Long userId){
+        return ResponseEntity.ok(userService.getUserHomeGyms(userId));
     }
 }

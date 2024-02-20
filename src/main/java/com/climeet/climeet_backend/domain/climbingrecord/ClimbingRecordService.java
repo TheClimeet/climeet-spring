@@ -36,6 +36,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,8 +66,8 @@ public class ClimbingRecordService {
 
     public static final int CLIMEET_LEVEL = 0;
     public static final int LEVEL_COUNT = 1;
-
     public static final int NANO_TO_SEC = 1000000000;
+
 
 
     /**
@@ -173,7 +176,7 @@ public class ClimbingRecordService {
         Long updateTime = 0L;
         // updateClimbingRecordDto의 time이 null이 아니면 업데이트 수행
         if (newTime != null) {
-            updateTime = newTime.toNanoOfDay()/NANO_TO_SEC - oldTime.toNanoOfDay()/NANO_TO_SEC;
+            updateTime = newTime.toNanoOfDay() / NANO_TO_SEC - oldTime.toNanoOfDay() / NANO_TO_SEC;
             System.out.println("oldTIme = " + oldTime);
             System.out.println("newTime = " + newTime);
             System.out.println("updateTime = " + updateTime);
@@ -207,7 +210,7 @@ public class ClimbingRecordService {
 
     /**
      * 내 월별 통계 return 완등시간 & 완등률(시도한 루트와 성공한 루트의 비율) & 레벨당 완등한 횟수 클밋 기준임.
-     */
+     */// TODO: 2024/02/19 할 거 5 (아마두)
     public ClimbingRecordStatisticsInfo getClimbingRecordStatistics(User user, int year,
         int month) {
 
@@ -229,20 +232,28 @@ public class ClimbingRecordService {
 
         //유저가 기록한 레벨 리스트를 뽑아 온다.
         //여기는 기록한 레벨과 그에 매칭되는 횟수가 나온다.
-        List<Object[]> difficulties = routeRecordRepository
+        List<Object[]> objectDifficulties = routeRecordRepository
             .getRouteRecordDifficultyBetween(
                 user,
                 startDate,
                 endDate
             );
 
-        Map<String, Long> difficultyList;
-        difficultyList = difficulties.stream()
-            .collect(Collectors.toMap(
-                arr -> ClimeetDifficulty.findByInt(((int) arr[CLIMEET_LEVEL]))
-                    .getStringValue(),
-                arr -> (Long) arr[LEVEL_COUNT]
-            ));
+        Map<Integer, Long> difficulties = new HashMap<>();
+
+        objectDifficulties.forEach(difficulty -> {
+            Integer level = (int) difficulty[CLIMEET_LEVEL];
+            Long count = (Long) difficulty[LEVEL_COUNT];
+            difficulties.put(level, count);
+        });
+
+        Map<String, Long> difficultyList = new LinkedHashMap<>();
+
+        for (int i = 0; i < 11; i++) {
+            Long levelCount = difficulties.getOrDefault(i, 0L);
+            difficultyList.put(ClimeetDifficulty.findByInt(i).getStringValue(), levelCount);
+        }
+
 
         return ClimbingRecordStatisticsInfo.toDTO(
             time,
@@ -254,7 +265,7 @@ public class ClimbingRecordService {
 
     /**
      * 나의 월별 그리고 암장별 통계기록
-     */
+     */// TODO: 2024/02/19 할 거 4 (아마두)
     public ClimbingRecordStatisticsInfoByGym getClimbingRecordStatisticsByGymId(User user,
         Long gymId,
         int year,
@@ -283,9 +294,7 @@ public class ClimbingRecordService {
 
         Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
 
-        //유저가 기록한 레벨 리스트를 뽑아 온다.
-        //여기는 기록한 레벨과 그에 매칭되는 횟수가 나온다.
-        List<Object[]> difficulties = routeRecordRepository
+        List<Object[]> objectDifficulties = routeRecordRepository
             .getRouteRecordDifficultyBetweenDatesAndGym(
                 user,
                 gym,
@@ -293,14 +302,22 @@ public class ClimbingRecordService {
                 endDate
             );
 
-        List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
-            .map(arr -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    gym, ((int) arr[CLIMEET_LEVEL]));
-                Long levelCount = (Long) arr[LEVEL_COUNT];
+        Map<Integer, Long> difficulties = new HashMap<>();
 
+        objectDifficulties.forEach(difficulty -> {
+            Integer level = (int) difficulty[CLIMEET_LEVEL];
+            Long count = (Long) difficulty[LEVEL_COUNT];
+            difficulties.put(level, count);
+        });
+
+
+        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+                gym).stream()
+            .map(difficultyMapping -> {
+                Long levelCount = difficulties.getOrDefault(difficultyMapping.getDifficulty(), 0L);
                 return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
+            .sorted(Comparator.comparing(GymDifficultyMappingInfo::getDifficulty))
             .collect(Collectors.toList());
 
         return ClimbingRecordStatisticsInfoByGym.toDTO(
@@ -311,6 +328,7 @@ public class ClimbingRecordService {
         );
     }
 
+    // TODO: 2024/02/19 할 거 1 (완)
     public ClimbingRecordStatisticsSimpleInfo getGymStatisticsWeekly(Long gymId) {
 
         Object[] lastWeek = startDayAndLastDayOfLastWeek();
@@ -321,21 +339,30 @@ public class ClimbingRecordService {
         ClimbingGym gym = gymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        List<Object[]> difficulties = routeRecordRepository
+        List<Object[]> objectDifficulties = routeRecordRepository
             .getRouteRecordDifficultyBetweenDaysAndGym(
                 gym,
                 startDate,
                 endDate
             );
 
-        List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
-            .map(arr -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    gym, ((int) arr[CLIMEET_LEVEL]));
-                Long levelCount = (Long) arr[LEVEL_COUNT];
+        Map<Integer, Long> difficulties = new HashMap<>();
 
+        objectDifficulties.forEach(difficulty -> {
+            Integer level = (int) difficulty[CLIMEET_LEVEL];
+            Long count = (Long) difficulty[LEVEL_COUNT];
+            difficulties.put(level, count);
+        });
+
+
+        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+                gym).stream()
+            .map(difficultyMapping -> {
+                Long levelCount = difficulties.getOrDefault(difficultyMapping.getDifficulty(),
+                    0L);
                 return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
+            .sorted(Comparator.comparing(GymDifficultyMappingInfo::getDifficulty))
             .collect(Collectors.toList());
 
         return ClimbingRecordStatisticsSimpleInfo.toDTO(difficultyList);
@@ -442,7 +469,7 @@ public class ClimbingRecordService {
         return lastWeek;
     }
 
-    // TODO: 2024/01/29 기록 생성할 때 유저의 누적 통계도 바뀌어야 한다능..
+    // TODO: 2024/01/29 할 거 3 (완)
     public ClimbingRecordUserStatisticsSimpleInfo getUserStatistics(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_MEMBER));
@@ -455,15 +482,23 @@ public class ClimbingRecordService {
         Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
 
         //기록
-        List<Object[]> difficulties = routeRecordRepository
+        List<Object[]> objectDifficulties = routeRecordRepository
             .findAllRouteRecordDifficultyAndUser(user);
 
-        Map<String, Long> difficultyList = difficulties.stream()
-            .collect(Collectors.toMap(
-                arr -> ClimeetDifficulty.findByInt(((int) arr[CLIMEET_LEVEL]))
-                    .getStringValue(),
-                arr -> (Long) arr[LEVEL_COUNT]
-            ));
+        Map<Integer, Long> difficulties = new HashMap<>();
+
+        objectDifficulties.forEach(difficulty -> {
+            Integer level = (int) difficulty[CLIMEET_LEVEL];
+            Long count = (Long) difficulty[LEVEL_COUNT];
+            difficulties.put(level, count);
+        });
+
+        Map<String, Long> difficultyList = new LinkedHashMap<>();
+
+        for (int i = 0; i < 11; i++) {
+            Long levelCount = difficulties.getOrDefault(i, 0L);
+            difficultyList.put(ClimeetDifficulty.findByInt(i).getStringValue(), levelCount);
+        }
 
         return ClimbingRecordUserStatisticsSimpleInfo.toDTO(
             userId,
@@ -473,7 +508,7 @@ public class ClimbingRecordService {
         );
     }
 
-
+    // TODO: 2024/02/19 할 거 2 (완)
     public ClimbingRecordUserAndGymStatisticsDetailInfo getUserStatisticsByGym(Long userId,
         Long gymId) {
         User user = userRepository.findById(userId)
@@ -490,17 +525,25 @@ public class ClimbingRecordService {
         Long attemptRouteCount = (Long) crTuple.get("attemptRouteCount");
 
         //기록
-        List<Object[]> difficulties = routeRecordRepository
+        List<Object[]> objectDifficulties = routeRecordRepository
             .findAllRouteRecordDifficultyAndUserAndGym(user, gym);
 
-        List<GymDifficultyMappingInfo> difficultyList = difficulties.stream()
-            .map(arr -> {
-                DifficultyMapping difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
-                    gym, ((int) arr[CLIMEET_LEVEL]));
-                Long levelCount = (Long) arr[LEVEL_COUNT];
+        Map<Integer, Long> difficulties = new HashMap<>();
 
+        objectDifficulties.forEach(difficulty -> {
+            Integer level = (int) difficulty[CLIMEET_LEVEL];
+            Long count = (Long) difficulty[LEVEL_COUNT];
+            difficulties.put(level, count);
+        });
+
+        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+                gym).stream()
+            .map(difficultyMapping -> {
+                Long levelCount = difficulties.getOrDefault(difficultyMapping.getDifficulty(),
+                    0L);
                 return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
+            .sorted(Comparator.comparing(GymDifficultyMappingInfo::getDifficulty))
             .collect(Collectors.toList());
 
         return ClimbingRecordUserAndGymStatisticsDetailInfo.toDTO(

@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.followrelationship;
 
 
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
 import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class FollowRelationshipService {
 
     private final FollowRelationshipRepository followRelationshipRepository;
+    private final ClimbingGymRepository climbingGymRepository;
     private final UserRepository userRepository;
     private final ManagerRepository managerRepository;
     private final FcmNotificationService fcmNotificationService;
@@ -49,5 +52,11 @@ public class FollowRelationshipService {
         manager.ifPresent(value -> value.getClimbingGym().thisWeekFollowCountDown());
         followRelationshipRepository.deleteById(followRelationship.getId());
         followRelationship.getFollower().decreaseFollwerCount();
+    }
+
+    public User findManagerByGymID(Long gymId){
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+        return climbingGym.getManager();
     }
 }

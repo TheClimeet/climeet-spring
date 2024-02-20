@@ -163,6 +163,18 @@ public class UserService {
             }).toList();
 
     }
+    public List<UserHomeGymSimpleInfo> getUserHomeGyms(Long userId) {
+        List<FollowRelationship> followRelationships = followRelationshipRepository.findByFollowerId(
+            userId);
+
+        return followRelationships.stream()
+            .filter(followRelationship -> followRelationship.getFollowing() instanceof Manager)
+            .map(followRelationship -> {
+                ClimbingGym climbingGym = ((Manager) followRelationship.getFollowing()).getClimbingGym();
+                return UserHomeGymSimpleInfo.toDTO(climbingGym);
+            }).toList();
+
+    }
 
 
     public UserAccountDetailInfo getLoginUserProfiles(User currentUser) {
@@ -249,10 +261,25 @@ public class UserService {
         return UserProfileDetailInfo.toDTO(user, status);
 
     }
-    public void updateUserFcmToken(User user, String token){
-        if(token==null){
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+
+    public UserFollowDetailInfo getOtherUserMyPageProfile(User currentUser, Long userId){
+        User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
+
+        boolean status = false;
+        if (followRelationshipRepository.findByFollowerIdAndFollowingId(
+            currentUser.getId(), userId).isPresent()){
+            status = true;
+
         }
+
+
+        return UserFollowDetailInfo.toDTO(user, status);
+
+    }
+
+    @Transactional
+    public void updateUserFcmToken(User user, String token){
         user.updateFCMToken(token);
     }
 

@@ -131,6 +131,9 @@ public class UserResponseDto {
             private String difficultyName;
             private Long sectorId;
             private String sectorName;
+            private String holdColor;
+            private String gymDifficultyName;
+            private String gymDifficultyColor;
         }
 
         private List<RouteSimpleInfo> routeSimpleInfos;
@@ -143,6 +146,9 @@ public class UserResponseDto {
                     .difficultyName(route.getDifficultyMapping().getClimeetDifficultyName())
                     .sectorId(route.getSector().getId())
                     .sectorName(route.getSector().getSectorName())
+                    .holdColor(route.getHoldColor())
+                    .gymDifficultyName(route.getDifficultyMapping().getGymDifficultyName())
+                    .gymDifficultyColor(route.getDifficultyMapping().getGymDifficultyColor())
                     .build())
                 .toList();
             return UserHomeGymDetailInfo.builder()

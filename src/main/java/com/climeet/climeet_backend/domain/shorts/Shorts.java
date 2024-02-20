@@ -84,4 +84,8 @@ public class Shorts extends BaseTimeEntity {
     public void updateViewCountUp() {
         this.viewCount++;
     }
+
+    public void updateCommentCount() {
+        this.commentCount++;
+    }
 }
