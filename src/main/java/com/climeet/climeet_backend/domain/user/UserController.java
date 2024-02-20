@@ -105,4 +105,17 @@ public class UserController {
     public ResponseEntity<UserProfileDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getUserMyPageProfile(currentUser));
     }
+
+    @GetMapping("/profile/{userId}")
+    @SwaggerApiError({ErrorStatus._EMPTY_USER})
+    @Operation(summary = "특정 유저 프로필 조회")
+    public ResponseEntity<UserFollowDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser, @PathVariable Long userId){
+        return ResponseEntity.ok(userService.getOtherUserMyPageProfile(currentUser, userId));
+    }
+
+    @GetMapping("/home/homegyms/{userId}")
+    @Operation(summary = "특정 유저 홈짐 조회")
+    public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser, @PathVariable Long userId){
+        return ResponseEntity.ok(userService.getUserHomeGyms(userId));
+    }
 }
