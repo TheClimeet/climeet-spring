@@ -86,7 +86,7 @@ public class ClimbingGymController {
     public ResponseEntity<List<ClimbingGymAverageLevelDetailResponse>> getFollowingUserAverageLevelInClimbingGym(
         @PathVariable Long gymId, @CurrentUser User user) {
         return ResponseEntity.ok(
-            climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId));
+            climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId, user));
     }
 
     @Operation(summary = "암장 배경사진 변경 (1개만 등록 가능)")
@@ -132,6 +132,14 @@ public class ClimbingGymController {
     ) {
         return ResponseEntity.ok(
             climbingGymService.searchAcceptedClimbingGymWithFollow(gymName, page, size, user));
+    }
+
+    @Operation(summary = "특정 암장에서의 현재 내 실력 조회")
+    @SwaggerApiError({})
+    @GetMapping("/{gymId}/my-skill")
+    public ResponseEntity<String> getFollowingUserAverageLevelInClimbingGym(
+        @CurrentUser User user, @PathVariable Long gymId) {
+        return ResponseEntity.ok(climbingGymService.getClimberAverageDifficulty(user, gymId));
     }
 
 }

@@ -27,13 +27,13 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -177,7 +177,7 @@ public class ClimbingGymService {
     }
 
     public List<ClimbingGymAverageLevelDetailResponse> getFollowingUserAverageLevelInClimbingGym(
-        Long gymId) {
+        Long gymId, User user) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -305,7 +305,26 @@ public class ClimbingGymService {
 
     }
 
-    private DifficultyMapping getClosestGymDifficulty(Integer level,
+    public String getClimberAverageDifficulty(User user, Long gymId) {
+
+        Optional<Float> userAverageDifficulty = routeRecordRepository.findAverageDifficultyByUser(user);
+        if(userAverageDifficulty.isEmpty()){
+            return null;
+        }
+
+        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+            climbingGym);
+        if (difficultyMappingList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
+        }
+
+        return getClosestGymDifficulty(Math.round(userAverageDifficulty.get()),
+            difficultyMappingList).getGymDifficultyName();
+    }
+
+    public DifficultyMapping getClosestGymDifficulty(Integer level,
         List<DifficultyMapping> difficultyMappingList) {
         DifficultyMapping difficulty = null;
         int minDifference = Integer.MAX_VALUE;
