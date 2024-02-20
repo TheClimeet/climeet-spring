@@ -46,7 +46,8 @@ public class FollowRelationshipController {
     @PostMapping("/follow-relationship/gym")
     @Operation(summary = "암장 팔로우")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
-    public ResponseEntity<String> followGym(@RequestParam Long gymId, @CurrentUser User currentUser){
+    public ResponseEntity<String> followGym(@RequestParam Long gymId, @CurrentUser User currentUser)
+        throws FirebaseMessagingException {
         User following = followRelationshipService.findManagerByGymID(gymId);
         followRelationshipService.createFollowRelationship(currentUser, following);
         return ResponseEntity.ok("팔로우 완료");
