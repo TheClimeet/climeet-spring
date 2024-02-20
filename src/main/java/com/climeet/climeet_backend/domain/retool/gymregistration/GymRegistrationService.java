@@ -12,6 +12,7 @@ import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -41,6 +42,7 @@ public class GymRegistrationService {
             gymRegistration.getClimbingGym(), gymRegistration.getManager());
     }
 
+    @Transactional
     public void changeGymRegistrations(Long gymRegistrationId,
         PatchGymRegistrationReq patchGymRegistrationReq) throws MessagingException {
 
