@@ -4,6 +4,8 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
+import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -22,6 +24,7 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,10 +51,11 @@ public class ShortsService {
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
     private final FollowRelationshipRepository followRelationshipRepository;
+    private final FcmNotificationService fcmNotificationService;
 
     @Transactional
     public void uploadShorts(User user, MultipartFile video,
-        CreateShortsRequest createShortsRequest) {
+        CreateShortsRequest createShortsRequest) throws FirebaseMessagingException {
 
         ClimbingGym climbingGym = null;
         if (createShortsRequest.getClimbingGymId() != null) {
@@ -84,6 +88,11 @@ public class ShortsService {
         for(FollowRelationship f : followRelationshipList){
             f.updateUploadStatus(true);
         }
+        List<Long> userIdList = followRelationshipList.stream()
+            .map(followRelationship -> followRelationship.getFollower().getId()
+            ).toList();
+
+        fcmNotificationService.sendMultipleUser(userIdList, NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()), NotificationType.UPLOAD_NEW_SHORTS.getMessage());
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
