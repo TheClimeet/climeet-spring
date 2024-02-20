@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -306,13 +307,21 @@ public class ClimbingGymService {
 
     public String getClimberAverageDifficulty(User user, Long gymId) {
 
-        Float userAverageDifficulty = routeRecordRepository.findAverageDifficultyByUser(user);
+        Optional<Float> userAverageDifficulty = routeRecordRepository.findAverageDifficultyByUser(user);
+        if(userAverageDifficulty.isEmpty()){
+            return null;
+        }
+
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        List<DifficultyMapping> difficultyMapping = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
             climbingGym);
-        return getClosestGymDifficulty(Math.round(userAverageDifficulty),
-            difficultyMapping).getGymDifficultyName();
+        if (difficultyMappingList.isEmpty()) {
+            throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
+        }
+
+        return getClosestGymDifficulty(Math.round(userAverageDifficulty.get()),
+            difficultyMappingList).getGymDifficultyName();
     }
 
     public DifficultyMapping getClosestGymDifficulty(Integer level,
