@@ -5,6 +5,8 @@ import static com.climeet.climeet_backend.global.utils.DateTimeConverter.convert
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLike;
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeRepository;
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeService;
+import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
+import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
@@ -14,6 +16,7 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +37,13 @@ public class ShortsCommentService {
     private final ShortsCommentRepository shortsCommentRepository;
     private final ShortsCommentLikeService shortsCommentLikeService;
     private final ShortsCommentLikeRepository shortsCommentLikeRepository;
+    private final FcmNotificationService fcmNotificationService;
     private static final int ADJUSTED_CHILD_COUNT = 1;
 
     @Transactional
     public ShortsCommentParentResponse createShortsComment(User user, Long shortsId,
         CreateShortsCommentRequest createShortsCommentRequest, Long parentCommentId,
-        boolean isReply) {
+        boolean isReply) throws FirebaseMessagingException {
 
         Shorts shorts = shortsRepository.findById(shortsId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS));
@@ -64,6 +68,8 @@ public class ShortsCommentService {
 
         shortsCommentRepository.save(shortsComment);
 
+        fcmNotificationService.sendSingleUser(shorts.getUser().getId(), NotificationType.PARENT_COMMENT_MY_SHORTS.getTitle(user.getProfileName()), shortsComment.getContent());
+
         return ShortsCommentParentResponse.toDTO(
             shortsComment.getUser(), shortsComment,
             CommentLikeStatus.NONE,
@@ -71,6 +77,8 @@ public class ShortsCommentService {
             shortsComment.getChildCommentCount() - ADJUSTED_CHILD_COUNT,
             convertToDisplayTime(shortsComment.getCreatedAt())
         );
+
+
     }
 
     public PageResponseDto<List<ShortsCommentParentResponse>> findShortsCommentList(User user,

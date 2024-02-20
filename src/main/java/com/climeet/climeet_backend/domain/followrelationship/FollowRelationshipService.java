@@ -3,12 +3,15 @@ package com.climeet.climeet_backend.domain.followrelationship;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
+import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
+import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,13 +24,14 @@ public class FollowRelationshipService {
     private final ClimbingGymRepository climbingGymRepository;
     private final UserRepository userRepository;
     private final ManagerRepository managerRepository;
+    private final FcmNotificationService fcmNotificationService;
 
     public User findByUserId(Long userId){
         return userRepository.findById(userId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
     }
-
-    public void createFollowRelationship(User follower, User following) {
+    public void createFollowRelationship(User follower, User following)
+        throws FirebaseMessagingException {
         if(followRelationshipRepository.findByFollowerIdAndFollowingId(follower.getId(),
             following.getId()).isPresent()){
             throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
@@ -37,6 +41,8 @@ public class FollowRelationshipService {
         FollowRelationship followRelationship = FollowRelationship.toEntity(follower, following);
         followRelationshipRepository.save(followRelationship);
         follower.increaseFollwerCount();
+        fcmNotificationService.sendSingleUser(following.getId(), NotificationType.NEW_FOLLOWER.getTitle(follower.getProfileName()), NotificationType.NEW_FOLLOWER.getMessage(follower.getProfileName()) );
+
     }
 
     public void deleteFollowRelationship(User following, User follower){

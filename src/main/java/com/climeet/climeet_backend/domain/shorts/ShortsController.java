@@ -8,6 +8,7 @@ import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ShortsController {
     @Operation(summary = "숏츠 업로드", description = "**shortsVisibility** : PUBLIC OR FOLLOWERS_ONLY OR PRIVATE")
     public ResponseEntity<String> uploadShorts(@CurrentUser User user,
         @RequestPart(value = "video") MultipartFile video,
-        @RequestPart CreateShortsRequest createShortsRequest) {
+        @RequestPart CreateShortsRequest createShortsRequest) throws FirebaseMessagingException {
         shortsService.uploadShorts(user, video, createShortsRequest);
         return ResponseEntity.ok("업로드 성공");
     }

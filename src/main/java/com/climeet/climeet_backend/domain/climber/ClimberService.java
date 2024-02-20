@@ -18,6 +18,7 @@ import com.climeet.climeet_backend.domain.user.UserService;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public class ClimberService {
 
     @Transactional
     public ClimberSimpleInfo handleSocialLogin(String socialType, String accessToken,
-        @RequestBody CreateClimberRequest climberRequestDto) {
+        @RequestBody CreateClimberRequest climberRequestDto) throws FirebaseMessagingException {
         HashMap<String, String> userInfo;
         userInfo = getClimberProfileByToken(socialType, accessToken);
         String socialId = userInfo.get("socialId");
@@ -66,6 +67,9 @@ public class ClimberService {
         }
         //login
         if (optionalClimber.isPresent()) {
+//            if(climberRequestDto!=null){
+//                throw new GeneralException(ErrorStatus._EXIST_USER);
+//            }
             resultClimber = login(optionalClimber.get());
         }
         if (resultClimber == null) {
@@ -94,7 +98,7 @@ public class ClimberService {
 
     @Transactional
     public Climber signUp(String socialType, @RequestBody CreateClimberRequest climberRequestDto,
-        String socialId, String profileImg) {
+        String socialId, String profileImg) throws FirebaseMessagingException {
 
         if (climberRequestDto == null) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);

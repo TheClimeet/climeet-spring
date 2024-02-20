@@ -22,6 +22,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _DUPLICATE_LOGINID(HttpStatus.CONFLICT, "MEMBER_003", "중복된 ID입니다."),
     _INVALID_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER_004", "올바르지 않은 사용자입니다."),
     _PENDING_APPROVAL(HttpStatus.NOT_FOUND, "MEMBER_005", "승인을 대기 중인 사용자입니다."),
+    _EXIST_USER(HttpStatus.CONFLICT, "MEMBER_006", "이미 존재하는 사용자입니다"),
 
     //암장 관련
     _EMPTY_CLIMBING_GYM(HttpStatus.CONFLICT, "CLIMBING_GYM_001", "존재하지 않는 암장입니다."),
@@ -98,11 +99,16 @@ public enum ErrorStatus implements BaseErrorCode {
     //암장 회원가입 관련
     _EMPTY_GYM_REGISTRATION(HttpStatus.CONFLICT, "GYM_REGISTRATION_001", "존재하지 않는 암장입니다."),
 
+    //알림 관련
+    _FAIL_TO_SEND_NOTIFICATION(HttpStatus.CONFLICT, "NOTIFICATION_001", "알림 전송 실패하였습니다"),
+
     //공지사항 관련
     _BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD_001", "존재하지 않는 공지사항입니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
+
+
 
 
     @Override
