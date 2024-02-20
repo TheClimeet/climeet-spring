@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.user;
 
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
+import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserFcmToken;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
@@ -92,8 +93,9 @@ public class UserController {
 
     @PostMapping("/users/fcmToken")
     @Operation(summary = "사용자 FCM 토큰 업데이트")
-    public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody String fcmToken){
-        userService.updateUserFcmToken(currentUser, fcmToken);
+    public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody
+        UpdateUserFcmToken updateUserFcmToken){
+        userService.updateUserFcmToken(currentUser, updateUserFcmToken.getFcmToken());
         return ResponseEntity.ok("업데이트 성공");
     }
 

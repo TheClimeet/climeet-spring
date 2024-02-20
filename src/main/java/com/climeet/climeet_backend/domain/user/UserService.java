@@ -59,7 +59,7 @@ public class UserService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._INVALID_JWT));
         String newRefreshToken = jwtTokenProvider.createRefreshToken(userId);
         String newAccesstoken = jwtTokenProvider.refreshAccessToken(refreshToken);
-        user.updateToken(newRefreshToken, newAccesstoken);
+        user.updateToken(newAccesstoken, newRefreshToken);
 
         return new UserTokenSimpleInfo(user);
 
@@ -249,10 +249,9 @@ public class UserService {
         return UserProfileDetailInfo.toDTO(user, status);
 
     }
+
+    @Transactional
     public void updateUserFcmToken(User user, String token){
-        if(token==null){
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
-        }
         user.updateFCMToken(token);
     }
 
