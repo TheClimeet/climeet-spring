@@ -97,7 +97,7 @@ public class ShortsController {
         return ResponseEntity.ok(shortsService.findDetailShorts(user, shortsId));
     }
 
-    @GetMapping("/shorts/{uploaderId}")
+    @GetMapping("/shorts/uploader/{uploaderId}")
     @Operation(summary = "특정 유저가 올린 숏츠 조회")
     @SwaggerApiError({ErrorStatus._EMPTY_USER})
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByUserId(@CurrentUser User user,
