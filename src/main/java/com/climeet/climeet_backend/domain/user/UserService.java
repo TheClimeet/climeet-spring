@@ -263,7 +263,7 @@ public class UserService {
     }
 
     public UserFollowDetailInfo getOtherUserMyPageProfile(User currentUser, Long userId){
-        User user = userRepository.findById(currentUser.getId())
+        User user = userRepository.findById(userId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
 
         boolean status = false;
