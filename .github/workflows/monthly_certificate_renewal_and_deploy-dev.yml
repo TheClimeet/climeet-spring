@@ -2,7 +2,7 @@ name: Monthly Certificate Renewal and Deployment
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
 
 jobs:
   update-cert-and-deploy:
@@ -56,7 +56,6 @@ jobs:
 
       # Docker 이미지 빌드 (Release Branch)
       - name: Docker 이미지 빌드 (Release Branch)
-        if: github.ref == 'refs/heads/release'
         run: docker build --build-arg SPRING_PROFILE=dev -t gourderased/spring-project:latest .
 
       # DockerHub 로그인
@@ -72,7 +71,6 @@ jobs:
 
       # Deploy to EC2 (Release Branch)
       - name: Deploy to EC2 (Release Branch)
-        if: github.ref == 'refs/heads/release'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.RELEASE_EC2_HOST }}
