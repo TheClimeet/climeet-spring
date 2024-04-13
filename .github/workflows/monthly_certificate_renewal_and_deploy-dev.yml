@@ -2,7 +2,7 @@ name: Monthly Certificate Renewal and Deployment
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/10 * * * *'
 
 jobs:
   update-cert-and-deploy:
