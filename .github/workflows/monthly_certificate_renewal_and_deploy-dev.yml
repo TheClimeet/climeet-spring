@@ -30,13 +30,13 @@ jobs:
       
       # EC2에서 인증서 파일 복사
       - name: Copy certificate files from EC2
-        uses: appleboy/scp-action@master@v0.1.3
+        uses: appleboy/scp-action@master@v0.1.7
         with:
           host: ${{ secrets.RELEASE_EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.RELEASE_SSH_KEY }}
           source: "/home/ubuntu/keystore-dev.p12"
-          target: "./config"
+          target: "./config/"
           debug: true
           rm: false
           overwrite: true
