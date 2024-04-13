@@ -30,7 +30,7 @@ jobs:
       
       # EC2에서 인증서 파일 복사
       - name: Copy certificate files from EC2
-        uses: appleboy/scp-action@v0.1.3
+        uses: appleboy/scp-action@v0.1.2
         with:
           host: ${{ secrets.RELEASE_EC2_HOST }}
           username: ubuntu
