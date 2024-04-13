@@ -35,7 +35,7 @@ jobs:
           source: "/home/ubuntu/keystore-dev.p12"
           target: "./config/"
           debug: true
-          port: 22
+          run: ls -al .
           rm: false
           overwrite: true
 
