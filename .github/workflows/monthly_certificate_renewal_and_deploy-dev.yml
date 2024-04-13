@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.RELEASE_EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.RELEASE_SSH_KEY }}
-          source: "/home/ubuntu/keystore-dev.p12"
+          source: "./home/ubuntu/keystore-dev.p12"
           target: "./config/"
           debug: true
           rm: false
