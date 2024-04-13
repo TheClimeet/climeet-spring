@@ -33,8 +33,11 @@ jobs:
           username: ubuntu
           key: ${{ secrets.RELEASE_SSH_KEY }}
           source: "/home/ubuntu/keystore-dev.p12"
-          target: "./config/keystore-dev.p12"
+          target: "./config/"
           debug: true
+          port: 22
+          rm: false
+          overwrite: true
 
       #서브 모듈 접근
       - name: Checkout repo
