@@ -25,6 +25,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: list folders
+        run: ls -al .
+      
       # EC2에서 인증서 파일 복사
       - name: Copy certificate files from EC2
         uses: appleboy/scp-action@master
@@ -32,10 +35,9 @@ jobs:
           host: ${{ secrets.RELEASE_EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.RELEASE_SSH_KEY }}
-          source: "/home/ubuntu/keystore-dev.p12"
+          source: "keystore-dev.p12"
           target: "./config/"
           debug: true
-          run: ls -al .
           rm: false
           overwrite: true
 
