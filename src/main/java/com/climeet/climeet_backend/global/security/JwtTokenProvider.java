@@ -2,11 +2,9 @@ package com.climeet.climeet_backend.global.security;
 
 
 import com.climeet.climeet_backend.domain.climber.Climber;
-import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
-import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import io.jsonwebtoken.Claims;
@@ -20,11 +18,9 @@ import java.util.Base64;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
