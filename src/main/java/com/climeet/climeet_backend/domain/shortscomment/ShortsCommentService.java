@@ -19,6 +19,7 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -54,6 +55,8 @@ public class ShortsCommentService {
         ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest,
             shorts);
 
+
+
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
@@ -64,11 +67,20 @@ public class ShortsCommentService {
             parentComment.updateChildCommentCount();
             shortsComment.updateParentComment(parentComment);
             shortsComment.updateIsParentFalse();
+            List<Long> userList = new LinkedList<>();
+            userList.add(shorts.getUser().getId());
+            userList.add(parentComment.getShorts().getUser().getId());
+            fcmNotificationService.sendMultipleUser(userList, NotificationType.CHILD_COMMENT_MY_SHORTS.getTitle(user.getProfileName()), shortsComment.getContent());
+
         }
 
         shortsCommentRepository.save(shortsComment);
 
-        fcmNotificationService.sendSingleUser(shorts.getUser().getId(), NotificationType.PARENT_COMMENT_MY_SHORTS.getTitle(user.getProfileName()), shortsComment.getContent());
+        if(!isReply) {
+            fcmNotificationService.sendSingleUser(shorts.getUser().getId(),
+                NotificationType.PARENT_COMMENT_MY_SHORTS.getTitle(user.getProfileName()),
+                shortsComment.getContent());
+        }
 
         return ShortsCommentParentResponse.toDTO(
             shortsComment.getUser(), shortsComment,
