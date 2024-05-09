@@ -189,8 +189,8 @@ public class ClimbingRecordController {
     }
 
     @Operation(summary = "유저별 운동한 암장 리스트 조회")
-    @GetMapping("/users/{userId}/gyms/{gymId}/list")
-    public ResponseEntity<List<VisitedClimbingGym>> getFollowingUserAverageLevelInClimbingGym(
+    @GetMapping("/users/{userId}/months/list")
+    public ResponseEntity<List<VisitedClimbingGym>> getVisitedGymList(
             @CurrentUser User user,
             @PathVariable Long userId,
             @RequestParam int year,
