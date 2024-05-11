@@ -17,6 +17,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserAndGymStatisticsDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.GymDifficultyMappingInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.VisitedClimbingGym;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
@@ -67,6 +68,8 @@ public class ClimbingRecordService {
     public static final int CLIMEET_LEVEL = 0;
     public static final int LEVEL_COUNT = 1;
     public static final int NANO_TO_SEC = 1000000000;
+    public static final int GYM_ID = 0;
+    public static final int GYM_NAME = 1;
 
 
 
@@ -552,5 +555,24 @@ public class ClimbingRecordService {
             attemptRouteCount,
             difficultyList
         );
+    }
+
+    public List<VisitedClimbingGym> getVisitedGymList(Long userId, int year, int month){
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+
+
+        LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
+        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
+
+        List<Object[]> climbingGymList = climbingRecordRepository.findAllByUserAndClimbingDateBetween(
+                user,
+                startDate,
+                endDate
+        );
+
+        return climbingGymList.stream()
+            .map(gym -> new VisitedClimbingGym((Long)gym[GYM_ID], (String)gym[GYM_NAME]))
+            .collect(Collectors.toList());
     }
 }

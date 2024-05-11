@@ -5,11 +5,11 @@ import com.climeet.climeet_backend.domain.user.User;
 import jakarta.persistence.Tuple;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, Long> {
 
@@ -94,4 +94,11 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
     List<Object[]> findByLevelRankingClimbingDateBetweenAndClimbingGym(LocalDate startDate,
         LocalDate endDate, ClimbingGym climbingGym);
 
+    @Query(
+        "SELECT cr.gym.id, cr.gym.name "
+            + "FROM ClimbingRecord cr "
+            + "WHERE cr.user = :user and cr.climbingDate BETWEEN :startDate AND :endDate "
+            + "GROUP BY cr.gym.id"
+    )
+    List<Object[]> findAllByUserAndClimbingDateBetween(User user, LocalDate startDate, LocalDate endDate);
 }

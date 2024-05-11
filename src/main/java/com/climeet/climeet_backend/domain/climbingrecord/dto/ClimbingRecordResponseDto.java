@@ -290,4 +290,11 @@ public class ClimbingRecordResponseDto {
                 .build();
         }
     }
+
+    @AllArgsConstructor
+    @Getter
+    public static class VisitedClimbingGym {
+        private Long gymId;
+        private String gymName;
+    }
 }
