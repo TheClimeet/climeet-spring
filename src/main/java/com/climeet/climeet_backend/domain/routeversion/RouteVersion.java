@@ -42,12 +42,6 @@ public class RouteVersion extends BaseTimeEntity {
     @NotNull
     private LocalDate timePoint;
 
-    //@NotNull
-    //private String routeList;
-
-    //@NotNull
-    //private String sectorList;
-
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private Map<String, List<Long>> climbData;
@@ -60,8 +54,6 @@ public class RouteVersion extends BaseTimeEntity {
             .climbingGymLayoutImage(climbingGymLayoutImage)
             .timePoint(timePoint)
             .climbData(climbData)
-            //.routeList(routeList)
-            //.sectorList(sectorList)
             .build();
     }
 }

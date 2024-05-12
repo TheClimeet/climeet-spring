@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.routeversion;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.route.Route;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
