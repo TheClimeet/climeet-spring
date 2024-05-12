@@ -42,11 +42,11 @@ public class RouteVersion extends BaseTimeEntity {
     @NotNull
     private LocalDate timePoint;
 
-    @NotNull
-    private String routeList;
+    //@NotNull
+    //private String routeList;
 
-    @NotNull
-    private String sectorList;
+    //@NotNull
+    //private String sectorList;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
@@ -54,13 +54,14 @@ public class RouteVersion extends BaseTimeEntity {
 
 
     public static RouteVersion toEntity(ClimbingGym climbingGym, LocalDate timePoint,
-        String routeList, String sectorList, ClimbingGymLayoutImage climbingGymLayoutImage) {
+        Map<String, List<Long>> climbData, ClimbingGymLayoutImage climbingGymLayoutImage) {
         return RouteVersion.builder()
             .climbingGym(climbingGym)
             .climbingGymLayoutImage(climbingGymLayoutImage)
             .timePoint(timePoint)
-            .routeList(routeList)
-            .sectorList(sectorList)
+            .climbData(climbData)
+            //.routeList(routeList)
+            //.sectorList(sectorList)
             .build();
     }
 }
