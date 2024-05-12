@@ -12,8 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotNull.List;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,7 +48,7 @@ public class RouteVersion extends BaseTimeEntity {
     @NotNull
     private String sectorList;
 
-    @Type()
+    @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private Map<String, List<Long>> climbData;
 
