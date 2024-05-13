@@ -62,7 +62,6 @@ dependencies {
 
     //DB의 JSON 타입을 Domain에서 사용하기 위함
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.0'
-    //implementation 'com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations'
 }
 
 tasks.named('test') {
