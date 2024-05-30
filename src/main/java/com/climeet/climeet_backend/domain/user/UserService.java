@@ -21,12 +21,14 @@ import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserProfileDe
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserTokenSimpleInfo;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
+import com.climeet.climeet_backend.global.s3.S3Service;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +40,7 @@ public class UserService {
     private final ClimberRepository climberRepository;
     private final ManagerRepository managerRepository;
     private final RouteVersionService routeVersionService;
+    private final S3Service s3Service;
 
     @Transactional
     public User updateNotification(User user, boolean isAllowFollowNotification,
@@ -281,6 +284,23 @@ public class UserService {
     @Transactional
     public void updateUserFcmToken(User user, String token){
         user.updateFCMToken(token);
+    }
+
+    @Transactional
+    public void updateUserProfileImage(User user, MultipartFile image){
+        String profileImageUrl = s3Service.uploadFile(image).getImgUrl();
+        user.updateProfileImageUrl(profileImageUrl);
+    }
+
+    @Transactional
+    public void updateUserProfileName(User user, String nickName){
+        if(checkProfileNameDuplication(nickName)){
+            throw new GeneralException(ErrorStatus._DUPLICATE_NAME);
+        }
+        user.updateProfileName(nickName);
+    }
+    public boolean checkProfileNameDuplication(String name) {
+        return userRepository.findByprofileName(name).isPresent();
     }
 
 

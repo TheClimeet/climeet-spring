@@ -239,21 +239,25 @@ public class ClimberService {
         return ClimberPrivacySettingInfo.toDTO(climber);
     }
 
+    @Transactional
     public void updateShortsPrivacySetting(User user){
         Climber climber = (Climber) user;
         climber.updateIsShortsPublic();
     }
 
+    @Transactional
     public void updateHomeGymPrivacySetting(User user){
         Climber climber = (Climber) user;
         climber.updateIsHomeGymPublic();
     }
 
+    @Transactional
     public void updateAverageCompletionRatePrivacySetting(User user){
         Climber climber = (Climber) user;
         climber.updateIsAverageCompletionRatePublic();
     }
 
+    @Transactional
     public void updateAverageCompletionLevelPrivacySetting(User user){
         Climber climber = (Climber) user;
         climber.updateIsAverageCompletionLevelPublic();
