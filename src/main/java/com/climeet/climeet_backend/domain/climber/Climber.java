@@ -41,6 +41,30 @@ public class Climber extends User {
 
     private boolean status = true;
 
+    private boolean isShortsPublic = true;
+
+    private boolean isHomeGymPublic = true;
+
+    private boolean isAverageCompletionRatePublic = true;
+
+    private boolean isAverageCompletionLevelPublic = true;
+
+    public void updateIsShortsPublic(){
+        this.isShortsPublic = !isShortsPublic;
+    }
+
+    public void updateIsHomeGymPublic(){
+        this.isHomeGymPublic = !isHomeGymPublic;
+    }
+
+    public void updateIsAverageCompletionRatePublic(){
+        this.isAverageCompletionLevelPublic = !isAverageCompletionLevelPublic;
+    }
+
+    public void updateIsAverageCompletionLevelPublic(){
+        this.isAverageCompletionLevelPublic = !isAverageCompletionRatePublic;
+    }
+
 
     public void updateProfileName(String profileName) {
         this.profileName = profileName; // User 클래스의 profileName 필드를 업데이트
@@ -68,6 +92,10 @@ public class Climber extends User {
             .socialType(socialType)
             .profileImageUrl(profileImg)
             .status(true)
+            .isShortsPublic(true)
+            .isHomeGymPublic(true)
+            .isAverageCompletionLevelPublic(true)
+            .isAverageCompletionRatePublic(true)
             .followerCount(0L)
             .followingCount(0L)
             .thisWeekCompleteCount(0)

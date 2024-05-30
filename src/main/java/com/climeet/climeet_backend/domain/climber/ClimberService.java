@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberDetailInfo;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberPrivacySettingInfo;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberSimpleInfo;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
@@ -230,6 +231,32 @@ public class ClimberService {
         return new PageResponseDto<>(pageable.getPageNumber(), climberSlice.hasNext(),
             climberDetailInfoList);
 
+    }
+
+    public ClimberPrivacySettingInfo getClimberPrivacySetting(long climberId){
+        Climber climber = climberRepository.findById(climberId)
+            .orElseThrow(()-> new GeneralException(ErrorStatus._INVALID_MEMBER));
+        return ClimberPrivacySettingInfo.toDTO(climber);
+    }
+
+    public void updateShortsPrivacySetting(User user){
+        Climber climber = (Climber) user;
+        climber.updateIsShortsPublic();
+    }
+
+    public void updateHomeGymPrivacySetting(User user){
+        Climber climber = (Climber) user;
+        climber.updateIsHomeGymPublic();
+    }
+
+    public void updateAverageCompletionRatePrivacySetting(User user){
+        Climber climber = (Climber) user;
+        climber.updateIsAverageCompletionRatePublic();
+    }
+
+    public void updateAverageCompletionLevelPrivacySetting(User user){
+        Climber climber = (Climber) user;
+        climber.updateIsAverageCompletionLevelPublic();
     }
 
 

@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberDetailInfo;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberPrivacySettingInfo;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberSimpleInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,6 +61,41 @@ public class ClimberController {
     @Operation(summary = "클라이머 검색 기능")
     public ResponseEntity<PageResponseDto<List<ClimberDetailInfo>>> getClimberSearchingList(@CurrentUser User currentUser, @RequestParam int page, @RequestParam int size, @RequestParam String climberName){
         return ResponseEntity.ok(climberService.searchClimber(currentUser, climberName, page, size));
+    }
+
+    @GetMapping("/privacy-setting")
+    @Operation(summary = "클라이머 정보 공개 여부 조회(쇼츠, 홈짐, 평균완등률, 평균레벨)")
+    public ResponseEntity<ClimberPrivacySettingInfo> getClimberPrivacyStatus(@CurrentUser User currentUser, @RequestParam long climberId){
+        return ResponseEntity.ok(climberService.getClimberPrivacySetting(climberId));
+
+    }
+
+    @PatchMapping("/shorts-privacy-setting")
+    @Operation(summary = "클라이머 쇼츠 공개 여부 변경")
+    public ResponseEntity<String> updateShortsPrivacyStatus(@CurrentUser User user){
+        climberService.updateShortsPrivacySetting(user);
+        return ResponseEntity.ok("공개 여부 변경 완료");
+    }
+
+    @PatchMapping("/shorts-privacy-setting")
+    @Operation(summary = "클라이머 홈짐 공개 여부 변경")
+    public ResponseEntity<String> updateHomeGymPrivacyStatus(@CurrentUser User user){
+        climberService.updateHomeGymPrivacySetting(user);
+        return ResponseEntity.ok("공개 여부 변경 완료");
+    }
+
+    @PatchMapping("/shorts-privacy-setting")
+    @Operation(summary = "클라이머 평균완등률 공개 여부 변경")
+    public ResponseEntity<String> updateAverageCompletionRatePrivacyStatus(@CurrentUser User user){
+        climberService.updateAverageCompletionRatePrivacySetting(user);
+        return ResponseEntity.ok("공개 여부 변경 완료");
+    }
+
+    @PatchMapping("/shorts-privacy-setting")
+    @Operation(summary = "클라이머 평균완등레벨 공개 여부 변경")
+    public ResponseEntity<String> updateAverageCompletionLevelPrivacyStatus(@CurrentUser User user){
+        climberService.updateAverageCompletionLevelPrivacySetting(user);
+        return ResponseEntity.ok("공개 여부 변경 완료");
     }
 
 

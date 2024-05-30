@@ -14,5 +14,7 @@ public interface ClimberRepository  extends JpaRepository<Climber, Long> {
     Optional<Climber> findByAccessTokenAndSocialType(String accessToken, SocialType socialType);
 
     Page<Climber> findByProfileNameContaining(String climberName, Pageable pageable);
+
+    //Optional<Climber> findById(long id);
 }
 
