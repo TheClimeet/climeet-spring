@@ -58,7 +58,7 @@ public class Climber extends User {
     }
 
     public void updateIsAverageCompletionRatePublic(){
-        this.isAverageCompletionLevelPublic = !isAverageCompletionLevelPublic;
+        this.isAverageCompletionRatePublic = !isAverageCompletionRatePublic;
     }
 
     public void updateIsAverageCompletionLevelPublic(){

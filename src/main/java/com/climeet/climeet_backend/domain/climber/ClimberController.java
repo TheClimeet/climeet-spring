@@ -77,21 +77,21 @@ public class ClimberController {
         return ResponseEntity.ok("공개 여부 변경 완료");
     }
 
-    @PatchMapping("/shorts-privacy-setting")
+    @PatchMapping("/homegym-privacy-setting")
     @Operation(summary = "클라이머 홈짐 공개 여부 변경")
     public ResponseEntity<String> updateHomeGymPrivacyStatus(@CurrentUser User user){
         climberService.updateHomeGymPrivacySetting(user);
         return ResponseEntity.ok("공개 여부 변경 완료");
     }
 
-    @PatchMapping("/shorts-privacy-setting")
+    @PatchMapping("/averageCompletionRate-privacy-setting")
     @Operation(summary = "클라이머 평균완등률 공개 여부 변경")
     public ResponseEntity<String> updateAverageCompletionRatePrivacyStatus(@CurrentUser User user){
         climberService.updateAverageCompletionRatePrivacySetting(user);
         return ResponseEntity.ok("공개 여부 변경 완료");
     }
 
-    @PatchMapping("/shorts-privacy-setting")
+    @PatchMapping("/averageCompletionLevel-privacy-setting")
     @Operation(summary = "클라이머 평균완등레벨 공개 여부 변경")
     public ResponseEntity<String> updateAverageCompletionLevelPrivacyStatus(@CurrentUser User user){
         climberService.updateAverageCompletionLevelPrivacySetting(user);
