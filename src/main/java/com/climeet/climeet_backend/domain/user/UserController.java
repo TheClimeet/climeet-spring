@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "User")
 @RequiredArgsConstructor
@@ -117,5 +119,20 @@ public class UserController {
     @Operation(summary = "특정 유저 홈짐 조회")
     public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser, @PathVariable Long userId){
         return ResponseEntity.ok(userService.getUserHomeGyms(userId));
+    }
+
+    @PatchMapping("/profile-image")
+    @Operation(summary = "유저 프로필 사진 업데이트")
+    public ResponseEntity<String> updateUserProfileImage(@CurrentUser User currentUser, @RequestPart
+        MultipartFile image){
+        userService.updateUserProfileImage(currentUser, image);
+        return ResponseEntity.ok("프로필 사진 업데이트 완료");
+    }
+
+    @PatchMapping("/profile-name")
+    @Operation(summary = "유저 프로필 이름 업데이트")
+    public ResponseEntity<String> updateUserProfileName(@CurrentUser User currentUser, @RequestParam String name){
+        userService.updateUserProfileName(currentUser, name);
+        return ResponseEntity.ok("프로필 이름 업데이트 완료");
     }
 }

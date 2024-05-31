@@ -20,4 +20,8 @@ public class UserRequestDto {
         private String fcmToken;
     }
 
+    public static class UpdateUserProfile{
+
+    }
+
 }

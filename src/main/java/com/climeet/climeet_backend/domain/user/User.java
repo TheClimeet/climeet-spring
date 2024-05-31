@@ -71,6 +71,10 @@ public class User {
     @NotNull
     private String fcmToken;
 
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     public void updateToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -85,6 +89,10 @@ public class User {
         this.isAllowLikeNotification = isAllowLikeNotification;
         this.isAllowCommentNotification = isAllowCommentNotification;
         this.isAllowAdNotification = isAllowAdNotification;
+    }
+
+    public void updateProfileName(String name){
+        this.profileName = name;
     }
 
     public void thisWeekTotalClimbingTimeUp(Long sec) {

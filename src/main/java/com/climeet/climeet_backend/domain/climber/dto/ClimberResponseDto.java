@@ -64,6 +64,28 @@ public class ClimberResponseDto {
 
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimberPrivacySettingInfo {
+
+        private boolean isShortsPublic;
+        private boolean isHomeGymPublic;
+        private boolean isAverageCompletionRatePublic;
+        private boolean isAverageCompletionLevelPublic;
+
+        public static ClimberPrivacySettingInfo toDTO(Climber climber){
+            return ClimberPrivacySettingInfo.builder()
+                .isShortsPublic(climber.isShortsPublic())
+                .isHomeGymPublic(climber.isHomeGymPublic())
+                .isAverageCompletionRatePublic(climber.isAverageCompletionRatePublic())
+                .isAverageCompletionLevelPublic(climber.isAverageCompletionLevelPublic())
+                .build();
+        }
+
+    }
+
 }
 
 
