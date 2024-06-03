@@ -131,6 +131,30 @@ public class JwtTokenProvider {
         }
     }
 
+    public String generateTempToken(String socialId) {
+        long now = System.currentTimeMillis();
+        return Jwts.builder()
+            .setSubject(socialId)
+            .setIssuedAt(new Date(now))
+            .setExpiration(new Date(now + 1000 * 60 * 60))
+            .signWith(SignatureAlgorithm.HS256, getSecretKey())
+            .compact();
+    }
+
+    public String validateTempTokenAndGetSocialId(String token) {
+        try {
+            return Jwts.parser()
+                .setSigningKey(getSecretKey())
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
+    }
+
 
 
 

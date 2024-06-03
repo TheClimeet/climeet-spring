@@ -30,8 +30,7 @@ public class FollowRelationshipService {
         return userRepository.findById(userId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
     }
-    public void createFollowRelationship(User follower, User following)
-        throws FirebaseMessagingException {
+    public void createFollowRelationship(User follower, User following) {
         if(followRelationshipRepository.findByFollowerIdAndFollowingId(follower.getId(),
             following.getId()).isPresent()){
             throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
@@ -41,7 +40,7 @@ public class FollowRelationshipService {
         FollowRelationship followRelationship = FollowRelationship.toEntity(follower, following);
         followRelationshipRepository.save(followRelationship);
         follower.increaseFollwerCount();
-        fcmNotificationService.sendSingleUser(following.getId(), NotificationType.NEW_FOLLOWER.getTitle(follower.getProfileName()), NotificationType.NEW_FOLLOWER.getMessage(follower.getProfileName()) );
+        //fcmNotificationService.sendSingleUser(following.getId(), NotificationType.NEW_FOLLOWER.getTitle(follower.getProfileName()), NotificationType.NEW_FOLLOWER.getMessage(follower.getProfileName()) );
 
     }
 

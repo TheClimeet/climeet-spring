@@ -1,14 +1,15 @@
 package com.climeet.climeet_backend.domain.climber;
 
 
+import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.ClimberTokenRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberDetailInfo;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberPrivacySettingInfo;
-import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberSimpleInfo;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.LoginSimpleInfo;
+import com.climeet.climeet_backend.domain.climber.enums.ResponseType;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
-import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -21,13 +22,16 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,90 +44,67 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 
 @Service
 @RequiredArgsConstructor
-@PropertySource("classpath:application-dev.yml")
 public class ClimberService {
 
     private final ClimberRepository climberRepository;
-    private final ClimbingGymRepository climbingGymRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ManagerRepository managerRepository;
-    private final FollowRelationshipService followRelationshipService;
-    private final UserService userService;
     private final UserRepository userRepository;
     private final FollowRelationshipRepository followRelationshipRepository;
+    private final UserService userService;
+    private final ClimbingGymRepository climbingGymRepository;
+    private final ManagerRepository managerRepository;
+    private final FollowRelationshipService followRelationshipService;
 
     @Transactional
-    public ClimberSimpleInfo handleSocialLogin(String socialType, String accessToken,
-        @RequestBody CreateClimberRequest climberRequestDto) throws FirebaseMessagingException {
-        HashMap<String, String> userInfo;
-        userInfo = getClimberProfileByToken(socialType, accessToken);
+    public LoginSimpleInfo login(String socialType,
+        @RequestBody ClimberTokenRequest climberTokenRequest) {
+        HashMap<String, String> userInfo = getClimberProfileByToken(socialType,
+            climberTokenRequest.getAccessToken());
         String socialId = userInfo.get("socialId");
         String profileImg = userInfo.get("profileImg");
         Optional<Climber> optionalClimber = climberRepository.findBySocialIdAndSocialType(socialId,
             SocialType.valueOf(socialType));
-        Climber resultClimber = null;
-        //signUp
-        if (optionalClimber.isEmpty()) {
-            resultClimber = signUp(socialType, climberRequestDto, socialId, profileImg);
-        }
         //login
+        String accessToken;
+        String refreshToken;
         if (optionalClimber.isPresent()) {
-//            if(climberRequestDto!=null){
-//                throw new GeneralException(ErrorStatus._EXIST_USER);
-//            }
-            resultClimber = login(optionalClimber.get());
+            accessToken = jwtTokenProvider.createAccessToken(optionalClimber.get().getPayload());
+            refreshToken = jwtTokenProvider.createRefreshToken(optionalClimber.get().getId());
+            optionalClimber.get().setLastLogin(LocalDateTime.now());
+            return LoginSimpleInfo.toDTO(socialType, accessToken, refreshToken,
+                ResponseType.SIGN_IN);
         }
-        if (resultClimber == null) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
-        }
-        return ClimberSimpleInfo.toDTO(resultClimber);
+        String payload = socialId + "+" + profileImg;
+        accessToken = jwtTokenProvider.generateTempToken(payload);
+        refreshToken = null;
+        return LoginSimpleInfo.toDTO(socialType, accessToken, refreshToken, ResponseType.SIGN_UP);
 
 
     }
 
     @Transactional
-    public Climber login(Climber climber) {
-        try {
-            String accessToken = jwtTokenProvider.createAccessToken(
-                climber.getPayload());
-            String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
-
-            climber.updateToken(accessToken, refreshToken);
-            return climber;
-
-        } catch (GeneralException e) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
-        }
-    }
-
-
-    @Transactional
-    public Climber signUp(String socialType, @RequestBody CreateClimberRequest climberRequestDto,
-        String socialId, String profileImg) throws FirebaseMessagingException {
-
-        if (climberRequestDto == null) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
-        }
-
-        Climber climber = Climber.toEntity(socialId, SocialType.valueOf(socialType), profileImg);
+    public LoginSimpleInfo signUp(CreateClimberRequest createClimberRequest)  {
+        String payload = jwtTokenProvider.validateTempTokenAndGetSocialId(
+            createClimberRequest.getToken());
+        List<String> userInfoList = getUserInfoInPayload(payload);
+        String socialId = userInfoList.get(0);
+        String profileImg = userInfoList.get(1);
+        SocialType socialType = createClimberRequest.getSocialType();
+        if (climberRepository.findBySocialIdAndSocialType(socialId, socialType).isPresent())
+            throw new GeneralException(ErrorStatus._EXIST_USER);
+        Climber climber = Climber.toEntity(socialId, socialType, profileImg);
         climberRepository.save(climber);
-
         String accessToken = jwtTokenProvider.createAccessToken(climber.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
+        updateClimber(climber, accessToken, refreshToken, createClimberRequest);
+        updateFollowList(climber, createClimberRequest.getGymFollowList());
+        return LoginSimpleInfo.toDTO(socialType.toString(), climber.getAccessToken(), climber.getRefreshToken(), ResponseType.SIGN_UP);
 
-        //추가적으로 사진 url을 입력받으면 입력 받은 url로 변경, null이면 소셜 프로필 사진으로 유지
-        if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
-            climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
-        }
 
-        userService.updateNotification(climber, climberRequestDto.getIsAllowFollowNotification(),
-            climberRequestDto.getIsAllowLikeNotification(),
-            climberRequestDto.getIsAllowCommentNotification(),
-            climberRequestDto.getIsAllowAdNotification());
-        updateClimber(climber, accessToken, refreshToken, climberRequestDto);
+    }
 
-        //가입 시 암장 팔로우
-        List<Long> gymFollowList = climberRequestDto.getGymFollowList();
+    @Transactional
+    public void updateFollowList(Climber climber,List<Long> gymFollowList)  {
         for (Long gymId : gymFollowList) {
             ClimbingGym optionalGym = climbingGymRepository.findById(gymId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
@@ -132,23 +113,42 @@ public class ClimberService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM));
             followRelationshipService.createFollowRelationship(manager, climber);
             manager.increaseFollwerCount();
+            climber.increaseFollwingCount();
 
         }
-
-        Climber savedClimber = climberRepository.save(climber);
-
-        return savedClimber;
     }
 
-    public void updateClimber(Climber climber, String accessToken, String refreshToken,
-        CreateClimberRequest climberRequestDto) {
-        climber.updateToken(accessToken, refreshToken);
-        climber.updateProfileName(climberRequestDto.getNickName());
-        climber.updateClimbingLevel(climberRequestDto.getClimbingLevel());
-        climber.updateDiscoveryChannel(climberRequestDto.getDiscoveryChannel());
-        if (!Objects.equals(climberRequestDto.getProfileImgUrl(), "")) {
-            climber.updateProfileImageUrl(climberRequestDto.getProfileImgUrl());
+
+    public List<String> getUserInfoInPayload (String payload){
+        String[] parts = payload.split("\\+");
+        List<String> list = new ArrayList<>();
+
+        if (parts.length >= 2) {
+            String socialId = parts[0];
+            String profileImg = parts[1];
+
+            list.add(socialId);
+            list.add(profileImg);
+        } else {
+            list.add("");  // socialId를 기본값으로 추가
+            list.add("");  // profileImg를 기본값으로 추가
         }
+
+        return list;
+    }
+
+
+    @Transactional
+    public void updateClimber (Climber climber, String accessToken, String refreshToken,
+        CreateClimberRequest createClimberRequest){
+        climber.updateToken(accessToken, refreshToken);
+        climber.updateProfileName(createClimberRequest.getNickName());
+        climber.updateClimbingLevel(createClimberRequest.getClimbingLevel());
+        climber.updateDiscoveryChannel(createClimberRequest.getDiscoveryChannel());
+        if (!Objects.equals(createClimberRequest.getProfileImgUrl(), "")) {
+            climber.updateProfileImageUrl(createClimberRequest.getProfileImgUrl());
+        }
+        userService.updateNotification(climber, createClimberRequest.getIsAllowFollowNotification(),createClimberRequest.getIsAllowLikeNotification(),createClimberRequest.getIsAllowCommentNotification(), createClimberRequest.getIsAllowAdNotification() );
     }
 
 
@@ -170,7 +170,7 @@ public class ClimberService {
         return WebClient.create()
             .get()
             .uri("https://openapi.naver.com/v1/nid/me")
-            .headers(httpHeaders -> httpHeaders.setBearerAuth(String.valueOf(accessToken)))
+            .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
             })
