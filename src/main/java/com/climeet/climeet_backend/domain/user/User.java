@@ -111,4 +111,12 @@ public class User {
         this.followerCount++;
     }
 
+    public void increaseFollwingCount() {
+        this.followingCount++;
+    }
+
+    public void decreaseFollwingCount() {
+        this.followingCount++;
+    }
+
 }

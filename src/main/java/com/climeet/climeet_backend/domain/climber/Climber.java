@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -48,6 +49,9 @@ public class Climber extends User {
     private boolean isAverageCompletionRatePublic = true;
 
     private boolean isAverageCompletionLevelPublic = true;
+
+    @Setter
+    private LocalDateTime lastLogin;
 
     public void updateIsShortsPublic(){
         this.isShortsPublic = !isShortsPublic;
@@ -96,6 +100,7 @@ public class Climber extends User {
             .isHomeGymPublic(true)
             .isAverageCompletionLevelPublic(true)
             .isAverageCompletionRatePublic(true)
+            .lastLogin(LocalDateTime.now())
             .followerCount(0L)
             .followingCount(0L)
             .thisWeekCompleteCount(0)
