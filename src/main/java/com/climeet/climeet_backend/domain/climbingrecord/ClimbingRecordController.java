@@ -12,6 +12,7 @@ import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordRespo
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordStatisticsSimpleInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserAndGymStatisticsDetailInfo;
 import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.ClimbingRecordUserStatisticsSimpleInfo;
+import com.climeet.climeet_backend.domain.climbingrecord.dto.ClimbingRecordResponseDto.VisitedClimbingGym;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -185,5 +186,15 @@ public class ClimbingRecordController {
         @PathVariable Long gymId
     ) {
         return ResponseEntity.ok(climbingRecordService.getUserStatisticsByGym(userId, gymId));
+    }
+
+    @Operation(summary = "유저별 운동한 암장 리스트 조회")
+    @GetMapping("/users/{userId}/months/list")
+    public ResponseEntity<List<VisitedClimbingGym>> getVisitedGymList(
+            @CurrentUser User user,
+            @PathVariable Long userId,
+            @RequestParam int year,
+            @RequestParam int month) {
+        return ResponseEntity.ok(climbingRecordService.getVisitedGymList(userId, year, month));
     }
 }

@@ -13,7 +13,6 @@ import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.route.dto.RouteResponseDto.RouteDetailResponse;
-import com.climeet.climeet_backend.domain.routerecord.RouteRecordService;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.CreateRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionRequestDto.GetFilteredRouteVersionRequest;
 import com.climeet.climeet_backend.domain.routeversion.dto.RouteVersionResponseDto.RouteVersionFilteringKeyResponse;
@@ -26,7 +25,9 @@ import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.s3.S3Service;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
@@ -48,14 +49,11 @@ public class RouteVersionService {
     private final FcmNotificationService fcmNotificationService;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
-        ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        List<RouteVersion> routeVersionList = routeVersionRepository.findByClimbingGymOrderByTimePointDesc(
-            climbingGym);
-        if (routeVersionList.isEmpty()) {
+        List<LocalDate> timePointList = routeVersionRepository.findTimePointListByGymId(gymId);
+        if (timePointList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_VERSION_LIST);
         }
-        return routeVersionList.stream().map(RouteVersion::getTimePoint).toList();
+        return timePointList;
     }
 
     public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user,
@@ -63,28 +61,31 @@ public class RouteVersionService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
+        // 암장 데이터와 TimePoint로 가장 가까운 시점의 RouteVersion 데이터를 가져옴
+        // 추가하려는 날짜의 해당 암장 루트 버전 데이터가 존재하는지 확인하기 위함
         Optional<RouteVersion> routeVersionOptional = routeVersionRepository.findByClimbingGymAndTimePoint(
             manager.getClimbingGym(), createRouteVersionRequest.getTimePoint());
         if (routeVersionOptional.isPresent()) {
             throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_VERSION);
         }
 
+        // 루트리스트에 넣을 데이터가 실제로 다 추가되어있는지 확인
         List<Route> routeList = routeRepository.findByIdIn(
             createRouteVersionRequest.getRouteIdList());
         if (routeList.size() != createRouteVersionRequest.getRouteIdList().size()) {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
+        // 섹터리스트에 넣을 데이터가 실제로 다 추가되어있는지 확인
         List<Sector> sectorList = sectorRepository.findByIdIn(
             createRouteVersionRequest.getSectorIdList());
         if (sectorList.size() != createRouteVersionRequest.getSectorIdList().size()) {
             throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
         }
 
-        String routeIdListString = RouteVersionConverter.convertListToString(
-            createRouteVersionRequest.getRouteIdList());
-        String sectorIdListString = RouteVersionConverter.convertListToString(
-            createRouteVersionRequest.getSectorIdList());
+        Map<String, List<Long>> climbData = new HashMap<>();
+        climbData.put("route", createRouteVersionRequest.getRouteIdList());
+        climbData.put("sector", createRouteVersionRequest.getSectorIdList());
 
         // 이미지 url이나 이미지 파일이 들어오지 않았을 때 예외처리
         if (layoutImage == null && createRouteVersionRequest.getLayoutImageId() == null) {
@@ -106,7 +107,7 @@ public class RouteVersionService {
         }
 
         routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
-            createRouteVersionRequest.getTimePoint(), routeIdListString, sectorIdListString,
+            createRouteVersionRequest.getTimePoint(), climbData,
             climbingGymLayoutImage));
 
     }
@@ -124,14 +125,8 @@ public class RouteVersionService {
                 climbingGym, timePoint)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
-        List<Long> sectorIdList = RouteVersionConverter.convertStringToList(
-            routeVersion.getSectorList());
-        if (sectorIdList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_SECTOR_LIST);
-        }
-
-        List<Sector> sectorList = sectorRepository.findByIdIn(sectorIdList);
-        if (sectorList.size() != sectorIdList.size()) {
+        List<Sector> sectorList = sectorRepository.findByIdIn(routeVersion.getClimbData().get("sector"));
+        if (sectorList.size() != routeVersion.getClimbData().get("sector").size()) {
             throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
         }
 
@@ -158,18 +153,11 @@ public class RouteVersionService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        RouteVersion routeVersion = routeVersionRepository.findFirstByClimbingGymAndTimePointLessThanEqualOrderByTimePointDesc(
-                climbingGym, getFilteredRouteVersionRequest.getTimePoint())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
+        Map<String, List<Long>> climbData = routeVersionRepository.findClimbDataByClimbingGymAndTimePoint(
+                climbingGym, getFilteredRouteVersionRequest.getTimePoint());
 
-        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
-            routeVersion.getRouteList());
-        if (routeIdList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
-        }
-
-        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
-        if (routeList.size() != routeIdList.size()) {
+        List<Route> routeList = routeRepository.findByIdIn(climbData.get("route"));
+        if (routeList.size() != climbData.get("route").size()) {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
@@ -221,17 +209,10 @@ public class RouteVersionService {
                 climbingGym, LocalDate.now())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
-        List<Long> routeIdList = RouteVersionConverter.convertStringToList(
-            routeVersion.getRouteList());
-        if (routeIdList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_ROUTE_LIST);
-        }
-
-        List<Route> routeList = routeRepository.findByIdIn(routeIdList);
-        if (routeList.size() != routeIdList.size()) {
+        List<Route> routeList = routeRepository.findByIdIn(routeVersion.getClimbData().get("route"));
+        if (routeList.size() != routeVersion.getClimbData().get("route").size()) {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
-
 
         return routeList;
     }

@@ -2,11 +2,9 @@ package com.climeet.climeet_backend.global.security;
 
 
 import com.climeet.climeet_backend.domain.climber.Climber;
-import com.climeet.climeet_backend.domain.climber.ClimberRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
-import com.climeet.climeet_backend.global.response.code.BaseErrorCode;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import io.jsonwebtoken.Claims;
@@ -20,11 +18,9 @@ import java.util.Base64;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -132,6 +128,30 @@ public class JwtTokenProvider {
             throw new GeneralException(ErrorStatus._EXPIRED_JWT);
         } catch (JwtException | IllegalArgumentException exception) {
             throw new GeneralException(ErrorStatus._INVALID_JWT);
+        }
+    }
+
+    public String generateTempToken(String socialId) {
+        long now = System.currentTimeMillis();
+        return Jwts.builder()
+            .setSubject(socialId)
+            .setIssuedAt(new Date(now))
+            .setExpiration(new Date(now + 1000 * 60 * 60))
+            .signWith(SignatureAlgorithm.HS256, getSecretKey())
+            .compact();
+    }
+
+    public String validateTempTokenAndGetSocialId(String token) {
+        try {
+            return Jwts.parser()
+                .setSigningKey(getSecretKey())
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new GeneralException(ErrorStatus._EXPIRED_JWT);
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
     }
 

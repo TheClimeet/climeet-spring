@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -40,6 +41,33 @@ public class Climber extends User {
     private DiscoveryChannel discoveryChannel;
 
     private boolean status = true;
+
+    private boolean isShortsPublic = true;
+
+    private boolean isHomeGymPublic = true;
+
+    private boolean isAverageCompletionRatePublic = true;
+
+    private boolean isAverageCompletionLevelPublic = true;
+
+    @Setter
+    private LocalDateTime lastLogin;
+
+    public void updateIsShortsPublic(){
+        this.isShortsPublic = !isShortsPublic;
+    }
+
+    public void updateIsHomeGymPublic(){
+        this.isHomeGymPublic = !isHomeGymPublic;
+    }
+
+    public void updateIsAverageCompletionRatePublic(){
+        this.isAverageCompletionRatePublic = !isAverageCompletionRatePublic;
+    }
+
+    public void updateIsAverageCompletionLevelPublic(){
+        this.isAverageCompletionLevelPublic = !isAverageCompletionLevelPublic;
+    }
 
 
     public void updateProfileName(String profileName) {
@@ -68,6 +96,11 @@ public class Climber extends User {
             .socialType(socialType)
             .profileImageUrl(profileImg)
             .status(true)
+            .isShortsPublic(true)
+            .isHomeGymPublic(true)
+            .isAverageCompletionLevelPublic(true)
+            .isAverageCompletionRatePublic(true)
+            .lastLogin(LocalDateTime.now())
             .followerCount(0L)
             .followingCount(0L)
             .thisWeekCompleteCount(0)

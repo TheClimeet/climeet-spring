@@ -1,4 +1,5 @@
 config
+!src/main/java/com/climeet/climeet_backend/global/config/
 HELP.md
 .gradle
 build/

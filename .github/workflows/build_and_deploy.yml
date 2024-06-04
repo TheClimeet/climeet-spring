@@ -3,7 +3,6 @@ name: CLIMEET_DEPLOY
 on:
   push:
     branches: ["main", "release"]
-  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
