@@ -86,9 +86,9 @@ public class ClimberService {
     public LoginSimpleInfo signUp(CreateClimberRequest createClimberRequest)  {
         String payload = jwtTokenProvider.validateTempTokenAndGetSocialId(
             createClimberRequest.getToken());
-        List<String> userInfoList = getUserInfoInPayload(payload);
-        String socialId = userInfoList.get(0);
-        String profileImg = userInfoList.get(1);
+        Map<String, String> userInfo = getUserInfoInPayload(payload);
+        String socialId = userInfo.get("socialId");
+        String profileImg = userInfo.get("profileImg");
         SocialType socialType = createClimberRequest.getSocialType();
         if (climberRepository.findBySocialIdAndSocialType(socialId, socialType).isPresent())
             throw new GeneralException(ErrorStatus._EXIST_USER);
@@ -119,22 +119,17 @@ public class ClimberService {
     }
 
 
-    public List<String> getUserInfoInPayload (String payload){
+    public Map<String, String> getUserInfoInPayload (String payload){
         String[] parts = payload.split("\\+");
-        List<String> list = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
 
-        if (parts.length >= 2) {
             String socialId = parts[0];
             String profileImg = parts[1];
 
-            list.add(socialId);
-            list.add(profileImg);
-        } else {
-            list.add("");  // socialId를 기본값으로 추가
-            list.add("");  // profileImg를 기본값으로 추가
-        }
+            map.put("socialId", socialId);
+            map.put("profileImg", profileImg);
 
-        return list;
+        return map;
     }
 
 
@@ -179,19 +174,19 @@ public class ClimberService {
 
     HashMap<String, String> getClimberProfileByToken(String providerName, String userToken)
         throws RuntimeException {
-        if (!providerName.equals("KAKAO") && !providerName.equals("NAVER")) {
+        if (!providerName.equals(SocialType.KAKAO.toString()) && !providerName.equals(SocialType.NAVER.toString())) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
         String socialId = null;
         String profileImg = null;
-        if (providerName.equals("KAKAO")) {
+        if (providerName.equals(SocialType.KAKAO.toString())) {
             Map<String, Object> userAttributesByToken = getClimberKaKaoAttributesByToken(userToken);
             KaKaoUserInfo kaKaoUserInfo = new KaKaoUserInfo(userAttributesByToken);
             socialId = Long.toString(kaKaoUserInfo.getID());
             profileImg = kaKaoUserInfo.getProfileImg();
 
         }
-        if (providerName.equals("NAVER")) {
+        if (providerName.equals(SocialType.NAVER.toString())) {
             Map<String, Object> userAttributesByToken = getClimberNaverAttributesByToken(userToken);
             NaverUserInfo naverUserInfo = new NaverUserInfo(userAttributesByToken);
             socialId = naverUserInfo.getId();
