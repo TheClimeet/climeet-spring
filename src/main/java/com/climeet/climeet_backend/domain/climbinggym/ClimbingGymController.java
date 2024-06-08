@@ -60,7 +60,7 @@ public class ClimbingGymController {
     @GetMapping("/{gymId}")
     public ResponseEntity<ClimbingGymDetailResponse> getClimbingGymInfo(
         @PathVariable Long gymId, @CurrentUser User user) {
-        return ResponseEntity.ok(climbingGymService.getClimbingGymInfo(gymId));
+        return ResponseEntity.ok(climbingGymService.getClimbingGymInfo(gymId, user));
     }
 
 
