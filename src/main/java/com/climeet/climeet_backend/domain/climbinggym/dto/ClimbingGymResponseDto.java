@@ -76,9 +76,10 @@ public class ClimbingGymResponseDto {
         private Long followingCount;
         private float averageRating;
         private int reviewCount;
+        private Boolean isFollower;
 
         public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym, Manager manager,
-            String gymBackGroundImageUrl) {
+            String gymBackGroundImageUrl, Boolean isFollower) {
             return ClimbingGymDetailResponse.builder()
                 .gymId(climbingGym.getId())
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
@@ -88,6 +89,7 @@ public class ClimbingGymResponseDto {
                 .followingCount(manager.getFollowingCount())
                 .averageRating(climbingGym.getAverageRating())
                 .reviewCount(climbingGym.getReviewCount())
+                .isFollower(isFollower)
                 .build();
         }
     }
