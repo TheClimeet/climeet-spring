@@ -197,4 +197,13 @@ public class ClimbingRecordController {
             @RequestParam int month) {
         return ResponseEntity.ok(climbingRecordService.getVisitedGymList(userId, year, month));
     }
+
+    @Operation(summary = "나의 운동한 암장 리스트 조회")
+    @GetMapping("/users/months/list")
+    public ResponseEntity<List<VisitedClimbingGym>> getVisitedGymList(
+        @CurrentUser User user,
+        @RequestParam int year,
+        @RequestParam int month) {
+        return ResponseEntity.ok(climbingRecordService.getVisitedGymList(user.getId(), year, month));
+    }
 }
