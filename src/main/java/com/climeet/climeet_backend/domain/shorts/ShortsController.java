@@ -110,7 +110,8 @@ public class ShortsController {
     @GetMapping("/shorts/my-shorts")
     @Operation(summary = "내 숏츠 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByLoginUser(@CurrentUser User user,
+        @RequestParam ShortsVisibility shortsVisibility,
         @RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(shortsService.findShortsByUserId(user, user.getId(), page, size));
+        return ResponseEntity.ok(shortsService.findMyShortsByShortsVisibility(user, shortsVisibility, page, size));
     }
 }
