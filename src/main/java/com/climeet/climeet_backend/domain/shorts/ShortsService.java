@@ -95,8 +95,9 @@ public class ShortsService {
             .map(followRelationship -> followRelationship.getFollower().getId()
             ).toList();
 
-
-        fcmNotificationService.sendMultipleUser(userIdList, NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()), NotificationType.UPLOAD_NEW_SHORTS.getMessage());
+        fcmNotificationService.sendMultipleUser(userIdList,
+            NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()),
+            NotificationType.UPLOAD_NEW_SHORTS.getMessage());
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
@@ -255,7 +256,7 @@ public class ShortsService {
 
                 Long gymId = null;
                 Boolean isGym = followRelationship.getFollowing() instanceof Manager;
-                if(isGym) {
+                if (isGym) {
                     gymId = ((Manager) followRelationship.getFollowing()).getClimbingGym().getId();
                 }
 
@@ -335,7 +336,8 @@ public class ShortsService {
 
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsByUserId(User user, Long uploaderId, int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsByUserId(User user, Long uploaderId,
+        int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         List<ShortsVisibility> shortsVisibilities = ShortsVisibility.getPublicAndFollowersOnlyList();
 
@@ -345,7 +347,7 @@ public class ShortsService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
 
         shortsSlice = shortsRepository.findByUserAndShortsVisibilityInOrderByCreatedAtDesc(uploader,
-                ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
+            ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
 
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
@@ -380,5 +382,42 @@ public class ShortsService {
 
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsInfoList);
+    }
+
+    //공개 범위에 따른 내 쇼츠 조회
+    public PageResponseDto<List<ShortsSimpleInfo>> findMyShortsByShortsVisibility(User user,
+        ShortsVisibility shortsVisibility, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Slice<Shorts> shortsSlice = shortsRepository.findByUserAndShortsVisibilityOrderByCreatedAtDesc(
+            user, shortsVisibility, pageable);
+
+        List<ShortsSimpleInfo> shortsSimpleInfoList = shortsSlice.stream().map(shorts -> {
+
+            DifficultyMapping difficultyMapping = null;
+            String gymDifficultyName = null;
+            String gymDifficultyColor = null;
+            String climeetDifficultyName = null;
+
+            if (shorts.getRoute() != null) {
+                difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
+                    shorts.getClimbingGym(),
+                    shorts.getRoute().getDifficultyMapping().getDifficulty());
+
+                gymDifficultyName = difficultyMapping.getGymDifficultyName();
+                gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
+                climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+            }
+
+            return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
+                shorts.getClimbingGym(),
+                findShorts(user, shorts.getId(), difficultyMapping),
+                gymDifficultyName,
+                gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
+        }).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsSimpleInfoList);
     }
 }

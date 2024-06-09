@@ -53,7 +53,7 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
 
     List<Shorts> findByCreatedAtBefore(LocalDateTime dateTime);
 
-    List<Shorts> findByUser(User uploader);
-
     Slice<Shorts> findByUserAndShortsVisibilityInOrderByCreatedAtDesc(User uploader, List<ShortsVisibility> publicAndFollowersOnlyList, Pageable pageable);
+
+    Slice<Shorts> findByUserAndShortsVisibilityOrderByCreatedAtDesc(User uploader, ShortsVisibility shortsVisibility, Pageable pageable);
 }
