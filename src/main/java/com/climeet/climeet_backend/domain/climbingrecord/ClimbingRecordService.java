@@ -557,7 +557,18 @@ public class ClimbingRecordService {
         );
     }
 
-    public List<VisitedClimbingGym> getVisitedGymList(Long userId, int year, int month){
+    public List<VisitedClimbingGym> getVisitedGymList(Long userId){
+        User user = userRepository.findById(userId).
+            orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
+
+        List<Object[]> climbingGymList = climbingRecordRepository.findGymListByUser(user);
+
+        return climbingGymList.stream()
+            .map(gym -> new VisitedClimbingGym((Long)gym[GYM_ID], (String)gym[GYM_NAME]))
+            .collect(Collectors.toList());
+    }
+
+    public List<VisitedClimbingGym> getVisitedMonthGymList(Long userId, int year, int month){
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
 
@@ -565,7 +576,7 @@ public class ClimbingRecordService {
         LocalDate startDate = LocalDate.of(year, month, START_DAY_OF_MONTH);
         LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
-        List<Object[]> climbingGymList = climbingRecordRepository.findAllByUserAndClimbingDateBetween(
+        List<Object[]> climbingGymList = climbingRecordRepository.findGymListByUserAndClimbingDateBetween(
                 user,
                 startDate,
                 endDate
