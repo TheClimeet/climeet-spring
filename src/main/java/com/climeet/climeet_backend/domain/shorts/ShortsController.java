@@ -103,8 +103,10 @@ public class ShortsController {
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByUserId(@CurrentUser User user,
         @PathVariable Long uploaderId,
         @RequestParam int page,
-        @RequestParam int size) {
-        return ResponseEntity.ok(shortsService.findShortsByUserId(user, uploaderId, page, size));
+        @RequestParam int size,
+        @RequestParam SortType sortType
+        ) {
+        return ResponseEntity.ok(shortsService.findShortsByUserIdAndSortType(user, uploaderId, sortType, page, size));
     }
 
     @GetMapping("/shorts/my-shorts")
