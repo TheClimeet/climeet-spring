@@ -55,5 +55,7 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
 
     Slice<Shorts> findByUserAndShortsVisibilityInOrderByCreatedAtDesc(User uploader, List<ShortsVisibility> publicAndFollowersOnlyList, Pageable pageable);
 
+    Slice<Shorts> findByUserAndRankingNotAndShortsVisibilityInOrderByRankingAsc(User uploader, int rankingThreshold, List<ShortsVisibility> shortsVisibilities, Pageable pageable);
+
     Slice<Shorts> findByUserAndShortsVisibilityOrderByCreatedAtDesc(User uploader, ShortsVisibility shortsVisibility, Pageable pageable);
 }

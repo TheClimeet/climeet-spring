@@ -55,6 +55,8 @@ public class ShortsService {
     private final UserRepository userRepository;
     private final FcmNotificationService fcmNotificationService;
 
+    static final int rankingThreshold = 0;
+
     @Transactional
     public void uploadShorts(User user, MultipartFile video,
         CreateShortsRequest createShortsRequest) throws FirebaseMessagingException {
@@ -276,7 +278,9 @@ public class ShortsService {
         return toShortsSimpleInfo(shorts, user);
     }
 
-    public PageResponseDto<List<ShortsSimpleInfo>> findShortsByUserId(User user, Long uploaderId,
+    //정렬기준에 따른 특정 유저 숏츠 조회
+    public PageResponseDto<List<ShortsSimpleInfo>> findShortsByUserIdAndSortType(User user,
+        Long uploaderId, SortType sortType,
         int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -285,9 +289,18 @@ public class ShortsService {
         User uploader = userRepository.findById(uploaderId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
 
-        shortsSlice = shortsRepository.findByUserAndShortsVisibilityInOrderByCreatedAtDesc(uploader,
-            ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
-
+        //최신순 조회
+        if (sortType.equals(SortType.LATEST)) {
+            shortsSlice = shortsRepository.findByUserAndShortsVisibilityInOrderByCreatedAtDesc(
+                uploader,
+                ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
+        }
+        //인기순 조회
+        else {
+            shortsSlice = shortsRepository.findByUserAndRankingNotAndShortsVisibilityInOrderByRankingAsc(
+                uploader, rankingThreshold, ShortsVisibility.getPublicAndFollowersOnlyList(),
+                pageable);
+        }
         List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
             //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
             .filter(shorts -> {
