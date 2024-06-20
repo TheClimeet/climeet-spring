@@ -116,4 +116,12 @@ public class ShortsController {
         @RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(shortsService.findMyShortsByShortsVisibility(user, shortsVisibility, page, size));
     }
+
+    //특정 유저가 좋아요 누른 숏츠 최근에 누른순으로 가져오기
+    @GetMapping("/shorts/user/liked")
+    @Operation(summary = "내가 좋아요 누른 숏츠 조회")
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findUserLikedShorts(@CurrentUser User user,
+        @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(shortsService.findUserLikedShorts(user, page, size));
+    }
 }

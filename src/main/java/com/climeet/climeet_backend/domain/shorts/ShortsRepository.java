@@ -8,6 +8,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 public interface ShortsRepository extends JpaRepository<Shorts, Long> {
 
@@ -58,4 +59,7 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
     Slice<Shorts> findByUserAndRankingNotAndShortsVisibilityInOrderByRankingAsc(User uploader, int rankingThreshold, List<ShortsVisibility> shortsVisibilities, Pageable pageable);
 
     Slice<Shorts> findByUserAndShortsVisibilityOrderByCreatedAtDesc(User uploader, ShortsVisibility shortsVisibility, Pageable pageable);
+
+    @Query("SELECT s FROM Shorts s JOIN ShortsLike sl WHERE sl.user = : userId ORDER BY sl.createdAt DESC")
+    Slice<Shorts> findLikedShortsByUserId(@Param("userId") Long userId, Pageable pageable);
 }
