@@ -77,19 +77,21 @@ public class ClimbingGymResponseDto {
         private float averageRating;
         private int reviewCount;
         private Boolean isFollower;
+        private Boolean hasManager;
 
-        public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym, Manager manager,
-            String gymBackGroundImageUrl, Boolean isFollower) {
+        public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym,  Long followerCount, Long followingCount,
+            String gymBackGroundImageUrl, Boolean isFollower, Boolean hasManager) {
             return ClimbingGymDetailResponse.builder()
                 .gymId(climbingGym.getId())
                 .gymProfileImageUrl(climbingGym.getProfileImageUrl())
                 .gymBackGroundImageUrl(gymBackGroundImageUrl)
                 .gymName(climbingGym.getName())
-                .followerCount(manager.getFollowerCount())
-                .followingCount(manager.getFollowingCount())
+                .followerCount(followerCount)
+                .followingCount(followingCount)
                 .averageRating(climbingGym.getAverageRating())
                 .reviewCount(climbingGym.getReviewCount())
                 .isFollower(isFollower)
+                .hasManager(hasManager)
                 .build();
         }
     }

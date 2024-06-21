@@ -113,17 +113,29 @@ public class ClimbingGymService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        Manager manager = managerRepository.findByClimbingGym(climbingGym)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
-
         ClimbingGymBackgroundImage backgroundImage = climbingGymBackgroundImageRepository.findByClimbingGym(
                 climbingGym)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
-        Boolean status = false;
-        if(followRelationshipRepository.findByFollowerIdAndFollowingId(user.getId(),climbingGym.getManager().getId()).isPresent()){
-            status = true;
+
+        // 매니저가 없으면 null값을 넣고, toDTO를 실행하기 전에 체크
+        Optional<Manager> optionalManager = managerRepository.findByClimbingGym(climbingGym);
+
+        Boolean hasManager = optionalManager.isPresent();
+        Boolean isFollow = false;
+        Long followerCount = null;
+        Long followingCount = null;
+
+        if (hasManager) { // 매니저가 존재한다면 팔로우, 팔로잉 수를 업데이트
+            Manager manager = optionalManager.get();
+            followerCount = manager.getFollowerCount();
+            followingCount = manager.getFollowingCount();
+
+            // followRelationship이 있으면 true
+            isFollow = followRelationshipRepository.findByFollowerIdAndFollowingId(user.getId(), manager.getId()).isPresent();
         }
-        return ClimbingGymDetailResponse.toDTO(climbingGym, manager, backgroundImage.getImgUrl(),status);
+
+
+        return ClimbingGymDetailResponse.toDTO(climbingGym, followerCount, followingCount, backgroundImage.getImgUrl(),isFollow, hasManager);
     }
 
     public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
