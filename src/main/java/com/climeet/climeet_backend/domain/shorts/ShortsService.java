@@ -97,9 +97,9 @@ public class ShortsService {
             .map(followRelationship -> followRelationship.getFollower().getId()
             ).toList();
 
-        fcmNotificationService.sendMultipleUser(userIdList,
-            NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()),
-            NotificationType.UPLOAD_NEW_SHORTS.getMessage());
+//        fcmNotificationService.sendMultipleUser(userIdList,
+//            NotificationType.UPLOAD_NEW_SHORTS.getTitle(user.getProfileName()),
+//            NotificationType.UPLOAD_NEW_SHORTS.getMessage());
     }
 
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsLatest(User user, Long gymId,
@@ -333,6 +333,36 @@ public class ShortsService {
         return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
             shortsSimpleInfoList);
     }
+
+    //내가 좋아요 누른 숏츠 조회
+    public PageResponseDto<List<ShortsSimpleInfo>> findUserLikedShorts(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Slice<Shorts> shortsSlice = shortsRepository.findLikedShortsByUserId(user.getId(), pageable);
+
+        List<ShortsSimpleInfo> shortsSimpleInfoList = shortsSlice.stream()
+            .map(shorts -> toShortsSimpleInfo(shorts, user)
+            ).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsSimpleInfoList);
+    }
+
+    //내가 저장한 숏츠 조회
+    public PageResponseDto<List<ShortsSimpleInfo>> findUserBookmarkedShorts(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Slice<Shorts> shortsSlice = shortsRepository.findBookmarkedShortsByUserId(user.getId(), pageable);
+
+        List<ShortsSimpleInfo> shortsSimpleInfoList = shortsSlice.stream()
+            .map(shorts -> toShortsSimpleInfo(shorts, user)
+            ).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsSimpleInfoList);
+    }
+
+
 
     //dto변환 헬퍼메소드
     private ShortsSimpleInfo toShortsSimpleInfo(Shorts shorts, User user) {

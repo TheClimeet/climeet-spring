@@ -116,4 +116,21 @@ public class ShortsController {
         @RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(shortsService.findMyShortsByShortsVisibility(user, shortsVisibility, page, size));
     }
+
+    @GetMapping("/shorts/user/liked")
+    @Operation(summary = "내가 좋아요 누른 숏츠 조회")
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findUserLikedShorts(@CurrentUser User user,
+        @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(shortsService.findUserLikedShorts(user, page, size));
+    }
+
+    @Operation(summary = "내가 북마크 숏츠 조회")
+    @GetMapping("/shorts/user/bookmarked")
+    public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findUserBookmarkedShorts(
+        @CurrentUser User user,
+        @RequestParam int page,
+        @RequestParam int size) {
+        PageResponseDto<List<ShortsSimpleInfo>> response = shortsService.findUserBookmarkedShorts(user, page, size);
+        return ResponseEntity.ok(response);
+    }
 }
