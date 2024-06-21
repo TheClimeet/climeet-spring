@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.shortscomment;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentChildResponse;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentParentResponse;
+import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -80,5 +81,14 @@ public class ShortsCommentController {
     ) {
         return ResponseEntity.ok(shortsCommentService.changeShortsCommentLikeStatus(user, shortsCommentId, isLike,
             isDislike));
+    }
+
+    @Operation(summary = "내가 작성한 숏츠 댓글 조회")
+    @GetMapping("/shorts/user/comments")
+    public ResponseEntity<PageResponseDto<List<ShortsCommentResponse>>> findMyShortsComments(
+        @CurrentUser User user,
+        @RequestParam int page, @RequestParam int size
+    ) {
+        return ResponseEntity.ok(shortsCommentService.findMyShortsComments(user, page, size));
     }
 }

@@ -189,13 +189,11 @@ public class ClimbingRecordController {
     }
 
     @Operation(summary = "유저별 운동한 암장 리스트 조회")
-    @GetMapping("/users/{userId}/months/list")
+    @GetMapping("/users/{userId}/list")
     public ResponseEntity<List<VisitedClimbingGym>> getVisitedGymList(
             @CurrentUser User user,
-            @PathVariable Long userId,
-            @RequestParam int year,
-            @RequestParam int month) {
-        return ResponseEntity.ok(climbingRecordService.getVisitedGymList(userId, year, month));
+            @PathVariable Long userId) {
+        return ResponseEntity.ok(climbingRecordService.getVisitedGymList(userId));
     }
 
     @Operation(summary = "나의 운동한 암장 리스트 조회")
@@ -204,6 +202,6 @@ public class ClimbingRecordController {
         @CurrentUser User user,
         @RequestParam int year,
         @RequestParam int month) {
-        return ResponseEntity.ok(climbingRecordService.getVisitedGymList(user.getId(), year, month));
+        return ResponseEntity.ok(climbingRecordService.getVisitedMonthGymList(user.getId(), year, month));
     }
 }

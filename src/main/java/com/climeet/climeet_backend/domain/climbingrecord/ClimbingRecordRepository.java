@@ -100,5 +100,13 @@ public interface ClimbingRecordRepository extends JpaRepository<ClimbingRecord, 
             + "WHERE cr.user = :user and cr.climbingDate BETWEEN :startDate AND :endDate "
             + "GROUP BY cr.gym.id"
     )
-    List<Object[]> findAllByUserAndClimbingDateBetween(User user, LocalDate startDate, LocalDate endDate);
+    List<Object[]> findGymListByUserAndClimbingDateBetween(User user, LocalDate startDate, LocalDate endDate);
+
+    @Query(
+        "SELECT cr.gym.id, cr.gym.name "
+            + "FROM ClimbingRecord cr "
+            + "WHERE cr.user = :user "
+            + "GROUP BY cr.gym.id"
+    )
+    List<Object[]> findGymListByUser(User user);
 }

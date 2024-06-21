@@ -12,6 +12,7 @@ import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentChildResponse;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentParentResponse;
+import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentResponseDto.ShortsCommentResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -190,6 +191,23 @@ public class ShortsCommentService {
         return commentListWithChild;
     }
 
+    //내가 작성한 댓글 가져오기 - 최신순
+    public PageResponseDto<List<ShortsCommentResponse>> findMyShortsComments(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<ShortsComment> commentSlice = shortsCommentRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+
+        List<ShortsCommentResponse> responseList = commentSlice.stream()
+            .map(comment -> ShortsCommentResponse.builder()
+                .commentId(comment.getId())
+                .profileImageUrl(comment.getUser().getProfileImageUrl())
+                .content(comment.getContent())
+                .createdDate(convertToDisplayTime(comment.getCreatedAt()))
+                .build()
+            ).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), commentSlice.hasNext(), responseList);
+    }
+
     private Long fetchParentCommentId(ShortsComment comment) {
         if (comment.getParentComment() != null) {
             return comment.getParentComment().getId();
@@ -207,4 +225,6 @@ public class ShortsCommentService {
             return CommentLikeStatus.NONE;
         }
     }
+
+
 }

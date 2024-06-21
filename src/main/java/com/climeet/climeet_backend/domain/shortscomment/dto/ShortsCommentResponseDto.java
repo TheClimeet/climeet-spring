@@ -80,4 +80,23 @@ public class ShortsCommentResponseDto {
                 .build();
         }
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class ShortsCommentResponse {
+        Long commentId;
+        String profileImageUrl;
+        String content;
+        String createdDate;
+
+        public static ShortsCommentResponse toDTO(Long commentId, String profileImageUrl, String content, String createdDate) {
+            return ShortsCommentResponse.builder()
+                .commentId(commentId)
+                .profileImageUrl(profileImageUrl)
+                .content(content)
+                .createdDate(createdDate)
+                .build();
+        }
+    }
 }

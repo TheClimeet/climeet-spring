@@ -54,11 +54,6 @@ public class ReviewService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        // 관리자가 등록된 암장인지 확인
-        if (climbingGym.getManager() == null) {
-            throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
-        }
-
         Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
@@ -80,11 +75,6 @@ public class ReviewService {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-
-        // 관리자가 등록된 암장인지 확인
-        if (climbingGym.getManager() == null) {
-            throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
-        }
 
         Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
@@ -129,11 +119,6 @@ public class ReviewService {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-
-        // 관리자가 등록된 암장인지 확인
-        if (climbingGym.getManager() == null) {
-            throw new GeneralException(ErrorStatus._EMPTY_MANAGER_GYM);
-        }
 
         Climber climber = climberRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
