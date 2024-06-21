@@ -348,6 +348,21 @@ public class ShortsService {
             shortsSimpleInfoList);
     }
 
+    //내가 저장한 숏츠 조회
+    public PageResponseDto<List<ShortsSimpleInfo>> findUserBookmarkedShorts(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Slice<Shorts> shortsSlice = shortsRepository.findBookmarkedShortsByUserId(user.getId(), pageable);
+
+        List<ShortsSimpleInfo> shortsSimpleInfoList = shortsSlice.stream()
+            .map(shorts -> toShortsSimpleInfo(shorts, user)
+            ).toList();
+
+        return new PageResponseDto<>(pageable.getPageNumber(), shortsSlice.hasNext(),
+            shortsSimpleInfoList);
+    }
+
+
 
     //dto변환 헬퍼메소드
     private ShortsSimpleInfo toShortsSimpleInfo(Shorts shorts, User user) {
@@ -372,6 +387,5 @@ public class ShortsService {
             gymDifficultyName,
             gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
     }
-
 
 }

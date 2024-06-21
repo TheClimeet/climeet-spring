@@ -69,4 +69,14 @@ public interface ShortsRepository extends JpaRepository<Shorts, Long> {
         + "AND s.shortsVisibility = 'PUBLIC'"
         + "ORDER BY sl.createdAt DESC")
     Slice<Shorts> findLikedShortsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT s "
+        + "FROM Shorts s "
+        + "JOIN ShortsBookmark sb "
+        + "ON sb.shorts.id = s.id "
+        + "WHERE sb.user.id = :userId "
+        + "AND sb.isBookmarked = true "
+        + "AND s.shortsVisibility = 'PUBLIC'"
+        + "ORDER BY sb.createdAt DESC")
+    Slice<Shorts> findBookmarkedShortsByUserId(@Param("userId") Long id, Pageable pageable);
 }
