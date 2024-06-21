@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.shortscomment;
 
+import com.climeet.climeet_backend.domain.user.User;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -20,4 +21,6 @@ public interface ShortsCommentRepository extends JpaRepository<ShortsComment, Lo
 
     Optional<Slice<ShortsComment>> findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtDesc(
         Long shortsId, Long parentCommentId, Pageable pageable);
+
+    Slice<ShortsComment> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 }
