@@ -203,7 +203,7 @@ public class ShortsCommentService {
                 .content(comment.getContent())
                 .createdDate(convertToDisplayTime(comment.getCreatedAt()))
                 .build()
-            ).collect(Collectors.toList());
+            ).toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), commentSlice.hasNext(), responseList);
     }
