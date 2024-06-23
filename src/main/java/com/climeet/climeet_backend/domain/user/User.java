@@ -103,20 +103,20 @@ public class User {
         this.thisWeekTotalClimbingTime -= sec;
     }
 
-    public void increaseFollwerCount() {
+    public void increaseFollowerCount() {
         this.followerCount++;
     }
 
-    public void decreaseFollwerCount() {
-        this.followerCount++;
+    public void decreaseFollowerCount() {
+        this.followerCount--;
     }
 
-    public void increaseFollwingCount() {
+    public void increaseFollowingCount() {
         this.followingCount++;
     }
 
-    public void decreaseFollwingCount() {
-        this.followingCount++;
+    public void decreaseFollowingCount() {
+        this.followingCount--;
     }
 
 }

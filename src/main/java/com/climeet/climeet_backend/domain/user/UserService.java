@@ -70,6 +70,9 @@ public class UserService {
 
     public List<UserFollowDetailInfo> getFollower(Long targetUserId, User currentUser,
         String userCategory) {
+        if(targetUserId==null){ //자기 자신의 팔로워를 조회할 때
+            targetUserId = currentUser.getId();
+        }
         userRepository.findById(targetUserId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
         List<FollowRelationship> targetUserFollowerList = followRelationshipRepository.findByFollowingId(
@@ -88,12 +91,12 @@ public class UserService {
                         followRelationship.getFollower().getId()).isPresent()) {
                         currentUserRelation = true;
                     }
-                    return UserFollowDetailInfo.toDTO(followRelationship.getFollower(),
-                        currentUserRelation);
+                    User follower = followRelationship.getFollower();
+                    return UserFollowDetailInfo.toDTO(follower.getId(), follower.getProfileName(), follower.getProfileName(), follower.getFollowerCount(), follower.getFollowingCount(), currentUserRelation);
                 }).toList();
 
         }
-        if (userCategory.equals("Manager")) {
+        if (userCategory.equals("Manager")) { //암장 정보 리턴
             userFollowDetailResponseList = targetUserFollowerList.stream()
                 .filter(followRelationship -> followRelationship.getFollower() instanceof Manager)
                 .map(followRelationship -> {
@@ -103,8 +106,9 @@ public class UserService {
                         followRelationship.getFollower().getId()).isPresent()) {
                         currentUserRelation = true;
                     }
-                    return UserFollowDetailInfo.toDTO(followRelationship.getFollower(),
-                        currentUserRelation);
+                    ClimbingGym climbingGym= ((Manager) followRelationship.getFollower()).getClimbingGym();
+                    User follower = followRelationship.getFollower();
+                    return UserFollowDetailInfo.toDTO(climbingGym.getId(), climbingGym.getName(),climbingGym.getProfileImageUrl(), follower.getFollowerCount(), follower.getFollowingCount(), currentUserRelation);
                 }).toList();
         }
 
@@ -113,6 +117,9 @@ public class UserService {
 
     public List<UserFollowDetailInfo> getFollowing(Long targetUserId, User currentUser,
         String userCategory) {
+        if(targetUserId==null){ //자기 자신의 팔로워를 조회할 때
+            targetUserId = currentUser.getId();
+        }
         userRepository.findById(targetUserId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
         List<FollowRelationship> targetUserFollowerList = followRelationshipRepository.findByFollowerId(
@@ -131,8 +138,8 @@ public class UserService {
                         followRelationship.getFollowing().getId()).isPresent()) {
                         currentUserRelation = true;
                     }
-                    return UserFollowDetailInfo.toDTO(followRelationship.getFollowing(),
-                        currentUserRelation);
+                    User following = followRelationship.getFollowing();
+                    return UserFollowDetailInfo.toDTO(following.getId(), following.getProfileName(), following.getProfileName(), following.getFollowerCount(), following.getFollowingCount(), currentUserRelation);
                 }).toList();
 
         }
@@ -146,8 +153,9 @@ public class UserService {
                         followRelationship.getFollowing().getId()).isPresent()) {
                         currentUserRelation = true;
                     }
-                    return UserFollowDetailInfo.toDTO(followRelationship.getFollowing(),
-                        currentUserRelation);
+                    ClimbingGym climbingGym= ((Manager) followRelationship.getFollowing()).getClimbingGym();
+                    User following = followRelationship.getFollowing();
+                    return UserFollowDetailInfo.toDTO(climbingGym.getId(), climbingGym.getName(),climbingGym.getProfileImageUrl(), following.getFollowerCount(), following.getFollowingCount(), currentUserRelation);
                 }).toList();
         }
 
@@ -277,7 +285,7 @@ public class UserService {
         }
 
 
-        return UserFollowDetailInfo.toDTO(user, status);
+        return UserFollowDetailInfo.toDTO(user.getId(), user.getProfileName(), user.getProfileName(), user.getFollowerCount(), user.getFollowingCount(), status);
 
     }
 
@@ -302,6 +310,10 @@ public class UserService {
     public boolean checkProfileNameDuplication(String name) {
         return userRepository.findByprofileName(name).isPresent();
     }
+
+//    public String createMasterToken(){
+//        return jwtTokenProvider.createToken("1+master", 0);
+//    }
 
 
 }

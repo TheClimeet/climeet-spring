@@ -15,6 +15,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,27 +31,34 @@ public class FollowRelationshipService {
         return userRepository.findById(userId)
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_USER));
     }
+
+    @Transactional
     public void createFollowRelationship(User follower, User following) {
         if(followRelationshipRepository.findByFollowerIdAndFollowingId(follower.getId(),
             following.getId()).isPresent()){
             throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
         }
-        Optional<Manager> manager = managerRepository.findById(following.getId());
-        manager.ifPresent(value -> value.getClimbingGym().thisWeekFollowCountUp());
+        if(following instanceof Manager){
+            Manager manager = (Manager)following;
+            manager.getClimbingGym().thisWeekFollowCountUp();
+        }
         FollowRelationship followRelationship = FollowRelationship.toEntity(follower, following);
         followRelationshipRepository.save(followRelationship);
-        follower.increaseFollwerCount();
+        follower.increaseFollowingCount();
+        following.increaseFollowerCount();
         //fcmNotificationService.sendSingleUser(following.getId(), NotificationType.NEW_FOLLOWER.getTitle(follower.getProfileName()), NotificationType.NEW_FOLLOWER.getMessage(follower.getProfileName()) );
 
     }
 
+    @Transactional
     public void deleteFollowRelationship(User following, User follower){
         FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFollowingId(follower.getId(), following.getId())
             .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP));
         Optional<Manager> manager = managerRepository.findById(following.getId());
         manager.ifPresent(value -> value.getClimbingGym().thisWeekFollowCountDown());
         followRelationshipRepository.deleteById(followRelationship.getId());
-        followRelationship.getFollower().decreaseFollwerCount();
+        followRelationship.getFollower().decreaseFollowingCount();
+        followRelationship.getFollowing().decreaseFollowerCount();
     }
 
     public User findManagerByGymID(Long gymId){
