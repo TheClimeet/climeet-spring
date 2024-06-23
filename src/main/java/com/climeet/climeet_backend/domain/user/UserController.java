@@ -44,7 +44,7 @@ public class UserController {
 
     }
     @GetMapping("/followers")
-    @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber")
+    @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber\n\n 다른 사람의 팔로워를 조회하고 싶을 때 followingUserId를 채워서 보내고, 나 자신의 팔로워를 조회하고 싶을 때는 null로 보내면 됩니다.")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollower(@RequestParam(required = false) Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getFollower(userId, currentUser, userCategory));
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @GetMapping("/followees")
-    @Operation(summary = "특정 유저 팔로잉 조회", description = "**userCategory** : Manager OR Climber")
+    @Operation(summary = "특정 유저 팔로잉 조회", description = "**userCategory** : Manager OR Climber\n\n 다른 사람의 팔로잉를 조회하고 싶을 때 followingUserId를 채워서 보내고, 나 자신의 팔로잉를 조회하고 싶을 때는 null로 보내면 됩니다.")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollowing(@RequestParam(required = false) Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getFollowing(userId, currentUser, userCategory));
