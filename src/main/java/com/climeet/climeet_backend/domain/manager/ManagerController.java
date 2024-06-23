@@ -55,7 +55,6 @@ public class ManagerController {
 
     @GetMapping("/check-id/{loginId}")
     @Operation(summary = "관리자 ID 중복 확인", description = "**이미 존재하는 ID** : false \n\n **사용 가능한 ID** : true")
-    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     public ResponseEntity<Boolean> checkLoginId(@PathVariable String loginId){
         boolean isDuplicated = !managerService.checkLoginDuplication(loginId);
         return ResponseEntity.ok(isDuplicated);
@@ -64,6 +63,7 @@ public class ManagerController {
 
     @GetMapping("/gym-id")
     @Operation(summary = "관리자 관리 암장 확인. - 205 [무빗]", description = "관리자의 소속 암장 id를 확인합니다.")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     public ResponseEntity<Long> getClimbingGymIdOfManager(@CurrentUser User user){
         return ResponseEntity.ok(managerService.getClimbingGymIdOfManager(user));
     }
