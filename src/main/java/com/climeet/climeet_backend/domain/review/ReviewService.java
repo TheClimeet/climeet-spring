@@ -58,8 +58,8 @@ public class ReviewService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         // 이미 작성된 리뷰가 있는지 확인 (1명의 유저는 1개의 암장에 1개의 리뷰만 가능)
-        Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimber(
-            climbingGym, climber);
+        Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimberId(
+            climbingGym, user.getId());
         if (optionalReview.isPresent()) {
             throw new GeneralException(ErrorStatus._REVIEW_EXIST);
         }
@@ -76,14 +76,11 @@ public class ReviewService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        Climber climber = climberRepository.findById(user.getId())
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
-
         ReviewSummaryResponse reviewSummaryResponse = null;
         if (page == FIRST_PAGE) {
             // 사용자 리뷰가 있으면 가져오고, 없으면 null을 myReview에 넣음
-            Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimber(
-                climbingGym, climber);
+            Optional<Review> optionalReview = reviewRepository.findByClimbingGymAndClimberId(
+                climbingGym, user.getId());
             ReviewDetailResponse myReview = null;
             if (optionalReview.isPresent()) {
                 myReview = ReviewDetailResponse.toDTO(optionalReview.get());
@@ -94,9 +91,9 @@ public class ReviewService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Slice<Review> reviewSlice = reviewRepository.findByClimbingGymAndClimberIsNotOrderByUpdatedAtDesc(
+        Slice<Review> reviewSlice = reviewRepository.findByClimbingGymAndClimberIdIsNotOrderByUpdatedAtDesc(
             climbingGym,
-            climber, pageable);
+            user.getId(), pageable);
 
         List<ReviewDetailResponse> reviewList = reviewSlice.stream()
             .map(review -> ReviewDetailResponse.toDTO(review))
@@ -124,8 +121,8 @@ public class ReviewService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MEMBER));
 
         // 리뷰 데이터 불러오기
-        Review review = reviewRepository.findByClimbingGymAndClimber(
-                climbingGym, climber)
+        Review review = reviewRepository.findByClimbingGymAndClimberId(
+                climbingGym, user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_REVIEW));
 
         // 리뷰 추가로 인한 평균 리뷰 갱신

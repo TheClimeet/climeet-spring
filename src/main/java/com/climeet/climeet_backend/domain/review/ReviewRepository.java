@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    Optional<Review> findByClimbingGymAndClimber(ClimbingGym climbingGym, Climber climber);
+    Optional<Review> findByClimbingGymAndClimberId(ClimbingGym climbingGym, Long userId);
 
-    Page<Review> findByClimbingGymAndClimberIsNotOrderByUpdatedAtDesc(ClimbingGym climbingGym,
-        Climber climber, Pageable pageable);
+    Page<Review> findByClimbingGymAndClimberIdIsNotOrderByUpdatedAtDesc(ClimbingGym climbingGym,
+        Long userId, Pageable pageable);
 }
