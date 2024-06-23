@@ -38,7 +38,10 @@ public class FollowRelationshipService {
             following.getId()).isPresent()){
             throw new GeneralException(ErrorStatus._EXIST_FOLLOW_RELATIONSHIP);
         }
-        //manager.ifPresent(value -> value.getClimbingGym().thisWeekFollowCountUp());
+        if(following instanceof Manager){
+            Manager manager = (Manager)following;
+            manager.getClimbingGym().thisWeekFollowCountUp();
+        }
         FollowRelationship followRelationship = FollowRelationship.toEntity(follower, following);
         followRelationshipRepository.save(followRelationship);
         follower.increaseFollowingCount();
