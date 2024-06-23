@@ -75,8 +75,9 @@ public class boardResponseDto {
         private String content;
         private int likeCount;
         private List<String> imageList;
+        private Boolean likeStatus;
 
-        public static BoardDetailInfo toDTO(Board board, List<String> boardImageList, User user) {
+        public static BoardDetailInfo toDTO(Board board, List<String> boardImageList, User user, Boolean likeStatus) {
             return BoardDetailInfo.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
@@ -88,6 +89,7 @@ public class boardResponseDto {
                 .content(board.getContent())
                 .likeCount(board.getLikeCount())
                 .imageList(boardImageList)
+                .likeStatus(likeStatus)
                 .build();
         }
     }

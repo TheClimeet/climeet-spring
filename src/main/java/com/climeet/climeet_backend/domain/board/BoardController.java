@@ -4,13 +4,16 @@ import com.climeet.climeet_backend.domain.board.dto.boardRequestDto.PostBoardReq
 import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardDetailInfo;
 import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardRetoolSimpleInfo;
 import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardSimpleInfo;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +46,8 @@ public class BoardController {
     @GetMapping("/boards/{boardId}")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._BOARD_NOT_FOUND})
     @Operation(summary = "특정 공지사항 조회")
-    public ResponseEntity<BoardDetailInfo> findBoardById(@PathVariable Long boardId){
-        return ResponseEntity.ok(boardService.findBoardById(boardId));
+    public ResponseEntity<BoardDetailInfo> findBoardById(@CurrentUser User user, @PathVariable Long boardId){
+        return ResponseEntity.ok(boardService.findBoardById(boardId, user));
     }
+
 }

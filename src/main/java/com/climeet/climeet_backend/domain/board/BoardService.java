@@ -7,6 +7,8 @@ import com.climeet.climeet_backend.domain.board.dto.boardResponseDto.BoardSimple
 import com.climeet.climeet_backend.domain.boardImage.BoardImage;
 import com.climeet.climeet_backend.domain.boardImage.BoardImageRepository;
 import com.climeet.climeet_backend.domain.boardImage.BoardImageService;
+import com.climeet.climeet_backend.domain.boardlike.BoardLike;
+import com.climeet.climeet_backend.domain.boardlike.BoardLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -24,6 +26,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final BoardImageService boardImageService;
     private final BoardImageRepository boardImageRepository;
+    private final BoardLikeRepository boardLikeRepository;
     public static final Long CLIMEET_OFFICIAL_ACCOUNT = 1L;
 
 
@@ -65,13 +68,17 @@ public class BoardService {
             .toList();
     }
 
-    public BoardDetailInfo findBoardById(Long boardId) {
+    public BoardDetailInfo findBoardById(Long boardId, User user) {
         User climeetOfficialAccount = userRepository.findById(CLIMEET_OFFICIAL_ACCOUNT)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._BOARD_NOT_FOUND));
+        boolean likeStatus = false;
+        if(boardLikeRepository.findByUserAndBoard(user, board).isPresent()){
+            likeStatus = true;
+        }
         return BoardDetailInfo.toDTO(board, boardImageRepository
             .findAllByBoardId(boardId).stream().map(BoardImage::getImageUrl).toList(),
-            climeetOfficialAccount);
+            climeetOfficialAccount, likeStatus);
     }
 }
