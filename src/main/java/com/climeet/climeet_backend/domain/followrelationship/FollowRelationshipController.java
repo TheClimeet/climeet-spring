@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name="2100 - FollowRelationship")
+@Tag(name="FollowRelationship")
 @RequiredArgsConstructor
 @RestController
 public class FollowRelationshipController {

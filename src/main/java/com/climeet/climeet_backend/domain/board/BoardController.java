@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "2000 - Board", description = "공지사항")
+@Tag(name = "Board", description = "공지사항")
 
 public class BoardController {
 

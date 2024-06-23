@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "1500 - DifficultyMapping", description = "암장 난이도 매핑 ")
+@Tag(name = "DifficultyMapping", description = "암장 난이도 매핑 ")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/gyms")

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "2200 - User")
+@Tag(name = "User")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")

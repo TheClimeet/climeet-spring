@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
-@Tag(name = "2600 - ShortsLike")
+@Tag(name = "ShortsLike")
 public class ShortsLikeController {
 
     private final ShortsLikeService shortsLikeService;

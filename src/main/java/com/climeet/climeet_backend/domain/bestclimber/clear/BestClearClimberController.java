@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "700 - BestClearClimber", description = "[완등순] 금주 베스트 클라이머 API")
+@Tag(name = "BestClearClimber", description = "[완등순] 금주 베스트 클라이머 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/home/rank/weeks/climbers")

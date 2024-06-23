@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "1100 - RouteVersion", description = "암장 루트 버전 API")
+@Tag(name = "RouteVersion", description = "암장 루트 버전 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/gyms")

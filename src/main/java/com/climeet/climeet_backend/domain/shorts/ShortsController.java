@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "300 - shorts", description = "숏츠 API")
+@Tag(name = "Shorts", description = "숏츠 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")

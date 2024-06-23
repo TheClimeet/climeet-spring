@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/messaging")
-@Tag(name = "2400 - Push-Notification", description = "[기록된 순(selected된 순)] 금주 베스트 루트 API")
+@Tag(name = "Push-Notification", description = "[기록된 순(selected된 순)] 금주 베스트 루트 API")
 public class FcmNotificationController {
     private final FcmNotificationService fcmNotificationService;
 

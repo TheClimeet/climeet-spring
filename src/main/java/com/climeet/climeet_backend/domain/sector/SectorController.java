@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "500 - ClimbingSector", description = "클라이밍 섹터 API")
+@Tag(name = "ClimbingSector", description = "클라이밍 섹터 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/gyms")

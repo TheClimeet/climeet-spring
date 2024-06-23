@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "1800 - BestFollowGym", description = "[팔로우순] 금주 베스트 운동 기록 API")
+@Tag(name = "BestFollowGym", description = "[팔로우순] 금주 베스트 운동 기록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/home/rank/weeks/gyms")

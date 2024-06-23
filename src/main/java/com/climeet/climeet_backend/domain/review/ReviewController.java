@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "1400 - ClimbingReview", description = "암장 리뷰 API")
+@Tag(name = "ClimbingReview", description = "암장 리뷰 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/gyms")

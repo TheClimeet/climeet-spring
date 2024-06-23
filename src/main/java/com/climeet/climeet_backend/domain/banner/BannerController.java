@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@Tag(name = "2700 - Banner")
+@Tag(name = "Banner")
 
 public class BannerController {
     private final BannerService bannerService;

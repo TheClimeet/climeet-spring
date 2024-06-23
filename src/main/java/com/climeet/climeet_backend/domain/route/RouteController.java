@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 
-@Tag(name = "1600 - ClimbingRoute", description = "클라이밍 루트 API")
+@Tag(name = "ClimbingRoute", description = "클라이밍 루트 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/gyms")

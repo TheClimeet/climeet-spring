@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
-@Tag(name = "2500 - ShortsBookmark")
+@Tag(name = "ShortsBookmark")
 
 public class ShortsBookmarkController {
 

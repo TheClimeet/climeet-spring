@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
-@Tag(name = "2300 - S3")
+@Tag(name = "S3")
 public class S3Controller {
 
     private final S3Service s3Service;

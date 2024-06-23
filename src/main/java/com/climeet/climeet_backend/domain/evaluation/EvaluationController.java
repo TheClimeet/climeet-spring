@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "800 - Evaluation", description = "클밋 운영진에게 전달하는 평가 및 리뷰")
+@Tag(name = "Evaluation", description = "클밋 운영진에게 전달하는 평가 및 리뷰")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/evaluation")

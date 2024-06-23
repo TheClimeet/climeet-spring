@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "2800 - BoardLike", description = "[기록된 순(selected된 순)] 금주 베스트 루트 API")
+@Tag(name = "BoardLike", description = "[기록된 순(selected된 순)] 금주 베스트 루트 API")
 
 public class BoardLikeController {
     private final BoardLikeService boardLikeService;
