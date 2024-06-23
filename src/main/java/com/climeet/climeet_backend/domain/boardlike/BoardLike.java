@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class BoardLike extends BaseTimeEntity {
 
     @Id
@@ -29,4 +31,11 @@ public class BoardLike extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
+
+    public static BoardLike toEntity(User user, Board board){
+        return BoardLike.builder()
+            .user(user)
+            .board(board)
+            .build();
+    }
 }
