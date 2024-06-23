@@ -85,13 +85,15 @@ public class ShortsCommentResponseDto {
     @Getter
     @AllArgsConstructor
     public static class ShortsCommentResponse {
+        Long shortsId;
         Long commentId;
         String profileImageUrl;
         String content;
         String createdDate;
 
-        public static ShortsCommentResponse toDTO(Long commentId, String profileImageUrl, String content, String createdDate) {
+        public static ShortsCommentResponse toDTO(Long shortsId, Long commentId, String profileImageUrl, String content, String createdDate) {
             return ShortsCommentResponse.builder()
+                .shortsId(shortsId)
                 .commentId(commentId)
                 .profileImageUrl(profileImageUrl)
                 .content(content)

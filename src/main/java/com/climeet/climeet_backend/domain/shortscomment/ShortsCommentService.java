@@ -198,6 +198,7 @@ public class ShortsCommentService {
 
         List<ShortsCommentResponse> responseList = commentSlice.stream()
             .map(comment -> ShortsCommentResponse.builder()
+                .shortsId(comment.getShorts().getId())
                 .commentId(comment.getId())
                 .profileImageUrl(comment.getUser().getProfileImageUrl())
                 .content(comment.getContent())
