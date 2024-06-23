@@ -33,7 +33,7 @@ public class ShortsCommentController {
 
     private final ShortsCommentService shortsCommentService;
 
-    @Operation(summary = "숏츠 댓글 작성")
+    @Operation(summary = "숏츠 댓글 작성 - 1701 [진로]")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS, ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PostMapping("/shorts/{shortsId}/shortsComments")
     public ResponseEntity<ShortsCommentParentResponse> createShortsComment(
@@ -46,7 +46,7 @@ public class ShortsCommentController {
             parentCommentId, parentCommentId != null));
     }
 
-    @Operation(summary = "숏츠 댓글 조회")
+    @Operation(summary = "숏츠 댓글 조회 - 1702 [진로]")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @GetMapping("/shorts/{shortsId}/shortsComments")
     public ResponseEntity<PageResponseDto<List<ShortsCommentParentResponse>>> findShortsCommentList(
@@ -58,7 +58,7 @@ public class ShortsCommentController {
             shortsCommentService.findShortsCommentList(user, shortsId, page, size));
     }
 
-    @Operation(summary = "숏츠 대댓글 조회")
+    @Operation(summary = "숏츠 대댓글 조회 - 1703 [진로]")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @GetMapping("/shorts/{shortsId}/{parentCommentId}")
     public ResponseEntity<PageResponseDto<List<ShortsCommentChildResponse>>> findShortsChildCommentList(
@@ -71,7 +71,7 @@ public class ShortsCommentController {
             shortsCommentService.findShortsChildCommentList(user, shortsId, parentCommentId, page, size));
     }
 
-    @Operation(summary = "숏츠 댓글 상호작용", description = "**shortsVisibility** : LIKE, DISLIKE, NONE")
+    @Operation(summary = "숏츠 댓글 상호작용 - 1704 [진로]", description = "**shortsVisibility** : LIKE, DISLIKE, NONE")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS_COMMENT})
     @PatchMapping("/shortsComments/{shortsCommentId}")
     public ResponseEntity<CommentLikeStatus> changeShortsCommentLikeStatus(
@@ -83,7 +83,7 @@ public class ShortsCommentController {
             isDislike));
     }
 
-    @Operation(summary = "내가 작성한 숏츠 댓글 조회")
+    @Operation(summary = "내가 작성한 숏츠 댓글 조회 - 1705 [진로]")
     @GetMapping("/shorts/user/comments")
     public ResponseEntity<PageResponseDto<List<ShortsCommentResponse>>> findMyShortsComments(
         @CurrentUser User user,

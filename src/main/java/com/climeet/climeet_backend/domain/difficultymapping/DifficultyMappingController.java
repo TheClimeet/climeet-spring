@@ -28,7 +28,7 @@ public class DifficultyMappingController {
 
     private final DifficultyMappingService difficultyMappingService;
 
-    @Operation(summary = "클밋, 암장 난이도 매핑 생성")
+    @Operation(summary = "클밋, 암장 난이도 매핑 생성 - 1501 [무빗]")
     @SwaggerApiError({ErrorStatus._INVALID_DIFFICULTY, ErrorStatus._EMPTY_MANAGER})
     @PostMapping("/difficulty")
     public ResponseEntity<List<Long>> createDifficultyMapping(@CurrentUser User user,
@@ -38,7 +38,7 @@ public class DifficultyMappingController {
             difficultyMappingService.createDifficultyMapping(user, createDifficultyMappingRequest));
     }
 
-    @Operation(summary = "클밋, 암장 난이도 매핑 조회")
+    @Operation(summary = "클밋, 암장 난이도 매핑 조회 - 1502 [무빗]")
     @SwaggerApiError({ErrorStatus._INVALID_DIFFICULTY, ErrorStatus._EMPTY_CLIMBING_GYM,
         ErrorStatus._EMPTY_DIFFICULTY_LIST})
     @GetMapping("/{gymId}/difficulty")
@@ -48,7 +48,7 @@ public class DifficultyMappingController {
         return ResponseEntity.ok(difficultyMappingService.getDifficultyMapping(gymId));
     }
 
-    @Operation(summary = "암장 색 코드 목록 조회")
+    @Operation(summary = "암장 색 코드 목록 조회 - 1503 [무빗]")
     @SwaggerApiError({})
     @GetMapping("/difficulty/color")
     public ResponseEntity<Map<String, String>> getGymDifficultyColorList(

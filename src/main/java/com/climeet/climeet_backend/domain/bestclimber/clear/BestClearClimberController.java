@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.bestclimber.clear;
 import com.climeet.climeet_backend.domain.bestclimber.clear.dto.BestClearClimberResponseDto.BestClearClimberDetailInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.security.CurrentUser;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class BestClearClimberController {
     private final BestClearClimberService bestClearClimberService;
 
     @GetMapping("/clear")
+    @Operation(summary = "701 - [훈]")
     public ResponseEntity<List<BestClearClimberDetailInfo>> getClimberRankingListOrderClearCount(
         @CurrentUser User user
     ){

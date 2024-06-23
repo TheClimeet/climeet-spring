@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BestRecordGymController {
     private final BestRecordGymService bestRecordGymService;
 
-    @Operation(summary = "[기록된 순(selected된 순)] 이번주 짐 랭킹 조회")
+    @Operation(summary = "[기록된 순(selected된 순)] 이번주 짐 랭킹 조회 - 601 [훈]")
     @GetMapping("/record")
     public ResponseEntity<List<BestRecordGymDetailInfo>> getGymRankingListOrderSelectionCount(
         @CurrentUser User user

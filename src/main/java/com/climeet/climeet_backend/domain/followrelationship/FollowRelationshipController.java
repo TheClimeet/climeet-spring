@@ -25,7 +25,7 @@ public class FollowRelationshipController {
     private final FollowRelationshipService followRelationshipService;
 
     @PostMapping("/follow-relationship")
-    @Operation(summary = "유저 팔로우")
+    @Operation(summary = "유저 팔로우 - 2101 [미리]")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> followUser(@RequestParam Long followingUserId, @CurrentUser User currentUser)
         throws FirebaseMessagingException {
@@ -35,7 +35,7 @@ public class FollowRelationshipController {
     }
 
     @DeleteMapping("/follow-relationship")
-    @Operation(summary = "유저 팔로우 취소")
+    @Operation(summary = "유저 팔로우 취소 - 2102 [미리]")
     @SwaggerApiError({ErrorStatus._EMPTY_USER, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> unfollowUser(@RequestParam Long followingUserId, @CurrentUser User currentUser){
         User following = followRelationshipService.findByUserId(followingUserId);
@@ -44,7 +44,7 @@ public class FollowRelationshipController {
     }
 
     @PostMapping("/follow-relationship/gym")
-    @Operation(summary = "암장 팔로우")
+    @Operation(summary = "암장 팔로우 - 2103 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> followGym(@RequestParam Long gymId, @CurrentUser User currentUser)
         throws FirebaseMessagingException {
@@ -54,7 +54,7 @@ public class FollowRelationshipController {
     }
 
     @DeleteMapping("/follow-relationship/gym")
-    @Operation(summary = "암장 팔로우 취소")
+    @Operation(summary = "암장 팔로우 취소 - 2104 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EXIST_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> unfollowGym(@RequestParam Long gymId, @CurrentUser User currentUser){
         User following = followRelationshipService.findManagerByGymID(gymId);

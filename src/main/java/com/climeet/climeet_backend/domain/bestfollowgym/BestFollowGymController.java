@@ -21,7 +21,7 @@ public class BestFollowGymController {
     /**
      * [GET] [팔로우 순] 이번주 짐 랭킹 조회
      */
-    @Operation(summary = "[팔로우 순] 이번주 짐 랭킹 조회")
+    @Operation(summary = "[팔로우 순] 이번주 짐 랭킹 조회 - 1801 [훈]")
     @GetMapping("/follow")
     public ResponseEntity<List<BestFollowGymDetailInfo>> getGymRankingListOrderFollowCount() {
         return ResponseEntity.ok(bestFollowGymService.getGymRankingListOrderFollowCount());

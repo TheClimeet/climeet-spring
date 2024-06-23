@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.bestclimber.time;
 import com.climeet.climeet_backend.domain.bestclimber.time.dto.BestTimeClimberResponseDto.BestTimeClimberDetailInfo;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.security.CurrentUser;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class BestTimeClimberController {
     private final BestTimeClimberService bestTimeClimberService;
 
     @GetMapping("/time")
+    @Operation(summary = "401 [훈]")
     public ResponseEntity<List<BestTimeClimberDetailInfo>> getClimberRankingListOrderTime(
         @CurrentUser User user
     ){

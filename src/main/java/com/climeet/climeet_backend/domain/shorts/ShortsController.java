@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "shorts", description = "숏츠 API")
+@Tag(name = "Shorts", description = "숏츠 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -35,7 +35,7 @@ public class ShortsController {
     @PostMapping("/shorts")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_SECTOR,
         ErrorStatus._EMPTY_ROUTE})
-    @Operation(summary = "숏츠 업로드", description = "**shortsVisibility** : PUBLIC OR FOLLOWERS_ONLY OR PRIVATE")
+    @Operation(summary = "숏츠 업로드 - 301 [진로]", description = "**shortsVisibility** : PUBLIC OR FOLLOWERS_ONLY OR PRIVATE")
     public ResponseEntity<String> uploadShorts(@CurrentUser User user,
         @RequestPart(value = "video") MultipartFile video,
         @RequestPart CreateShortsRequest createShortsRequest) throws FirebaseMessagingException {
@@ -44,7 +44,7 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/latest")
-    @Operation(summary = "숏츠 최신순 조회", description = "gymId, sectorId, routeIds 미 입력시 전체 조회")
+    @Operation(summary = "숏츠 최신순 조회 - 305 [진로]", description = "gymId, sectorId, routeIds 미 입력시 전체 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findLatestShorts(
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
@@ -54,7 +54,7 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/popular")
-    @Operation(summary = "숏츠 인기순 조회", description = "gymId, sectorId, routeIds 미 입력시 전체 조회")
+    @Operation(summary = "숏츠 인기순 조회 - 307 [진로]", description = "gymId, sectorId, routeIds 미 입력시 전체 조회")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findPopularShorts(
         @CurrentUser User user, @RequestParam int page, @RequestParam int size,
         @RequestParam(required = false) Long gymId, @RequestParam(required = false) Long sectorId,
@@ -64,7 +64,7 @@ public class ShortsController {
     }
 
     @PatchMapping("/shorts/{shortsId}/viewCount")
-    @Operation(summary = "숏츠 조회수 증가")
+    @Operation(summary = "숏츠 조회수 증가 - 303 [진로]")
     public ResponseEntity<String> updateShortsViewCount(@CurrentUser User user,
         @PathVariable Long shortsId) {
         shortsService.updateShortsViewCount(user, shortsId);
@@ -72,7 +72,7 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/profile")
-    @Operation(summary = "숏츠 프로필 바 조회", description = "팔로우 하고있는 암장, 프로필 리스트 조회/최근에 영상을 올렸을 시 true")
+    @Operation(summary = "숏츠 프로필 바 조회 - 308 [진로]", description = "팔로우 하고있는 암장, 프로필 리스트 조회/최근에 영상을 올렸을 시 true")
     public ResponseEntity<List<ShortsProfileSimpleInfo>> getShortsProfileList(
         @CurrentUser User user) {
         List<ShortsProfileSimpleInfo> shortsProfileSimpleInfoList = shortsService.getShortsProfileList(
@@ -81,7 +81,7 @@ public class ShortsController {
     }
 
     @PatchMapping("/shorts/isRead")
-    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리")
+    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리 - 304 [진로]")
     @SwaggerApiError({ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> updateShortsIsRead(@CurrentUser User user,
         @RequestParam Long followingUserId) {
@@ -90,14 +90,14 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/{shortsId}")
-    @Operation(summary = "숏츠 단일 조회")
+    @Operation(summary = "숏츠 단일 조회 - 302 [진로]")
     @SwaggerApiError({ErrorStatus._EMPTY_SHORTS, ErrorStatus._SHORTS_ACCESS_DENIED})
     public ResponseEntity<ShortsSimpleInfo> findShorts(@CurrentUser User user,
         @PathVariable Long shortsId) {
         return ResponseEntity.ok(shortsService.findDetailShorts(user, shortsId));
     }
 
-    @GetMapping("/shorts/uploader/{uploaderId}")
+    @GetMapping("/shorts/uploader/{uploaderId} - 309 [진로]")
     @Operation(summary = "특정 유저가 올린 숏츠 조회")
     @SwaggerApiError({ErrorStatus._EMPTY_USER})
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByUserId(@CurrentUser User user,
@@ -110,7 +110,7 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/my-shorts")
-    @Operation(summary = "내 숏츠 조회")
+    @Operation(summary = "내 숏츠 조회 - 306 [진로]")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findShortsByLoginUser(@CurrentUser User user,
         @RequestParam ShortsVisibility shortsVisibility,
         @RequestParam int page, @RequestParam int size) {
@@ -118,13 +118,13 @@ public class ShortsController {
     }
 
     @GetMapping("/shorts/user/liked")
-    @Operation(summary = "내가 좋아요 누른 숏츠 조회")
+    @Operation(summary = "내가 좋아요 누른 숏츠 조회 - 310 [진로]")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findUserLikedShorts(@CurrentUser User user,
         @RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(shortsService.findUserLikedShorts(user, page, size));
     }
 
-    @Operation(summary = "내가 북마크 숏츠 조회")
+    @Operation(summary = "내가 북마크 숏츠 조회 - 311 [진로]")
     @GetMapping("/shorts/user/bookmarked")
     public ResponseEntity<PageResponseDto<List<ShortsSimpleInfo>>> findUserBookmarkedShorts(
         @CurrentUser User user,

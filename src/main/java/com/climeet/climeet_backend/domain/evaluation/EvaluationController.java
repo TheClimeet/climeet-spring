@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.evaluation;
 import com.climeet.climeet_backend.domain.evaluation.dto.EvaluationRequestDto.CreateEvaluation;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.security.CurrentUser;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class EvaluationController {
     private final EvaluationService evaluationService;
 
     @PostMapping
+    @Operation(summary = "801 [훈]")
     public ResponseEntity<String> createEvaluation(@CurrentUser User user, @RequestBody
     CreateEvaluation requestDto) {
         return evaluationService.createEvaluation(user, requestDto);

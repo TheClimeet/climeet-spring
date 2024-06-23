@@ -29,7 +29,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Operation(summary = "암장 리뷰 작성")
+    @Operation(summary = "암장 리뷰 작성 - 1401 [무빗]")
     @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
         ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._REVIEW_EXIST})
     @PostMapping("/{gymId}/review")
@@ -39,7 +39,7 @@ public class ReviewController {
         return ResponseEntity.ok("리뷰를 추가했습니다.");
     }
 
-    @Operation(summary = "특정 암장 리뷰 목록 조회")
+    @Operation(summary = "특정 암장 리뷰 목록 조회 - 1402 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_MANAGER_GYM,
         ErrorStatus._EMPTY_MEMBER})
     @GetMapping("/{gymId}/review")
@@ -50,7 +50,7 @@ public class ReviewController {
     }
 
 
-    @Operation(summary = "암장 리뷰 수정")
+    @Operation(summary = "암장 리뷰 수정 - 1403 [무빗]")
     @SwaggerApiError({ErrorStatus._RATING_OUT_OF_RANGE, ErrorStatus._EMPTY_CLIMBING_GYM,
         ErrorStatus._EMPTY_MANAGER_GYM, ErrorStatus._EMPTY_MEMBER, ErrorStatus._EMPTY_REVIEW})
     @PatchMapping("/{gymId}/review")

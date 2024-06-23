@@ -31,14 +31,14 @@ public class RouteRecordController {
 
     //생성로직은 ClimbingRecordService에서 구현
 
-    @Operation(summary = "루트 기록 전체 조회")
+    @Operation(summary = "루트 기록 전체 조회 - 101 [훈]")
     @GetMapping
     @SwaggerApiError({ErrorStatus._EMPTY_ROUTE_RECORD})
     public ResponseEntity<List<RouteRecordSimpleInfo>> getRouteRecordList(@CurrentUser User user) {
         return ResponseEntity.ok(routeRecordService.getRouteRecordList(user));
     }
 
-    @Operation(summary = "루트 기록 id 조회")
+    @Operation(summary = "루트 기록 id 조회 - 102 [훈]")
     @GetMapping("/{id}")
     @SwaggerApiError({ErrorStatus._ROUTE_RECORD_NOT_FOUND, ErrorStatus._EMPTY_ROUTE,
         ErrorStatus._INVALID_MEMBER})
@@ -48,7 +48,7 @@ public class RouteRecordController {
         return ResponseEntity.ok(routeRecordService.getRouteRecord(user, id));
     }
 
-    @Operation(summary = "RouteRecord 수정")
+    @Operation(summary = "RouteRecord 수정 - 104 [훈]")
     @PatchMapping("/{id}")
     @SwaggerApiError({ErrorStatus._ROUTE_RECORD_NOT_FOUND, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<RouteRecordSimpleInfo> updateRouteRecord(
@@ -59,7 +59,7 @@ public class RouteRecordController {
             routeRecordService.updateRouteRecord(user, id, updateRouteRecord));
     }
 
-    @Operation(summary = "RouteRecord 삭제")
+    @Operation(summary = "RouteRecord 삭제 - 103 [훈]")
     @DeleteMapping("/{id}")
     @SwaggerApiError({ErrorStatus._ROUTE_RECORD_NOT_FOUND, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<String> deleteRouteRecord(
