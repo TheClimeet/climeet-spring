@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "User")
+@Tag(name = "2200 - User")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -36,7 +36,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/refresh-token")
-    @Operation(summary = "소셜 Access token, Refresh token 재발급 ")
+    @Operation(summary = "소셜 Access token, Refresh token 재발급 - 2201 [미리]")
     @SwaggerApiError({ErrorStatus._INVALID_JWT, ErrorStatus._EXPIRED_JWT, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<UserTokenSimpleInfo> refreshToken(@RequestParam String refreshToken){
         return ResponseEntity.ok(userService.updateUserToken(refreshToken));
@@ -44,7 +44,7 @@ public class UserController {
 
     }
     @GetMapping("/followers")
-    @Operation(summary = "특정 유저 팔로워 조회", description = "**userCategory** : Manager OR Climber\n\n 다른 사람의 팔로워를 조회하고 싶을 때 followingUserId를 채워서 보내고, 나 자신의 팔로워를 조회하고 싶을 때는 null로 보내면 됩니다.")
+    @Operation(summary = "특정 유저 팔로워 조회 - 2202 [미리]", description = "**userCategory** : Manager OR Climber\n\n 다른 사람의 팔로워를 조회하고 싶을 때 followingUserId를 채워서 보내고, 나 자신의 팔로워를 조회하고 싶을 때는 null로 보내면 됩니다.")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollower(@RequestParam(required = false) Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getFollower(userId, currentUser, userCategory));
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @GetMapping("/followees")
-    @Operation(summary = "특정 유저 팔로잉 조회", description = "**userCategory** : Manager OR Climber\n\n 다른 사람의 팔로잉를 조회하고 싶을 때 followingUserId를 채워서 보내고, 나 자신의 팔로잉를 조회하고 싶을 때는 null로 보내면 됩니다.")
+    @Operation(summary = "특정 유저 팔로잉 조회 - 2203 [미리]", description = "**userCategory** : Manager OR Climber\n\n 다른 사람의 팔로잉를 조회하고 싶을 때 followingUserId를 채워서 보내고, 나 자신의 팔로잉를 조회하고 싶을 때는 null로 보내면 됩니다.")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<List<UserFollowDetailInfo>> getFollowing(@RequestParam(required = false) Long userId, @RequestParam String userCategory, @CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getFollowing(userId, currentUser, userCategory));
@@ -60,13 +60,13 @@ public class UserController {
     }
 
     @GetMapping("/home/homegyms")
-    @Operation(summary = "홈 화면 홈짐 바로가기")
+    @Operation(summary = "홈 화면 홈짐 바로가기 - 2204 [미리]")
     public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getHomeGyms(currentUser));
     }
 
     @GetMapping("/users/accounts")
-    @Operation(summary = "로그인 계정 정보 조회")
+    @Operation(summary = "로그인 계정 정보 조회 - 2205 [미리]")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<UserAccountDetailInfo> getLoginUserProfiles(
         @CurrentUser User currentUser) {
@@ -74,7 +74,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/notifications")
-    @Operation(summary = "notificaion 허용 범위 수정")
+    @Operation(summary = "notificaion 허용 범위 수정 - 2206 [미리]")
     @SwaggerApiError({ErrorStatus._BAD_REQUEST, ErrorStatus._EMPTY_USER})
     public ResponseEntity<String> updateUserNotification(@CurrentUser User currentUser, @RequestBody
     UpdateUserAllowNotificationRequest updateRequestDto) {
@@ -82,19 +82,19 @@ public class UserController {
     }
 
     @GetMapping("/climber-following")
-    @Operation(summary = "팔로우하는 클라이머 정보 조회(검색창 하단)")
+    @Operation(summary = "팔로우하는 클라이머 정보 조회(검색창 하단) - 2207 [미리]")
     public ResponseEntity<List<UserFollowSimpleInfo>> getClimberFollowing(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getClimberFollowing(currentUser));
     }
 
     @GetMapping("/gym-following")
-    @Operation(summary = "팔로우하는 암장 정보 조회(검색창 하단)")
+    @Operation(summary = "팔로우하는 암장 정보 조회(검색창 하단) - 2208 [미리]")
     public ResponseEntity<List<UserHomeGymDetailInfo>> getGymsFollowing(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getGymsFollowing(currentUser));
     }
 
     @PostMapping("/users/fcmToken")
-    @Operation(summary = "사용자 FCM 토큰 업데이트")
+    @Operation(summary = "사용자 FCM 토큰 업데이트 - 2209 [미리]")
     public ResponseEntity<String> updateFcmToken(@CurrentUser User currentUser, @RequestBody
         UpdateUserFcmToken updateUserFcmToken){
         userService.updateUserFcmToken(currentUser, updateUserFcmToken.getFcmToken());
@@ -103,26 +103,26 @@ public class UserController {
 
     @GetMapping("/profile")
     @SwaggerApiError({ErrorStatus._EMPTY_USER})
-    @Operation(summary = "마이페이지 유저 프로필 조회")
+    @Operation(summary = "마이페이지 유저 프로필 조회 - 2210 [미리]")
     public ResponseEntity<UserProfileDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getUserMyPageProfile(currentUser));
     }
 
     @GetMapping("/profile/{userId}")
     @SwaggerApiError({ErrorStatus._EMPTY_USER})
-    @Operation(summary = "특정 유저 프로필 조회")
+    @Operation(summary = "특정 유저 프로필 조회 - 2211 [미리]")
     public ResponseEntity<UserFollowDetailInfo> getUserMyPageProfile(@CurrentUser User currentUser, @PathVariable Long userId){
         return ResponseEntity.ok(userService.getOtherUserMyPageProfile(currentUser, userId));
     }
 
     @GetMapping("/home/homegyms/{userId}")
-    @Operation(summary = "특정 유저 홈짐 조회")
+    @Operation(summary = "특정 유저 홈짐 조회 - 2212 [미리]")
     public ResponseEntity<List<UserHomeGymSimpleInfo>> getHomeGyms(@CurrentUser User currentUser, @PathVariable Long userId){
         return ResponseEntity.ok(userService.getUserHomeGyms(userId));
     }
 
     @PatchMapping("/profile-image")
-    @Operation(summary = "유저 프로필 사진 업데이트")
+    @Operation(summary = "유저 프로필 사진 업데이트 - 2213 [미리]")
     public ResponseEntity<String> updateUserProfileImage(@CurrentUser User currentUser, @RequestPart
         MultipartFile image){
         userService.updateUserProfileImage(currentUser, image);
@@ -130,7 +130,7 @@ public class UserController {
     }
 
     @PatchMapping("/profile-name")
-    @Operation(summary = "유저 프로필 이름 업데이트")
+    @Operation(summary = "유저 프로필 이름 업데이트 - 2214 [미리]")
     public ResponseEntity<String> updateUserProfileName(@CurrentUser User currentUser, @RequestParam String name){
         userService.updateUserProfileName(currentUser, name);
         return ResponseEntity.ok("프로필 이름 업데이트 완료");

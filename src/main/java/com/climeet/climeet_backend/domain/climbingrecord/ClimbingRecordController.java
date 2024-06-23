@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "ClimbingRecords", description = "클라이밍 운동기록 API")
+@Tag(name = "1200 - ClimbingRecords", description = "클라이밍 운동기록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/climbing-records")
@@ -43,7 +43,7 @@ public class ClimbingRecordController {
     private final ClimbingRecordService climbingRecordService;
 
 
-    @Operation(summary = "클라이밍 기록 생성")
+    @Operation(summary = "클라이밍 기록 생성 - 1201 [훈]")
     @PostMapping
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM, ErrorStatus._EMPTY_ROUTE})
     public ResponseEntity<String> createClimbingRecord(
@@ -53,7 +53,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok("클라이밍 기록을 생성하였습니다.");
     }
 
-    @Operation(summary = "클라이밍 간편 기록 전체 조회")
+    @Operation(summary = "클라이밍 간편 기록 전체 조회 - 1202 [훈]")
     @GetMapping
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD})
     public ResponseEntity<List<ClimbingRecordSimpleInfo>> getClimbingRecordList(
@@ -62,7 +62,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getClimbingRecordList());
     }
 
-    @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.)")
+    @Operation(summary = "클라이밍 기록 id 조회 (루트기록들 포함. 단, 루트 기록은 없어도 예외처리하지 않음.) - 1203 [훈]")
     @GetMapping("/{id}")
     @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND})
     public ResponseEntity<ClimbingRecordDetailInfo> getClimbingRecordById(
@@ -72,7 +72,7 @@ public class ClimbingRecordController {
     }
 
 
-    @Operation(summary = "나의 클라이밍 기록 날짜 조회")
+    @Operation(summary = "나의 클라이밍 기록 날짜 조회 - 1204 [훈]")
     @GetMapping("/between-dates")
     @SwaggerApiError({ErrorStatus._INVALID_DATE_RANGE,
         ErrorStatus._INVALID_MEMBER})
@@ -86,7 +86,7 @@ public class ClimbingRecordController {
     }
 
 
-    @Operation(summary = "ClimbingRecord 수정")
+    @Operation(summary = "ClimbingRecord 수정 - 1205 [훈]")
     @PatchMapping("/{id}")
     @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<ClimbingRecordSimpleInfo> updateClimbingRecord(
@@ -97,7 +97,7 @@ public class ClimbingRecordController {
             climbingRecordService.updateClimbingRecord(user, id, updateClimbingRecord));
     }
 
-    @Operation(summary = "ClimbingRecord 삭제")
+    @Operation(summary = "ClimbingRecord 삭제 - 1206 [훈]")
     @DeleteMapping("/{id}")
     @SwaggerApiError({ErrorStatus._CLIMBING_RECORD_NOT_FOUND, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<String> deleteClimbingRecord(
@@ -107,7 +107,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok("클라이밍 기록을 삭제하였습니다.");
     }
 
-    @Operation(summary = "나의 월별 운동기록 통계")
+    @Operation(summary = "나의 월별 운동기록 통계 - 1207 [훈]")
     @GetMapping("/users/statistics/months")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<ClimbingRecordStatisticsInfo> getClimbingStatisticsMonthly(
@@ -118,7 +118,7 @@ public class ClimbingRecordController {
             climbingRecordService.getClimbingRecordStatistics(user, year, month));
     }
 
-    @Operation(summary = "특정 암장에 대한 나의 월 통계")
+    @Operation(summary = "특정 암장에 대한 나의 월 통계 - 1208 [훈]")
     @GetMapping("/users/gyms/{gymId}/statistics/months")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_RECORD, ErrorStatus._INVALID_MEMBER})
     public ResponseEntity<ClimbingRecordStatisticsInfoByGym> getClimbingStatisticsByGymMonthly(
@@ -130,7 +130,7 @@ public class ClimbingRecordController {
             climbingRecordService.getClimbingRecordStatisticsByGymId(user, gymId, year, month));
     }
 
-    @Operation(summary = "암장별 주간 평균 완등률 통계 ")
+    @Operation(summary = "암장별 주간 평균 완등률 통계 - 1209 [훈]")
     @GetMapping("/gyms/{gymId}/statistics/weeks")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordStatisticsSimpleInfo> getGymStatisticsWeekly(
@@ -141,7 +141,7 @@ public class ClimbingRecordController {
             climbingRecordService.getGymStatisticsWeekly(gymId));
     }
 
-    @Operation(summary = "[완등순] 암장별 클라이머 랭킹")
+    @Operation(summary = "[완등순] 암장별 클라이머 랭킹 - 1210 [훈]")
     @GetMapping("/gyms/{gymId}/rank/weeks/climbers/clear")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<List<BestClearUserSimpleInfo>> getClimberRankingListOrderClearCountByGym(
@@ -150,7 +150,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderClearCountByGym(gymId));
     }
 
-    @Operation(summary = "[시간순] 암장별 클라이머 랭킹")
+    @Operation(summary = "[시간순] 암장별 클라이머 랭킹 - 1211 [훈]")
     @GetMapping("/gyms/{gymId}/rank/weeks/climbers/time")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<List<BestTimeUserSimpleInfo>> getClimberRankingListOrderTimeByGym(
@@ -159,7 +159,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderTimeByGym(gymId));
     }
 
-    @Operation(summary = "[높은 레벨순] 암장별 클라이머 랭킹")
+    @Operation(summary = "[높은 레벨순] 암장별 클라이머 랭킹 - 1212 [훈]")
     @GetMapping("/gyms/{gymId}/rank/weeks/climbers/level")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<List<BestLevelUserSimpleInfo>> getClimberRankingListOrderLevelByGym(
@@ -168,7 +168,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getClimberRankingListOrderLevelByGym(gymId));
     }
 
-    @Operation(summary = "[유저프로필] 유저별 전체 암장에 대한 누적 통계")
+    @Operation(summary = "[유저프로필] 유저별 전체 암장에 대한 누적 통계 - 1213 [훈]")
     @GetMapping("/users/{userId}/statistics")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordUserStatisticsSimpleInfo> getUserStatistics(
@@ -177,7 +177,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getUserStatistics(userId));
     }
 
-    @Operation(summary = "유저별 특정 암장에 대한 누적 통계")
+    @Operation(summary = "유저별 특정 암장에 대한 누적 통계 - 1214 [훈]")
     @GetMapping("/users/{userId}/gyms/{gymId}/statistics")
     @SwaggerApiError({ErrorStatus._EMPTY_CLIMBING_GYM})
     public ResponseEntity<ClimbingRecordUserAndGymStatisticsDetailInfo> getUserStatistics(
@@ -188,7 +188,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getUserStatisticsByGym(userId, gymId));
     }
 
-    @Operation(summary = "유저별 운동한 암장 리스트 조회")
+    @Operation(summary = "유저별 운동한 암장 리스트 조회 - 1215 [훈]")
     @GetMapping("/users/{userId}/list")
     public ResponseEntity<List<VisitedClimbingGym>> getVisitedGymList(
             @CurrentUser User user,
@@ -196,7 +196,7 @@ public class ClimbingRecordController {
         return ResponseEntity.ok(climbingRecordService.getVisitedGymList(userId));
     }
 
-    @Operation(summary = "나의 운동한 암장 리스트 조회")
+    @Operation(summary = "나의 운동한 암장 리스트 조회 - 1216 [훈]")
     @GetMapping("/users/months/list")
     public ResponseEntity<List<VisitedClimbingGym>> getVisitedGymList(
         @CurrentUser User user,

@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "BestRecordGym", description = "[기록된 순(selected된 순)] 금주 베스트 운동 기록 API")
+@Tag(name = "600 - BestRecordGym", description = "[기록된 순(selected된 순)] 금주 베스트 운동 기록 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/home/rank/weeks/gyms")
 public class BestRecordGymController {
     private final BestRecordGymService bestRecordGymService;
 
-    @Operation(summary = "[기록된 순(selected된 순)] 이번주 짐 랭킹 조회")
+    @Operation(summary = "[기록된 순(selected된 순)] 이번주 짐 랭킹 조회 - 601 [훈]")
     @GetMapping("/record")
     public ResponseEntity<List<BestRecordGymDetailInfo>> getGymRankingListOrderSelectionCount(
         @CurrentUser User user

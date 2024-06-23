@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "ClimbingSector", description = "클라이밍 섹터 API")
+@Tag(name = "500 - ClimbingSector", description = "클라이밍 섹터 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/gyms")
@@ -28,7 +28,7 @@ public class SectorController {
 
     private final SectorService sectorService;
 
-    @Operation(summary = "클라이밍 섹터 생성")
+    @Operation(summary = "클라이밍 섹터 생성 - 502 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._DUPLICATE_SECTOR_NAME})
     @PostMapping("/sector")
     public ResponseEntity<SectorSimpleResponse> createSector(
@@ -38,7 +38,7 @@ public class SectorController {
         return ResponseEntity.ok(sectorService.createSector(createSectorRequest, sectorImage, user));
     }
 
-    @Operation(summary = "특정 암장 전체 섹터 조회")
+    @Operation(summary = "특정 암장 전체 섹터 조회 - 501 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_SECTOR_LIST})
     @GetMapping("/{gymId}/sector")
     public ResponseEntity<List<SectorDetailResponse>> getSectorList(
