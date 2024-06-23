@@ -3,7 +3,9 @@ package com.climeet.climeet_backend.domain.manager;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
+import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import com.climeet.climeet_backend.global.security.CurrentUser;
 import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,6 +59,12 @@ public class ManagerController {
         boolean isDuplicated = !managerService.checkLoginDuplication(loginId);
         return ResponseEntity.ok(isDuplicated);
 
+    }
+
+    @GetMapping("/gym-id")
+    @Operation(summary = "관리자 관리 암장 확인. - 205 [무빗]", description = "관리자의 소속 암장 id를 확인합니다.")
+    public ResponseEntity<Long> getClimbingGymIdOfManager(@CurrentUser User user){
+        return ResponseEntity.ok(managerService.getClimbingGymIdOfManager(user));
     }
 
 
