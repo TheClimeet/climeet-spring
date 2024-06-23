@@ -55,6 +55,7 @@ public class ManagerController {
 
     @GetMapping("/check-id/{loginId}")
     @Operation(summary = "관리자 ID 중복 확인", description = "**이미 존재하는 ID** : false \n\n **사용 가능한 ID** : true")
+    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     public ResponseEntity<Boolean> checkLoginId(@PathVariable String loginId){
         boolean isDuplicated = !managerService.checkLoginDuplication(loginId);
         return ResponseEntity.ok(isDuplicated);
