@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "ClimbingGym", description = "암장 관련 API")
 @RestController
@@ -93,16 +91,18 @@ public class ClimbingGymController {
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._EMPTY_BACKGROUND_IMAGE})
     @PatchMapping("/background-image")
     public ResponseEntity<String> changeClimbingGymBackgroundImage(@CurrentUser User user,
-        @RequestPart MultipartFile image) {
-        return ResponseEntity.ok(climbingGymService.changeClimbingGymBackgroundImage(user, image));
+        @RequestBody String imageUrl) {
+        climbingGymService.changeClimbingGymBackgroundImage(user, imageUrl);
+        return ResponseEntity.ok("암장 배경사진 변경을 완료했습니다.");
     }
 
     @Operation(summary = "암장 프로필 이미지 변경 (1개만 등록 가능)")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     @PatchMapping("/profile-image")
     public ResponseEntity<String> changeClimbingGymProfileImage(@CurrentUser User user,
-        @RequestPart MultipartFile image) {
-        return ResponseEntity.ok(climbingGymService.changeClimbingGymProfileImage(user, image));
+        @RequestBody String imageUrl) {
+        climbingGymService.changeClimbingGymProfileImage(user, imageUrl);
+        return ResponseEntity.ok("관리자 프로필 이미지 변경을 완료했습니다.");
     }
 
     @Operation(summary = "암장 제공 서비스 수정", description = "**Enum 설명**\n\n**ServiceBitmask** :  샤워\\_시설,  샤워\\_용품,  수건\\_제공,  간이\\_세면대,  초크\\_대여,  암벽화\\_대여,  삼각대\\_대여,  운동복\\_대여")

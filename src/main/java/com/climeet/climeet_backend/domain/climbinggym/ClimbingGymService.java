@@ -42,7 +42,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -228,7 +227,7 @@ public class ClimbingGymService {
             .toList();
     }
 
-    public String changeClimbingGymBackgroundImage(User user, MultipartFile image) {
+    public void changeClimbingGymBackgroundImage(User user, String imageUrl) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
@@ -236,21 +235,16 @@ public class ClimbingGymService {
                 manager.getClimbingGym())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
 
-        String backgroundImageUrl = s3Service.uploadFile(image).getImgUrl();
-        climbingGymBackgroundImage.changeImgUrl(backgroundImageUrl);
+        climbingGymBackgroundImage.changeImgUrl(imageUrl);
         climbingGymBackgroundImageRepository.save(climbingGymBackgroundImage);
-
-        return backgroundImageUrl;
     }
 
-    public String changeClimbingGymProfileImage(User user, MultipartFile image) {
+    public void changeClimbingGymProfileImage(User user, String imageUrl) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
         ClimbingGym climbingGym = manager.getClimbingGym();
-        String profileImageUrl = s3Service.uploadFile(image).getImgUrl();
-        climbingGym.updateProfileImageUrl(profileImageUrl);
+        climbingGym.updateProfileImageUrl(imageUrl);
         climbingGymRepository.save(climbingGym);
-        return profileImageUrl;
     }
 
     public void updateClimbingGymService(User user,
