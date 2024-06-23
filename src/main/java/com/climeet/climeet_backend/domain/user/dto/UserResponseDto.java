@@ -58,13 +58,13 @@ public class UserResponseDto {
         private Long followingCount;
         private Boolean isFollower;
 
-        public static UserFollowDetailInfo toDTO(User follower, Boolean followStatus){
+        public static UserFollowDetailInfo toDTO(Long id, String name, String profileUrl, Long followerCount, Long followingCount, Boolean followStatus){
             return UserFollowDetailInfo.builder()
-                .userId(follower.getId())
-                .userName(follower.getProfileName())
-                .userProfileUrl(follower.getProfileImageUrl())
-                .followerCount(follower.getFollowerCount())
-                .followingCount(follower.getFollowingCount())
+                .userId(id)
+                .userName(name)
+                .userProfileUrl(profileUrl)
+                .followerCount(followerCount)
+                .followingCount(followingCount)
                 .isFollower(followStatus)
                 .build();
         }
