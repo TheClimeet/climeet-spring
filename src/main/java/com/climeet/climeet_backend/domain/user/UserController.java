@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.user;
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserFcmToken;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAllowNotificationInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
@@ -134,6 +135,11 @@ public class UserController {
     public ResponseEntity<String> updateUserProfileName(@CurrentUser User currentUser, @RequestParam String name){
         userService.updateUserProfileName(currentUser, name);
         return ResponseEntity.ok("프로필 이름 업데이트 완료");
+    }
+    @GetMapping("/users/notifications")
+    @Operation(summary = "유저 알림 허용 범위 조회 - 2215 [미리]")
+    public ResponseEntity<UserAllowNotificationInfo> getUserNotification(@CurrentUser User currentUser){
+        return ResponseEntity.ok(userService.getUserNotification(currentUser));
     }
 //    @PostMapping("/master-token")
 //    public String createMasterToken(){
