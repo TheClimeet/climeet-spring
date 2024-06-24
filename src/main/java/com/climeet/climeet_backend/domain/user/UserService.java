@@ -13,6 +13,7 @@ import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllo
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.route.Route;
 import com.climeet.climeet_backend.domain.routeversion.RouteVersionService;
+import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAllowNotificationInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowDetailInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserFollowSimpleInfo;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserHomeGymDetailInfo;
@@ -309,6 +310,10 @@ public class UserService {
     }
     public boolean checkProfileNameDuplication(String name) {
         return userRepository.findByprofileName(name).isPresent();
+    }
+
+    public UserAllowNotificationInfo getUserNotification(User user){
+        return UserAllowNotificationInfo.toDTO(user);
     }
 
 //    public String createMasterToken(){

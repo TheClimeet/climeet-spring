@@ -206,4 +206,24 @@ public class UserResponseDto {
         }
 
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UserAllowNotificationInfo{
+        private Boolean isAllowFollowNotification;
+        private Boolean isAllowLikeNotification;
+        private Boolean isAllowCommentNotification;
+        private Boolean isAllowAdNotification;
+
+        public static UserAllowNotificationInfo toDTO(User user){
+            return UserAllowNotificationInfo.builder()
+                .isAllowFollowNotification(user.getIsAllowFollowNotification())
+                .isAllowLikeNotification(user.getIsAllowLikeNotification())
+                .isAllowCommentNotification(user.getIsAllowCommentNotification())
+                .isAllowAdNotification(user.getIsAllowAdNotification())
+                .build();
+        }
+    }
 }
