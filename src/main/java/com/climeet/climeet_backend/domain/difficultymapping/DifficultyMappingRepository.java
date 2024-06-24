@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DifficultyMappingRepository extends JpaRepository<DifficultyMapping, Long> {
 
+    List<DifficultyMapping> findByIdIn(List<Long> difficultyIdList);
+
     DifficultyMapping findByClimbingGymAndDifficulty(ClimbingGym climbingGym, int difficulty);
 
     DifficultyMapping findByClimbingGymAndGymDifficultyName(ClimbingGym climbingGym, String gymDifficultyName);

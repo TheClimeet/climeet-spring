@@ -4,9 +4,12 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImage;
 import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImageRepository;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.dto.ClimbingGymLayoutImageResponseDto.LayoutImgListDetail;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.dto.DifficultyMappingResponseDto.DifficultyMappingDetailResponse;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.GymDifficulty;
 import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
@@ -23,16 +26,14 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
-import com.climeet.climeet_backend.global.s3.S3Service;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,6 @@ public class RouteVersionService {
     private final ManagerRepository managerRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
-    private final S3Service s3Service;
     private final FcmNotificationService fcmNotificationService;
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
@@ -56,59 +56,98 @@ public class RouteVersionService {
         return timePointList;
     }
 
-    public void createRouteVersion(CreateRouteVersionRequest createRouteVersionRequest, User user,
-        MultipartFile layoutImage) {
+    public void createRouteVersion(CreateRouteVersionRequest requestDto, User user) {
+        // user가 매니저인지 확인
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
-        // 암장 데이터와 TimePoint로 가장 가까운 시점의 RouteVersion 데이터를 가져옴
-        // 추가하려는 날짜의 해당 암장 루트 버전 데이터가 존재하는지 확인하기 위함
-        Optional<RouteVersion> routeVersionOptional = routeVersionRepository.findByClimbingGymAndTimePoint(
-            manager.getClimbingGym(), createRouteVersionRequest.getTimePoint());
-        if (routeVersionOptional.isPresent()) {
-            throw new GeneralException(ErrorStatus._DUPLICATE_ROUTE_VERSION);
-        }
+        // 암장 난이도 추가 변경
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(manager.getClimbingGym());
+        List<Long> filteredDifficultyMappingIdList = new ArrayList<>(difficultyMappingList.stream()
+            .filter(difficulty -> requestDto.getExistingData().getDifficulty()
+                .contains(difficulty.getGymDifficultyName()))
+            .map(DifficultyMapping::getId)
+            .toList());
+        List<Long> newDifficultyImageIdList = requestDto.getNewData().getDifficulty().stream()
+            .map(difficultyDto -> {
+                DifficultyMapping targetDifficulty = difficultyMappingList.stream()
+                    .filter(difficulty -> difficulty.getGymDifficultyName().equals(difficultyDto.getGymDifficultyName()))
+                    .findFirst()
+                    .orElse(null);
+                if(targetDifficulty != null) {
+                    targetDifficulty.changeDifficultyMapping(ClimeetDifficulty.findByString(
+                        difficultyDto.getClimeetDifficultyName()));
+                } else {
+                    targetDifficulty = DifficultyMapping.toEntity(
+                        GymDifficulty.findByName(difficultyDto.getGymDifficultyName()),
+                        ClimeetDifficulty.findByString(difficultyDto.getClimeetDifficultyName()),
+                        manager.getClimbingGym());
+                }
+                return difficultyMappingRepository.save(targetDifficulty).getId();
+            })
+            .toList();
+        filteredDifficultyMappingIdList.addAll(newDifficultyImageIdList);
 
-        // 루트리스트에 넣을 데이터가 실제로 다 추가되어있는지 확인
-        List<Route> routeList = routeRepository.findByIdIn(
-            createRouteVersionRequest.getRouteIdList());
-        if (routeList.size() != createRouteVersionRequest.getRouteIdList().size()) {
-            throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
-        }
 
-        // 섹터리스트에 넣을 데이터가 실제로 다 추가되어있는지 확인
-        List<Sector> sectorList = sectorRepository.findByIdIn(
-            createRouteVersionRequest.getSectorIdList());
-        if (sectorList.size() != createRouteVersionRequest.getSectorIdList().size()) {
-            throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
-        }
+        // 암장 층별 이미지 추가
+        List<ClimbingGymLayoutImage> layoutImageList = climbingGymLayoutImageRepository.findClimbingGymLayoutImageByClimbingGym(manager.getClimbingGym());
+        List<Long> filteredLayoutImageIdList = new ArrayList<>(layoutImageList.stream()
+            .filter(layout -> requestDto.getExistingData().getLayout().contains(layout.getFloor()))
+            .map(ClimbingGymLayoutImage::getId)
+            .toList());
+        List<Long> newLayoutImageIdList = requestDto.getNewData().getLayout().stream()
+            .map(layoutDto -> {
+                ClimbingGymLayoutImage targetLayoutImage = layoutImageList.stream()
+                    .filter( layout -> layout.getFloor() == layoutDto.getFloor())
+                    .findFirst()
+                    .orElse(null);
+                if (targetLayoutImage != null) {
+                    targetLayoutImage.changeImgUrl(layoutDto.getImgUrl());
+                } else {
+                    targetLayoutImage = ClimbingGymLayoutImage.toEntity(
+                        manager.getClimbingGym(), layoutDto.getFloor(), layoutDto.getImgUrl());
+                }
+                return climbingGymLayoutImageRepository.save(targetLayoutImage).getId();
+            })
+            .toList();
+        filteredLayoutImageIdList.addAll(newLayoutImageIdList);
+
+        // 기존 Sector 가져오기
+        List<Sector> sectorList = new ArrayList<>(sectorRepository.findByIdIn(requestDto.getExistingData().getSector()));
+        // 새 Sector 추가하기
+        List<Sector> newSectorList = requestDto.getNewData().getSector().stream()
+            .map(sectorDto -> {
+                return sectorRepository.save(Sector.toEntity(manager.getClimbingGym(), sectorDto.getName(), sectorDto.getFloor(),
+                    sectorDto.getImgUrl()));
+            })
+            .toList();
+        // Sector 데이터 병합(Route 추가시에 사용)
+        sectorList.addAll(newSectorList);
+
+        // 기존 Route 가져오기
+        List<Route> routeList = new ArrayList<>(routeRepository.findByIdIn(requestDto.getExistingData().getRoute()));
+        // 새 Route 추가하기
+        List<Route> newRouteList = requestDto.getNewData().getRoute().stream()
+            .map(routeDto-> {
+                Sector targetSector = sectorList.stream()
+                    .filter(sector -> sector.getSectorName().equals(routeDto.getSectorName()))
+                    .findFirst()
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._MISMATCH_SECTOR_DATA));
+                DifficultyMapping targetDifficulty = difficultyMappingList.stream()
+                    .filter(difficultyMapping -> difficultyMapping.getGymDifficultyName().equals(routeDto.getGymDifficultyName()))
+                    .findFirst()
+                    .orElseThrow(() -> new GeneralException(ErrorStatus._MISMATCH_DIFFICULTY_DATA));
+                return routeRepository.save(Route.toEntity(targetSector, targetDifficulty, routeDto.getImgUrl(), routeDto.getHoldColor()));
+            })
+            .toList();
+        routeList.addAll(newRouteList);
 
         Map<String, List<Long>> climbData = new HashMap<>();
-        climbData.put("route", createRouteVersionRequest.getRouteIdList());
-        climbData.put("sector", createRouteVersionRequest.getSectorIdList());
-
-        // 이미지 url이나 이미지 파일이 들어오지 않았을 때 예외처리
-        if (layoutImage == null && createRouteVersionRequest.getLayoutImageId() == null) {
-            throw new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE);
-        }
-
-        ClimbingGymLayoutImage climbingGymLayoutImage = null;
-        // 이미지 파일이 들어왔으면 s3에 업로드 후 사용
-        if (layoutImage != null) {
-            String layoutImageUrl = s3Service.uploadFile(layoutImage).getImgUrl();
-            climbingGymLayoutImage = climbingGymLayoutImageRepository.save(
-                ClimbingGymLayoutImage.toEntity(layoutImageUrl));
-        }
-        // 이미지 파일이 안들어왔으면 기존 url 그대로 사용
-        else {
-            climbingGymLayoutImage = climbingGymLayoutImageRepository.findById(
-                    createRouteVersionRequest.getLayoutImageId())
-                .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_LAYOUT_IMAGE));
-        }
+        climbData.put("route", routeList.stream().map(Route::getId).toList());
+        climbData.put("sector", sectorList.stream().map(Sector::getId).toList());
 
         routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
-            createRouteVersionRequest.getTimePoint(), climbData,
-            climbingGymLayoutImage));
+            requestDto.getTimePoint(), filteredDifficultyMappingIdList, filteredLayoutImageIdList, climbData));
 
     }
 
@@ -125,26 +164,25 @@ public class RouteVersionService {
                 climbingGym, timePoint)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_VERSION));
 
+        List<ClimbingGymLayoutImage> layoutImageList = climbingGymLayoutImageRepository.findByIdIn(routeVersion.getLayoutList());
+
         List<Sector> sectorList = sectorRepository.findByIdIn(routeVersion.getClimbData().get("sector"));
         if (sectorList.size() != routeVersion.getClimbData().get("sector").size()) {
             throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
         }
 
-        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
-            climbingGym);
-        if (difficultyList.isEmpty()) {
-            throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
-        }
+        List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByIdIn(routeVersion.getDifficultyMappingList());
 
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
             .map(SectorDetailResponse::toDTO).toList();
         List<DifficultyMappingDetailResponse> difficultyMappingDetailResponses = difficultyList.stream()
             .map(DifficultyMappingDetailResponse::toDTO).toList();
-        int maxFloor = sectorList.stream()
-            .mapToInt(Sector::getFloor).max().orElse(0);
+        int maxFloor = layoutImageList.stream()
+            .mapToInt(ClimbingGymLayoutImage::getFloor).max().orElse(0);
+        List<LayoutImgListDetail> layoutResponses = layoutImageList.stream().map(LayoutImgListDetail::toDto).toList();
 
         return RouteVersionFilteringKeyResponse.toDTO(climbingGym, sectorDetailResponses,
-            difficultyMappingDetailResponses, maxFloor, routeVersion);
+            difficultyMappingDetailResponses, layoutResponses, maxFloor, routeVersion);
     }
 
     public PageResponseDto<List<RouteDetailResponse>> getRouteVersionFilteringRouteList(Long gymId,
@@ -172,8 +210,7 @@ public class RouteVersionService {
         // sector Filter 적용
         if (getFilteredRouteVersionRequest.getSectorId() != null) {
             routeList = routeList.stream()
-                .filter(route -> route.getSector().getId()
-                    == getFilteredRouteVersionRequest.getSectorId())
+                .filter(route -> route.getSector().getId().equals(getFilteredRouteVersionRequest.getSectorId()))
                 .toList();
         }
 
@@ -188,7 +225,7 @@ public class RouteVersionService {
         List<RouteDetailResponse> routeDetailResponseList = routeList.stream()
             .sorted(Comparator.comparing(Route::getId).reversed())
             .skip(
-                getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
+                (long) getFilteredRouteVersionRequest.getPage() * getFilteredRouteVersionRequest.getSize())
             .limit(getFilteredRouteVersionRequest.getSize())
             .map(RouteDetailResponse::toDTO)
             .toList();
