@@ -136,11 +136,13 @@ public class UserController {
         userService.updateUserProfileName(currentUser, name);
         return ResponseEntity.ok("프로필 이름 업데이트 완료");
     }
+
     @GetMapping("/users/notifications")
     @Operation(summary = "유저 알림 허용 범위 조회 - 2215 [미리]")
     public ResponseEntity<UserAllowNotificationInfo> getUserNotification(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getUserNotification(currentUser));
     }
+
 //    @PostMapping("/master-token")
 //    public String createMasterToken(){
 //        return userService.createMasterToken();

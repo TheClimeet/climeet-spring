@@ -312,6 +312,7 @@ public class UserService {
         return userRepository.findByprofileName(name).isPresent();
     }
 
+
     public UserAllowNotificationInfo getUserNotification(User user){
         return UserAllowNotificationInfo.toDTO(user);
     }
