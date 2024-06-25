@@ -146,8 +146,16 @@ public class RouteVersionService {
         climbData.put("route", routeList.stream().map(Route::getId).toList());
         climbData.put("sector", sectorList.stream().map(Sector::getId).toList());
 
-        routeVersionRepository.save(RouteVersion.toEntity(manager.getClimbingGym(),
-            requestDto.getTimePoint(), filteredDifficultyMappingIdList, filteredLayoutImageIdList, climbData));
+        RouteVersion routeVersion = routeVersionRepository.findByClimbingGymAndTimePoint(manager.getClimbingGym(), requestDto.getTimePoint())
+            .orElse(null);
+        if(routeVersion != null){
+            routeVersion.changeRouteVersion(filteredDifficultyMappingIdList, filteredLayoutImageIdList, climbData);
+        } else{
+            routeVersion = RouteVersion.toEntity(manager.getClimbingGym(),
+                requestDto.getTimePoint(), filteredDifficultyMappingIdList, filteredLayoutImageIdList, climbData);
+        }
+
+        routeVersionRepository.save(routeVersion);
 
     }
 

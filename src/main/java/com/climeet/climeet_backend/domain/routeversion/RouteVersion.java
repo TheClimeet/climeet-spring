@@ -64,4 +64,11 @@ public class RouteVersion extends BaseTimeEntity {
             .climbData(climbData)
             .build();
     }
+
+    public void changeRouteVersion(List<Long> difficultyMappingList,
+        List<Long> layoutList ,Map<String, List<Long>> climbData){
+        this.difficultyMappingList = difficultyMappingList;
+        this.layoutList = layoutList;
+        this.climbData = climbData;
+    }
 }
