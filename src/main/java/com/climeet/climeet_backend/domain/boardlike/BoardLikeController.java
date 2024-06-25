@@ -19,17 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class BoardLikeController {
     private final BoardLikeService boardLikeService;
 
-    @PatchMapping("/boards/{boardId}/like - 2801 [미리]")
+    @PatchMapping("/boards/{boardId}/like")
     @SwaggerApiError({ErrorStatus._BOARD_NOT_FOUND, ErrorStatus._EXIST_BOARD_LIKE})
-    @Operation(summary = "특정 공지사항 좋아요")
+    @Operation(summary = "특정 공지사항 좋아요 - 2801 [미리]")
     public ResponseEntity<String> likeNotice(@CurrentUser User user, @PathVariable Long boardId){
         boardLikeService.boardLike(user, boardId);
         return ResponseEntity.ok("좋아요 완료");
     }
 
-    @PatchMapping("/boards/{boardId}/unlike - 2802 [미리]")
+    @PatchMapping("/boards/{boardId}/unlike")
     @SwaggerApiError({ErrorStatus._BOARD_NOT_FOUND, ErrorStatus._UNEXIST_BOARD_LIKE})
-    @Operation(summary = "특정 공지사항 좋아요 취소")
+    @Operation(summary = "특정 공지사항 좋아요 취소 - 2802 [미리]")
     public ResponseEntity<String> unLikeNotice(@CurrentUser User user, @PathVariable Long boardId){
         boardLikeService.boardUnLike(user, boardId);
         return ResponseEntity.ok("좋아요 취소 완료");
