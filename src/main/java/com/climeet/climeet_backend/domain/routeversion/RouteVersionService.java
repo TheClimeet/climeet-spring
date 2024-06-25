@@ -35,6 +35,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +58,7 @@ public class RouteVersionService {
         return timePointList;
     }
 
+    @Transactional
     public void createRouteVersion(CreateRouteVersionRequest requestDto, User user) {
         // user가 매니저인지 확인
         Manager manager = managerRepository.findById(user.getId())
