@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class RouteVersionRequestDto {
+
     @Getter
     @NoArgsConstructor
     public static class ExistingRouteVersionData {
+
         private List<String> difficulty = new ArrayList<>();
         private List<Integer> layout = new ArrayList<>();
         private List<Long> sector = new ArrayList<>();
@@ -21,6 +23,7 @@ public class RouteVersionRequestDto {
     @Getter
     @AllArgsConstructor
     public static class NewDifficultyData {
+
         private String gymDifficultyName;
         private String climeetDifficultyName;
     }
@@ -28,6 +31,7 @@ public class RouteVersionRequestDto {
     @Getter
     @AllArgsConstructor
     public static class NewLayoutData {
+
         private int floor;
         private String imgUrl;
     }
@@ -35,6 +39,7 @@ public class RouteVersionRequestDto {
     @Getter
     @AllArgsConstructor
     public static class NewSectorData {
+
         private String name;
         private int floor;
         private String imgUrl;
@@ -43,6 +48,7 @@ public class RouteVersionRequestDto {
     @Getter
     @AllArgsConstructor
     public static class NewRouteData {
+
         private String sectorName;
         private String gymDifficultyName;
         private String holdColor;
@@ -52,6 +58,7 @@ public class RouteVersionRequestDto {
     @Getter
     @NoArgsConstructor
     public static class NewRouteVersionData {
+
         private List<NewDifficultyData> difficulty = new ArrayList<>();
         private List<NewLayoutData> layout = new ArrayList<>();
         private List<NewSectorData> sector = new ArrayList<>();
@@ -61,9 +68,10 @@ public class RouteVersionRequestDto {
     @Getter
     @NoArgsConstructor
     public static class CreateRouteVersionRequest {
+
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate timePoint;
-        private ExistingRouteVersionData existingData = new ExistingRouteVersionData();;
+        private ExistingRouteVersionData existingData = new ExistingRouteVersionData();
         private NewRouteVersionData newData = new NewRouteVersionData();
     }
 
