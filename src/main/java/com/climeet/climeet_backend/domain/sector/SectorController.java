@@ -1,8 +1,6 @@
 package com.climeet.climeet_backend.domain.sector;
 
-import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
 import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorDetailResponse;
-import com.climeet.climeet_backend.domain.sector.dto.SectorResponseDto.SectorSimpleResponse;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.security.CurrentUser;
@@ -14,11 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "ClimbingSector", description = "클라이밍 섹터 API")
 @RequiredArgsConstructor
@@ -27,16 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class SectorController {
 
     private final SectorService sectorService;
-
-    @Operation(summary = "클라이밍 섹터 생성 - 502 [무빗]")
-    @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._DUPLICATE_SECTOR_NAME})
-    @PostMapping("/sector")
-    public ResponseEntity<SectorSimpleResponse> createSector(
-        @RequestPart(value = "image") MultipartFile sectorImage,
-        @RequestPart CreateSectorRequest createSectorRequest, @CurrentUser User user) {
-
-        return ResponseEntity.ok(sectorService.createSector(createSectorRequest, sectorImage, user));
-    }
 
     @Operation(summary = "특정 암장 전체 섹터 조회 - 501 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_SECTOR_LIST})
