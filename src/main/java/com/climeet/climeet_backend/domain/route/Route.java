@@ -48,7 +48,7 @@ public class Route extends BaseTimeEntity {
     private int selectionCount;
 
     public static Route toEntity(Sector sector,
-        String routeImageUrl, DifficultyMapping difficultyMapping, String holdColor) {
+        DifficultyMapping difficultyMapping, String routeImageUrl, String holdColor) {
         return Route.builder()
             .sector(sector)
             .difficultyMapping(difficultyMapping)
