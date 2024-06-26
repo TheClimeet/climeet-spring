@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 
@@ -21,6 +22,8 @@ import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.retool.gymnamechangerequest.GymNameChangeRequest;
+import com.climeet.climeet_backend.domain.retool.gymnamechangerequest.GymNameChangeRequestRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
@@ -55,6 +58,7 @@ public class ClimbingGymService {
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
     private final BitmaskConverter bitmaskConverter;
+    private final GymNameChangeRequestRepository gymNameChangeRequestRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -130,11 +134,12 @@ public class ClimbingGymService {
             followingCount = manager.getFollowingCount();
 
             // followRelationship이 있으면 true
-            isFollow = followRelationshipRepository.findByFollowerIdAndFollowingId(user.getId(), manager.getId()).isPresent();
+            isFollow = followRelationshipRepository.findByFollowerIdAndFollowingId(user.getId(),
+                manager.getId()).isPresent();
         }
 
-
-        return ClimbingGymDetailResponse.toDTO(climbingGym, followerCount, followingCount, backgroundImage.getImgUrl(),isFollow, hasManager);
+        return ClimbingGymDetailResponse.toDTO(climbingGym, followerCount, followingCount,
+            backgroundImage.getImgUrl(), isFollow, hasManager);
     }
 
     public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
@@ -316,8 +321,9 @@ public class ClimbingGymService {
 
     public String getClimberAverageDifficulty(User user, Long gymId) {
 
-        Optional<Float> userAverageDifficulty = routeRecordRepository.findAverageDifficultyByUser(user);
-        if(userAverageDifficulty.isEmpty()){
+        Optional<Float> userAverageDifficulty = routeRecordRepository.findAverageDifficultyByUser(
+            user);
+        if (userAverageDifficulty.isEmpty()) {
             return null;
         }
 
@@ -350,6 +356,14 @@ public class ClimbingGymService {
         }
 
         return difficulty;
+    }
+
+    public void changeGymNameRequest(User user, ChangeClimbingGymNameRequest requestDto) {
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
+        gymNameChangeRequestRepository.save(
+            GymNameChangeRequest.toEntity(manager.getClimbingGym(), requestDto.getName()));
     }
 
 }

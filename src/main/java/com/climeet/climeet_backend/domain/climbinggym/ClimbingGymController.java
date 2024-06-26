@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
@@ -140,6 +141,15 @@ public class ClimbingGymController {
     public ResponseEntity<String> getFollowingUserAverageLevelInClimbingGym(
         @CurrentUser User user, @PathVariable Long gymId) {
         return ResponseEntity.ok(climbingGymService.getClimberAverageDifficulty(user, gymId));
+    }
+
+    @Operation(summary = "암장 이름 변경 요청 전송 - 1013 [무빗]", description = "이름 변경이 바로 이루어지지 않으며, 클밋 관리자 측에서 확인하는 과정을 거칩니다.")
+    @SwaggerApiError({})
+    @PatchMapping("/name")
+    public ResponseEntity<String> changeGymNameRequest(@CurrentUser User user, @RequestBody
+        ChangeClimbingGymNameRequest changeClimbingGymNameRequest){
+        climbingGymService.changeGymNameRequest(user, changeClimbingGymNameRequest);
+        return ResponseEntity.ok("이름 변경 신청이 완료되었습니다.");
     }
 
 }
