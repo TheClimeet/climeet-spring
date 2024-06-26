@@ -52,4 +52,10 @@ public class Board extends BaseTimeEntity {
             .boardType(boardType)
             .build();
     }
+    public void increaseLikeCount(){
+        this.likeCount++;
+    }
+    public void decreaseLikeCount(){
+        this.likeCount--;
+    }
 }
