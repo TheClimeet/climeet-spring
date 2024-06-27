@@ -56,13 +56,11 @@ public class ShortsCommentService {
         ShortsComment shortsComment = ShortsComment.toEntity(user, createShortsCommentRequest,
             shorts);
 
-
-
         if (isReply) {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
-            if(parentComment.getChildCommentCount() != 0) {
+            if (parentComment.getChildCommentCount() != 0) {
                 shortsComment.updateIsFirstChildFalse();
             }
             parentComment.updateChildCommentCount();
@@ -71,13 +69,15 @@ public class ShortsCommentService {
             List<Long> userList = new LinkedList<>();
             userList.add(shorts.getUser().getId());
             userList.add(parentComment.getShorts().getUser().getId());
-            fcmNotificationService.sendMultipleUser(userList, NotificationType.CHILD_COMMENT_MY_SHORTS.getTitle(user.getProfileName()), shortsComment.getContent());
+            fcmNotificationService.sendMultipleUser(userList,
+                NotificationType.CHILD_COMMENT_MY_SHORTS.getTitle(user.getProfileName()),
+                shortsComment.getContent());
 
         }
 
         shortsCommentRepository.save(shortsComment);
 
-        if(!isReply) {
+        if (!isReply) {
             fcmNotificationService.sendSingleUser(shorts.getUser().getId(),
                 NotificationType.PARENT_COMMENT_MY_SHORTS.getTitle(user.getProfileName()),
                 shortsComment.getContent());
@@ -94,6 +94,7 @@ public class ShortsCommentService {
 
     }
 
+    //쇼츠 댓글 조회
     public PageResponseDto<List<ShortsCommentParentResponse>> findShortsCommentList(User user,
         Long shortsId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -108,19 +109,25 @@ public class ShortsCommentService {
             user, shortsCommentIncludeChildList);
 
         List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
-            .map(comment -> ShortsCommentParentResponse.toDTO(
-                comment.getUser(), comment,
-                likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
-                fetchParentCommentId(comment),
-                comment.getChildCommentCount() - ADJUSTED_CHILD_COUNT,
-                convertToDisplayTime(comment.getCreatedAt())
-            ))
+            .map(comment -> {
+                //댓글이 0개 또는 1개일때 예외처리
+                int childCommentCount = comment.getChildCommentCount();
+                int adjustedChildCount = (childCommentCount == 0 || childCommentCount == 1) ? childCommentCount : childCommentCount - ADJUSTED_CHILD_COUNT;
+                return ShortsCommentParentResponse.toDTO(
+                    comment.getUser(), comment,
+                    likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
+                    fetchParentCommentId(comment),
+                    adjustedChildCount,
+                    convertToDisplayTime(comment.getCreatedAt())
+                );
+            })
             .collect(Collectors.toList());
 
         return new PageResponseDto<>(pageable.getPageNumber(), parentCommentList.hasNext(),
             responses);
     }
 
+    //쇼츠 대댓글 조회
     public PageResponseDto<List<ShortsCommentChildResponse>> findShortsChildCommentList(User user,
         Long shortsId, Long parentCommentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -192,9 +199,11 @@ public class ShortsCommentService {
     }
 
     //내가 작성한 댓글 가져오기 - 최신순
-    public PageResponseDto<List<ShortsCommentResponse>> findMyShortsComments(User user, int page, int size) {
+    public PageResponseDto<List<ShortsCommentResponse>> findMyShortsComments(User user, int page,
+        int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<ShortsComment> commentSlice = shortsCommentRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+        Slice<ShortsComment> commentSlice = shortsCommentRepository.findByUserOrderByCreatedAtDesc(
+            user, pageable);
 
         List<ShortsCommentResponse> responseList = commentSlice.stream()
             .map(comment -> ShortsCommentResponse.builder()
@@ -206,7 +215,8 @@ public class ShortsCommentService {
                 .build()
             ).toList();
 
-        return new PageResponseDto<>(pageable.getPageNumber(), commentSlice.hasNext(), responseList);
+        return new PageResponseDto<>(pageable.getPageNumber(), commentSlice.hasNext(),
+            responseList);
     }
 
     private Long fetchParentCommentId(ShortsComment comment) {
