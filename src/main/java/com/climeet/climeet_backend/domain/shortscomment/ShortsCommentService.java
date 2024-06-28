@@ -42,6 +42,8 @@ public class ShortsCommentService {
     private final FcmNotificationService fcmNotificationService;
     private static final int ADJUSTED_CHILD_COUNT = 1;
     private static final int NO_CHILD_COMMENTS = 0;
+    private static final int SINGLE_COMMENT = 1;
+
 
     @Transactional
     public ShortsCommentParentResponse createShortsComment(User user, Long shortsId,
@@ -113,7 +115,7 @@ public class ShortsCommentService {
             .map(comment -> {
                 //댓글이 1개일때 예외처리
                 int childCommentCount = comment.getChildCommentCount();
-                int adjustedChildCount = (childCommentCount == 1) ? childCommentCount : childCommentCount - ADJUSTED_CHILD_COUNT;
+                int adjustedChildCount = (childCommentCount == SINGLE_COMMENT) ? childCommentCount : childCommentCount - ADJUSTED_CHILD_COUNT;
                 return ShortsCommentParentResponse.toDTO(
                     comment.getUser(), comment,
                     likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
