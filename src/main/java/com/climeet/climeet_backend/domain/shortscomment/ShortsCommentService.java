@@ -41,6 +41,7 @@ public class ShortsCommentService {
     private final ShortsCommentLikeRepository shortsCommentLikeRepository;
     private final FcmNotificationService fcmNotificationService;
     private static final int ADJUSTED_CHILD_COUNT = 1;
+    private static final int NO_CHILD_COMMENTS = 0;
 
     @Transactional
     public ShortsCommentParentResponse createShortsComment(User user, Long shortsId,
@@ -60,7 +61,7 @@ public class ShortsCommentService {
             ShortsComment parentComment = shortsCommentRepository.findById(parentCommentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
-            if (parentComment.getChildCommentCount() != 0) {
+            if (parentComment.getChildCommentCount() != NO_CHILD_COMMENTS) {
                 shortsComment.updateIsFirstChildFalse();
             }
             parentComment.updateChildCommentCount();
@@ -110,9 +111,9 @@ public class ShortsCommentService {
 
         List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
             .map(comment -> {
-                //댓글이 0개 또는 1개일때 예외처리
+                //댓글이 1개일때 예외처리
                 int childCommentCount = comment.getChildCommentCount();
-                int adjustedChildCount = (childCommentCount == 0 || childCommentCount == 1) ? childCommentCount : childCommentCount - ADJUSTED_CHILD_COUNT;
+                int adjustedChildCount = (childCommentCount == 1) ? childCommentCount : childCommentCount - ADJUSTED_CHILD_COUNT;
                 return ShortsCommentParentResponse.toDTO(
                     comment.getUser(), comment,
                     likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
@@ -131,7 +132,7 @@ public class ShortsCommentService {
     public PageResponseDto<List<ShortsCommentChildResponse>> findShortsChildCommentList(User user,
         Long shortsId, Long parentCommentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<ShortsComment> childCommentList = shortsCommentRepository.findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtDesc(
+        Slice<ShortsComment> childCommentList = shortsCommentRepository.findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtAsc(
                 shortsId, parentCommentId, pageable)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
 
