@@ -72,7 +72,7 @@ public class ClimbingGymService {
             pageable);
 
         List<ClimbingGymSimpleResponse> climbingGymList = climbingGymSlice.stream()
-            .map(climbingGym -> ClimbingGymSimpleResponse.toDTO(climbingGym)).toList();
+            .map(ClimbingGymSimpleResponse::toDTO).toList();
 
         return new PageResponseDto<>(pageable.getPageNumber(), climbingGymSlice.hasNext(),
             climbingGymList);

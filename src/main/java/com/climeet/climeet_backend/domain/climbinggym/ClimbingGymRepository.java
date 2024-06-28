@@ -12,10 +12,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClimbingGymRepository extends JpaRepository<ClimbingGym, Long> {
-
-    Optional<ClimbingGym> findByName(String gymName);
-
-    Page<ClimbingGym> findByNameContaining(String gymName, Pageable pageable);
+    @Query("SELECT cg FROM ClimbingGym cg WHERE cg.name LIKE %:name%")
+    Page<ClimbingGym> findByNameContaining(@Param("name") String name, Pageable pageable);
 
     @Query("SELECT cg FROM ClimbingGym cg LEFT JOIN Manager m on cg.id = m.climbingGym.id WHERE cg.name LIKE %:name% AND m.id IS NOT NULL")
     Page<ClimbingGym> findByNameContainingAndManagerIsNotNull(@Param("name") String name, Pageable pageable);
