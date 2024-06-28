@@ -385,7 +385,7 @@ public class ShortsService {
             shorts.getClimbingGym(),
             findShorts(user, shorts.getId(), difficultyMapping),
             gymDifficultyName,
-            gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
+            gymDifficultyColor, shorts.getUser() instanceof Manager);
     }
 
 }
