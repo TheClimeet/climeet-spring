@@ -30,4 +30,15 @@ public class ClimbingGymRequestDto {
         private String name;
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class ChangeClimbingGymBackgroundImageRequest {
+        private String imgUrl;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ChangeClimbingGymProfileImageRequest {
+        private String imgUrl;
+    }
 }

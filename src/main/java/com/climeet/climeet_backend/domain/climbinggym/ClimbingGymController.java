@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymBackgroundImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymProfileImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
@@ -92,8 +94,8 @@ public class ClimbingGymController {
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._EMPTY_BACKGROUND_IMAGE})
     @PatchMapping("/background-image")
     public ResponseEntity<String> changeClimbingGymBackgroundImage(@CurrentUser User user,
-        @RequestBody String imageUrl) {
-        climbingGymService.changeClimbingGymBackgroundImage(user, imageUrl);
+        @RequestBody ChangeClimbingGymBackgroundImageRequest changeClimbingGymBackgroundImageRequest) {
+        climbingGymService.changeClimbingGymBackgroundImage(user, changeClimbingGymBackgroundImageRequest);
         return ResponseEntity.ok("암장 배경사진 변경을 완료했습니다.");
     }
 
@@ -101,8 +103,8 @@ public class ClimbingGymController {
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     @PatchMapping("/profile-image")
     public ResponseEntity<String> changeClimbingGymProfileImage(@CurrentUser User user,
-        @RequestBody String imageUrl) {
-        climbingGymService.changeClimbingGymProfileImage(user, imageUrl);
+        @RequestBody ChangeClimbingGymProfileImageRequest changeClimbingGymProfileImageRequest) {
+        climbingGymService.changeClimbingGymProfileImage(user, changeClimbingGymProfileImageRequest);
         return ResponseEntity.ok("관리자 프로필 이미지 변경을 완료했습니다.");
     }
 
