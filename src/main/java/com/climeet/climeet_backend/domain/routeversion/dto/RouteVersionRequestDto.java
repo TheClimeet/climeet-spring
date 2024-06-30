@@ -7,6 +7,7 @@ import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSect
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,6 +32,7 @@ public class RouteVersionRequestDto {
         private List<CreateLayoutImageRequest> layout = new ArrayList<>();
         private List<CreateSectorRequest> sector = new ArrayList<>();
         private List<CreateRouteRequest> route = new ArrayList<>();
+
     }
 
     @Getter
