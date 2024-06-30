@@ -47,7 +47,7 @@ public class RouteRecord extends BaseTimeEntity {
 
     private Boolean isCompleted = false;
 
-    private int difficulty;
+    private Integer difficulty;
 
     public static RouteRecord toEntity(User user, CreateRouteRecord createRouteRecordReq,
         ClimbingRecord climbingRecord, Route route) {
