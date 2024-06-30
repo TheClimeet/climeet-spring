@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -147,7 +146,7 @@ public class ClimbingRecordService {
 
         return climbingRecordList.stream()
             .map(record -> ClimbingRecordSimpleInfo.toDTO(record))
-            .collect(Collectors.toList());
+            .toList();
     }
 
 
@@ -321,7 +320,7 @@ public class ClimbingRecordService {
                 return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
             .sorted(Comparator.comparing(GymDifficultyMappingInfo::getDifficulty))
-            .collect(Collectors.toList());
+            .toList();
 
         return ClimbingRecordStatisticsInfoByGym.toDTO(
             time,
@@ -366,7 +365,7 @@ public class ClimbingRecordService {
                 return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
             .sorted(Comparator.comparing(GymDifficultyMappingInfo::getDifficulty))
-            .collect(Collectors.toList());
+            .toList();
 
         return ClimbingRecordStatisticsSimpleInfo.toDTO(difficultyList);
     }
@@ -388,7 +387,7 @@ public class ClimbingRecordService {
                 Long totalCount = (Long) userRankMap[RANKING_CONDITION];
                 return BestClearUserSimpleInfo.toDTO(user, rank[0]++, totalCount);
             })
-            .collect(Collectors.toList());
+            .toList();
 
         return ranking;
     }
@@ -410,7 +409,7 @@ public class ClimbingRecordService {
                     (Double) userRankMap[RANKING_CONDITION]);
                 return BestTimeUserSimpleInfo.toDTO(user, rank[0]++, totalTime);
             })
-            .collect(Collectors.toList());
+            .toList();
 
         return ranking;
     }
@@ -447,7 +446,7 @@ public class ClimbingRecordService {
                     highDifficultyCount, climeetDifficultyName, gymDifficultyName,
                     gymDifficultyColor);
             })
-            .collect(Collectors.toList());
+            .toList();
 
         return ranking;
     }
@@ -539,7 +538,7 @@ public class ClimbingRecordService {
             difficulties.put(level, count);
         });
 
-        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
+        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findByClimbingGymAndDifficultyIsNotNullOrderByDifficultyAsc(
                 gym).stream()
             .map(difficultyMapping -> {
                 Long levelCount = difficulties.getOrDefault(difficultyMapping.getDifficulty(),
@@ -547,7 +546,7 @@ public class ClimbingRecordService {
                 return GymDifficultyMappingInfo.toDTO(difficultyMapping, levelCount);
             })
             .sorted(Comparator.comparing(GymDifficultyMappingInfo::getDifficulty))
-            .collect(Collectors.toList());
+            .toList();
 
         return ClimbingRecordUserAndGymStatisticsDetailInfo.toDTO(
             userId,
@@ -565,7 +564,7 @@ public class ClimbingRecordService {
 
         return climbingGymList.stream()
             .map(gym -> new VisitedClimbingGym((Long)gym[GYM_ID], (String)gym[GYM_NAME]))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<VisitedClimbingGym> getVisitedMonthGymList(Long userId, int year, int month){
@@ -584,6 +583,6 @@ public class ClimbingRecordService {
 
         return climbingGymList.stream()
             .map(gym -> new VisitedClimbingGym((Long)gym[GYM_ID], (String)gym[GYM_NAME]))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

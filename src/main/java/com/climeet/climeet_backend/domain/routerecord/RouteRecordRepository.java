@@ -43,6 +43,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         "   rr.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.user = :user AND rr.isCompleted = true " +
+        "AND rr.difficulty IS NOT NULL " +
         "GROUP BY rr.difficulty" )
     List<Object[]> findAllRouteRecordDifficultyAndUser(
         @Param("user") User user
@@ -52,6 +53,7 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         "   rr.difficulty as difficulty, COUNT(*) as count " +
         "FROM RouteRecord rr " +
         "WHERE rr.user = :user AND rr.isCompleted = true AND rr.gym = :gym " +
+        "AND rr.difficulty IS NOT NULL " +
         "GROUP BY rr.difficulty" )
     List<Object[]> findAllRouteRecordDifficultyAndUserAndGym(
         @Param("user") User user,
