@@ -25,7 +25,7 @@ public interface RouteVersionRepository extends JpaRepository<RouteVersion, Long
         + "FROM RouteVersion rv "
         + "WHERE rv.climbingGym = :climbingGym "
         + "AND rv.timePoint <= :timePoint "
-        + "ORDER BY rv.timePoint "
+        + "ORDER BY rv.timePoint DESC "
         + "LIMIT 1")
     Map<String, List<Long>> findClimbDataByClimbingGymAndTimePoint(@Param("climbingGym") ClimbingGym climbingGym, @Param("timePoint") LocalDate timePoint);
 
