@@ -74,13 +74,15 @@ public interface RouteRecordRepository extends JpaRepository<RouteRecord, Long> 
         "FROM RouteRecord rr " +
         "JOIN FollowRelationship fr ON rr.user = fr.follower " +
         "WHERE rr.isCompleted = true AND fr.following = :manager " +
+        "AND rr.route.difficultyMapping.difficulty IS NOT NULL " +
         "GROUP BY rr.user")
     List<Float> getFollowUserSumCountDifficultyInClimbingGym(@Param("manager") User manager);
 
     @Query("SELECT " +
         "   AVG(rr.difficulty) as averageDifficulty " +
         "FROM RouteRecord rr " +
-        "WHERE rr.user = :user ")
+        "WHERE rr.user = :user " +
+        "AND rr.difficulty IS NOT NULL")
     Optional<Float> findAverageDifficultyByUser(@Param("user") User user);
 
 }
