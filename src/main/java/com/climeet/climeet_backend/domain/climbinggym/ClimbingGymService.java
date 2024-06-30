@@ -1,6 +1,8 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymBackgroundImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymProfileImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 
@@ -232,7 +234,7 @@ public class ClimbingGymService {
             .toList();
     }
 
-    public void changeClimbingGymBackgroundImage(User user, String imageUrl) {
+    public void changeClimbingGymBackgroundImage(User user, ChangeClimbingGymBackgroundImageRequest requestDto) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
@@ -240,15 +242,15 @@ public class ClimbingGymService {
                 manager.getClimbingGym())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
 
-        climbingGymBackgroundImage.changeImgUrl(imageUrl);
+        climbingGymBackgroundImage.changeImgUrl(requestDto.getImgUrl());
         climbingGymBackgroundImageRepository.save(climbingGymBackgroundImage);
     }
 
-    public void changeClimbingGymProfileImage(User user, String imageUrl) {
+    public void changeClimbingGymProfileImage(User user, ChangeClimbingGymProfileImageRequest requestDto) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
         ClimbingGym climbingGym = manager.getClimbingGym();
-        climbingGym.updateProfileImageUrl(imageUrl);
+        climbingGym.updateProfileImageUrl(requestDto.getImgUrl());
         climbingGymRepository.save(climbingGym);
     }
 
