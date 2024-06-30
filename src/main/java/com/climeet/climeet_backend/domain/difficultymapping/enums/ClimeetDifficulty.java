@@ -15,12 +15,12 @@ public enum ClimeetDifficulty {
     V7("V7", 7),
     V8("V8", 8),
     V9("V9+", 9),
-    C("C", 10);
+    C("C", null);
 
     private String stringValue;
-    private int intValue;
+    private Integer intValue;
 
-    ClimeetDifficulty(String stringValue, int intValue) {
+    ClimeetDifficulty(String stringValue, Integer intValue) {
         this.stringValue = stringValue;
         this.intValue = intValue;
     }
@@ -29,7 +29,7 @@ public enum ClimeetDifficulty {
         return stringValue;
     }
 
-    public int getIntValue() {
+    public Integer getIntValue() {
         return intValue;
     }
 
@@ -42,7 +42,7 @@ public enum ClimeetDifficulty {
         throw new GeneralException(ErrorStatus._INVALID_DIFFICULTY);
     }
 
-    public static ClimeetDifficulty findByInt(int climeetDifficulty){
+    public static ClimeetDifficulty findByInt(Integer climeetDifficulty){
         return Arrays.stream(ClimeetDifficulty.values())
             .filter(difficulty -> difficulty.getIntValue() == climeetDifficulty)
             .findFirst()

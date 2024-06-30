@@ -36,8 +36,7 @@ public class DifficultyMapping extends BaseTimeEntity {
     @Column(length = 10)
     private String climeetDifficultyName;
 
-    @NotNull
-    private int difficulty;
+    private Integer difficulty;
 
     @NotNull
     @Column(length = 10)
