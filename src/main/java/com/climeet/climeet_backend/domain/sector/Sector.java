@@ -1,7 +1,6 @@
 package com.climeet.climeet_backend.domain.sector;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
-import com.climeet.climeet_backend.domain.sector.dto.SectorRequestDto.CreateSectorRequest;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor

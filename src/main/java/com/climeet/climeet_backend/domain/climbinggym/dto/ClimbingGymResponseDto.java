@@ -156,7 +156,7 @@ public class ClimbingGymResponseDto {
     public static class ClimbingGymAverageLevelDetailResponse {
 
         private Long gymId;
-        private int difficulty;
+        private Integer difficulty;
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private double percentage;

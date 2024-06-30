@@ -16,7 +16,7 @@ public class DifficultyMappingResponseDto {
 
         private String climeetDifficultyName;
         private String gymDifficultyName;
-        private int difficulty;
+        private Integer difficulty;
         private String gymDifficultyColor;
 
         public static DifficultyMappingDetailResponse toDTO(

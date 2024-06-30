@@ -130,7 +130,7 @@ public class ClimbingRecordResponseDto {
         private String gymDifficultyName;
         private String gymDifficultyColor;
         private Long count;
-        private int difficulty;
+        private Integer difficulty;
         public static GymDifficultyMappingInfo toDTO(
             DifficultyMapping difficultyMapping,
             Long count

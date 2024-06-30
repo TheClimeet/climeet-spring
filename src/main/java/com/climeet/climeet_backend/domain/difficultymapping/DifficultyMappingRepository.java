@@ -14,4 +14,6 @@ public interface DifficultyMappingRepository extends JpaRepository<DifficultyMap
 
     List<DifficultyMapping> findByClimbingGymOrderByDifficultyAsc(ClimbingGym climbingGym);
 
+    List<DifficultyMapping> findByClimbingGymAndDifficultyIsNotNullOrderByDifficultyAsc(ClimbingGym climbingGym);
+
 }
