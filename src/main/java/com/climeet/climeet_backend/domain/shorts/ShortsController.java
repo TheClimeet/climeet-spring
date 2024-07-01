@@ -81,7 +81,7 @@ public class ShortsController {
     }
 
     @PatchMapping("/shorts/isRead")
-    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리 - 304 [진로]")
+    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리 - 304 [미리]")
     @SwaggerApiError({ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> updateShortsIsRead(@CurrentUser User user,
         @RequestParam Long followingUserId) {
