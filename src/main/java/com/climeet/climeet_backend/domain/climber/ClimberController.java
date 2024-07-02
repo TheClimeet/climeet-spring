@@ -1,6 +1,7 @@
 package com.climeet.climeet_backend.domain.climber;
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.ClimberTokenRequest;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.ClimberTokenRevokeRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberDetailInfo;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberPrivacySettingInfo;
@@ -17,6 +18,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -98,6 +100,13 @@ public class ClimberController {
     public ResponseEntity<String> updateAverageCompletionLevelPrivacyStatus(@CurrentUser User user){
         climberService.updateAverageCompletionLevelPrivacySetting(user);
         return ResponseEntity.ok("공개 여부 변경 완료");
+    }
+
+    @DeleteMapping("/deactivate")
+    @Operation(summary = "클라이머 탈퇴 - 1310 [미리]")
+    public ResponseEntity<String> deleteClimberAccount(@CurrentUser User user, @RequestBody ClimberTokenRevokeRequest climberTokenRequest){
+        climberService.deleteClimberAccount(user, climberTokenRequest);
+        return ResponseEntity.ok("7일 안에 재로그인 시 정보가 복구됩니다");
     }
 
 

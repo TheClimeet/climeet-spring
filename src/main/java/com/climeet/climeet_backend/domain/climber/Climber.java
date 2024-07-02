@@ -34,13 +34,12 @@ public class Climber extends User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type")
+    @Getter
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "discovery_channel")
     private DiscoveryChannel discoveryChannel;
-
-    private boolean status = true;
 
     private boolean isShortsPublic = true;
 
@@ -49,9 +48,6 @@ public class Climber extends User {
     private boolean isAverageCompletionRatePublic = true;
 
     private boolean isAverageCompletionLevelPublic = true;
-
-    @Setter
-    private LocalDateTime lastLogin;
 
     public void updateIsShortsPublic(){
         this.isShortsPublic = !isShortsPublic;

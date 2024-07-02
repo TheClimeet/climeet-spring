@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.climber;
 
 
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.ClimberTokenRequest;
+import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.ClimberTokenRevokeRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberRequestDto.CreateClimberRequest;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberDetailInfo;
 import com.climeet.climeet_backend.domain.climber.dto.ClimberResponseDto.ClimberPrivacySettingInfo;
@@ -14,32 +15,36 @@ import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipR
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipService;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.redis.RedisService;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.domain.user.UserService;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
+import reactor.core.publisher.Mono;
 
 
 @Service
@@ -54,6 +59,16 @@ public class ClimberService {
     private final ClimbingGymRepository climbingGymRepository;
     private final ManagerRepository managerRepository;
     private final FollowRelationshipService followRelationshipService;
+    private final RedisService redisService;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
+    private String naverClientId;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    private String naverClientSecret;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client_id}")
+    private String kakaoClientId;
 
     @Transactional
     public LoginSimpleInfo login(String socialType,
@@ -68,9 +83,13 @@ public class ClimberService {
         String accessToken;
         String refreshToken;
         if (optionalClimber.isPresent()) {
-            accessToken = jwtTokenProvider.createAccessToken(optionalClimber.get().getPayload());
-            refreshToken = jwtTokenProvider.createRefreshToken(optionalClimber.get().getId());
-            optionalClimber.get().setLastLogin(LocalDateTime.now());
+            Climber climber = optionalClimber.get();
+            if(!climber.getStatus()){
+                climber.updateStatus();
+            }
+            accessToken = jwtTokenProvider.createAccessToken(climber.getPayload());
+            refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
+            climber.setLastLogin(LocalDateTime.now());
             return LoginSimpleInfo.toDTO(socialType, accessToken, refreshToken,
                 ResponseType.SIGN_IN);
         }
@@ -98,6 +117,7 @@ public class ClimberService {
         String refreshToken = jwtTokenProvider.createRefreshToken(climber.getId());
         updateClimber(climber, accessToken, refreshToken, createClimberRequest);
         updateFollowList(climber, createClimberRequest.getGymFollowList());
+        climber.setLastLogin(LocalDateTime.now());
         return LoginSimpleInfo.toDTO(socialType.toString(), climber.getAccessToken(), climber.getRefreshToken(), ResponseType.SIGN_UP);
 
 
@@ -170,6 +190,78 @@ public class ClimberService {
             .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
             })
             .block();
+    }
+
+    private Mono<Void> disconnectSocialServer(String socialType, String accessToken)
+        throws UnsupportedEncodingException {
+        if(socialType.equals(SocialType.KAKAO.toString())) {
+            return WebClient.create()
+                .post()
+                .uri("https://kapi.kakao.com/v1/user/unlink")
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
+                .retrieve()
+                .bodyToMono(Void.class);
+        }
+        if(socialType.equals(SocialType.NAVER.toString())){
+            String urlEncodeToken = URLEncoder.encode(accessToken, "UTF-8");
+            String uri = String.format("https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=%s&client_secret=%s&access_token=%s&service_provider=NAVER",
+                naverClientId, naverClientSecret, urlEncodeToken);
+            return WebClient.create()
+                .post()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(Void.class);
+
+        }
+        if(socialType.equals(SocialType.APPLE.toString())){
+            /*
+            todo : apple token revoke 로직 추가
+             */
+        }
+        return null;
+    }
+
+    public Map<String, Object> refreshSocialToken(String socialType, String refreshToken){
+        if(socialType.equals(SocialType.KAKAO.toString())) {
+            HashMap<String, String> request = new HashMap<>();
+            request.put("grant_type", "refresh_token");
+            request.put("client_id", kakaoClientId);
+            request.put("refresh_token", refreshToken);
+
+            return WebClient.create()
+                .post()
+                .uri("https://kauth.kakao.com/oauth/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .header("charset", "utf-8")
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
+                .block();
+        }
+        if(socialType.equals(SocialType.NAVER.toString())){
+            String uri = String.format("https://nid.naver.com/oauth2.0/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s",
+                naverClientId, naverClientSecret, refreshToken);
+            return WebClient.create()
+                .post()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
+                .block();
+
+        }
+        if(socialType.equals(SocialType.APPLE.toString())){
+            /*
+            todo : apple token revoke 로직 추가
+             */
+        }
+        return null;
+    }
+
+    public String getAccessToken(String socialType, String refreshToken){
+        Map<String, Object> map = refreshSocialToken(socialType, refreshToken);
+        return map.get("access_token").toString();
     }
 
     HashMap<String, String> getClimberProfileByToken(String providerName, String userToken)
@@ -256,6 +348,26 @@ public class ClimberService {
     public void updateAverageCompletionLevelPrivacySetting(User user){
         Climber climber = (Climber) user;
         climber.updateIsAverageCompletionLevelPublic();
+    }
+
+    @Transactional
+    public void deleteClimberAccount(User user, ClimberTokenRevokeRequest climberTokenRequest){
+        user.updateStatus();
+        user.setLastLogin(LocalDateTime.now());
+        redisService.setValueWithExpiration(user.getId().toString(), climberTokenRequest.getRefreshToken());
+    }
+
+    @Transactional
+    public void hardDeleteClimberAccount(User user) throws UnsupportedEncodingException {
+        Climber climber = (Climber)user;
+        String socialType = climber.getSocialType().toString();
+        String refreshToken = redisService.getValue(user.getId().toString());
+        //refreshToken으로 새로운 social access token 발급
+        String newAccessToken = getAccessToken(socialType, refreshToken);
+        //resource server에 토큰 disconnect 요청
+        disconnectSocialServer(socialType,newAccessToken);
+
+        userRepository.delete(user);
     }
 
 
