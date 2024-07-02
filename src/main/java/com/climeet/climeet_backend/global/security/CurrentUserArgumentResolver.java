@@ -50,7 +50,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             int index = targetSubject.indexOf(targetIndex);
             String userId = targetSubject.substring(0, index);
 
-            return userRepository.findById(Long.valueOf(userId))
+            return userRepository.findByIdAndStatusTrue(Long.valueOf(userId))
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_USER));
         } catch (Exception ex) {
             throw new GeneralException(ErrorStatus._INVALID_JWT);
