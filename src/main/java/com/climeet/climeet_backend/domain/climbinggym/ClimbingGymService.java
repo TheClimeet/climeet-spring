@@ -31,7 +31,6 @@ import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
-import com.climeet.climeet_backend.global.s3.S3Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,14 +57,16 @@ public class ClimbingGymService {
     private final FollowRelationshipRepository followRelationshipRepository;
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
-    private final S3Service s3Service;
-    private final BitmaskConverter bitmaskConverter;
     private final GymNameChangeRequestRepository gymNameChangeRequestRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
-    private final static int PERCENTAGE_DIVISOR = 100;
-    private final static double DEFAULT_PERCENTAGE = 0;
+    @Value("${cloud.aws.s3.public-uri}")
+    private String s3Uri;
+    private static final String DEFAULT_PROFILE_ENDPOINT = "default/profile.jpg";
+    private static final String DEFAULT_BACKGROUND_ENDPOINT = "default/background.jpg";
+    private static final int PERCENTAGE_DIVISOR = 100;
+    private static final double DEFAULT_PERCENTAGE = 0;
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
         int page, int size) {
@@ -91,7 +92,7 @@ public class ClimbingGymService {
             .map(climbingGym -> {
                 Long managerId = null;
                 Long follower = 0L;
-                String profileImageUrl = null;
+                String profileImageUrl = s3Uri + DEFAULT_PROFILE_ENDPOINT;
                 // manager 유무 확인
                 if (climbingGym.getManager() != null) {
                     managerId = climbingGym.getManager().getId();
@@ -118,19 +119,23 @@ public class ClimbingGymService {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
-        ClimbingGymBackgroundImage backgroundImage = climbingGymBackgroundImageRepository.findByClimbingGym(
+        String profileImgUrl =
+            (climbingGym.getProfileImageUrl() != null) ? climbingGym.getProfileImageUrl()
+                : s3Uri + DEFAULT_PROFILE_ENDPOINT;
+
+        String backgroundImgUrl = climbingGymBackgroundImageRepository.findImgUrlByClimbingGym(
                 climbingGym)
-            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_BACKGROUND_IMAGE));
+            .orElse(s3Uri + DEFAULT_BACKGROUND_ENDPOINT);
 
         // 매니저가 없으면 null값을 넣고, toDTO를 실행하기 전에 체크
         Optional<Manager> optionalManager = managerRepository.findByClimbingGym(climbingGym);
 
         Boolean hasManager = optionalManager.isPresent();
-        Boolean isFollow = false;
+        boolean isFollow = false;
         Long followerCount = null;
         Long followingCount = null;
 
-        if (hasManager) { // 매니저가 존재한다면 팔로우, 팔로잉 수를 업데이트
+        if (Boolean.TRUE.equals(hasManager)) { // 매니저가 존재한다면 팔로우, 팔로잉 수를 업데이트
             Manager manager = optionalManager.get();
             followerCount = manager.getFollowerCount();
             followingCount = manager.getFollowingCount();
@@ -141,7 +146,7 @@ public class ClimbingGymService {
         }
 
         return ClimbingGymDetailResponse.toDTO(climbingGym, followerCount, followingCount,
-            backgroundImage.getImgUrl(), isFollow, hasManager);
+            profileImgUrl, backgroundImgUrl, isFollow, hasManager);
     }
 
     public ClimbingGymTabInfoResponse getClimbingGymTabInfo(Long gymId) {
@@ -182,7 +187,6 @@ public class ClimbingGymService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode jsonNode = objectMapper.readTree(gymInfoResult);
-            // String name = jsonNode.get("name").asText();
             String tel = jsonNode.get("tel").asText();
             String address = jsonNode.get("address").asText();
             String businessHours = jsonNode.get("businessHours").toString();
@@ -198,7 +202,7 @@ public class ClimbingGymService {
     }
 
     public List<ClimbingGymAverageLevelDetailResponse> getFollowingUserAverageLevelInClimbingGym(
-        Long gymId, User user) {
+        Long gymId) {
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
 
@@ -234,7 +238,8 @@ public class ClimbingGymService {
             .toList();
     }
 
-    public void changeClimbingGymBackgroundImage(User user, ChangeClimbingGymBackgroundImageRequest requestDto) {
+    public void changeClimbingGymBackgroundImage(User user,
+        ChangeClimbingGymBackgroundImageRequest requestDto) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
 
@@ -246,7 +251,8 @@ public class ClimbingGymService {
         climbingGymBackgroundImageRepository.save(climbingGymBackgroundImage);
     }
 
-    public void changeClimbingGymProfileImage(User user, ChangeClimbingGymProfileImageRequest requestDto) {
+    public void changeClimbingGymProfileImage(User user,
+        ChangeClimbingGymProfileImageRequest requestDto) {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
         ClimbingGym climbingGym = manager.getClimbingGym();
@@ -259,7 +265,7 @@ public class ClimbingGymService {
         Manager manager = managerRepository.findById(user.getId())
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
         ClimbingGym climbingGym = manager.getClimbingGym();
-        climbingGym.updateServiceBitMask(bitmaskConverter.convertServiceListToBitmask(
+        climbingGym.updateServiceBitMask(BitmaskConverter.convertServiceListToBitmask(
             updateClimbingGymServiceRequest.getServiceList()));
         climbingGymRepository.save(climbingGym);
     }
@@ -293,7 +299,7 @@ public class ClimbingGymService {
             .map(climbingGym -> {
                 Long managerId = null;
                 Long follower = 0L;
-                String profileImageUrl = null;
+                String profileImageUrl = s3Uri + DEFAULT_PROFILE_ENDPOINT;
                 // manager 유무 확인
                 if (climbingGym.getManager() != null) {
                     managerId = climbingGym.getManager().getId();

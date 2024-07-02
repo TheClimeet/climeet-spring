@@ -87,7 +87,7 @@ public class ClimbingGymController {
     public ResponseEntity<List<ClimbingGymAverageLevelDetailResponse>> getFollowingUserAverageLevelInClimbingGym(
         @PathVariable Long gymId, @CurrentUser User user) {
         return ResponseEntity.ok(
-            climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId, user));
+            climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId));
     }
 
     @Operation(summary = "암장 배경사진 변경 (1개만 등록 가능) - 1006 [무빗]")
