@@ -18,6 +18,7 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDet
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsProfileSimpleInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsCommentService;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
@@ -49,6 +50,7 @@ public class ShortsService {
     private final RouteRepository routeRepository;
     private final ShortsLikeRepository shortsLikeRepository;
     private final ShortsBookmarkRepository shortsBookmarkRepository;
+    private final ShortsCommentService shortsCommentService;
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
     private final FollowRelationshipRepository followRelationshipRepository;
@@ -369,6 +371,16 @@ public class ShortsService {
             shortsSimpleInfoList);
     }
 
+    //해당 유저가 올린 숏츠 삭제
+    public void deleteShorts(User user) {
+        List<Shorts> userShorts = shortsRepository.findByUserId(user.getId());
+
+        for(Shorts shorts : userShorts) {
+            shortsCommentService.deleteCommentsByShortsId(shorts.getId());
+            shortsLikeRepository.deleteByShortsId(shorts.getId());
+            shortsRepository.delete(shorts);
+        }
+    }
 
     //dto변환 헬퍼메소드
     private ShortsSimpleInfo toShortsSimpleInfo(Shorts shorts, User user) {

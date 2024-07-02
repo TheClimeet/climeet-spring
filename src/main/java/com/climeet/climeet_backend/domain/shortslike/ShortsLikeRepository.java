@@ -10,4 +10,6 @@ public interface ShortsLikeRepository extends JpaRepository<ShortsLike, Long> {
     boolean existsShortsLikeByUserAndShorts(User user, Shorts shorts);
 
     Optional<ShortsLike> findByUserAndShorts(User user, Shorts shorts);
+
+    void deleteByShortsId(Long id);
 }
