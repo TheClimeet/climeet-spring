@@ -13,8 +13,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -60,6 +62,9 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Setter
+    private LocalDateTime lastLogin;
+
     @NotNull
     @Column(name = "access_token")
     private String accessToken;
@@ -70,6 +75,13 @@ public class User {
 
     @NotNull
     private String fcmToken;
+
+    @Getter
+    private Boolean status = true;
+
+    public void updateStatus(){
+        this.status = !status;
+    }
 
     public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;

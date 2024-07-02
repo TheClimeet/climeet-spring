@@ -19,6 +19,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @AllArgsConstructor
@@ -30,7 +32,8 @@ public class ClimbingGym extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "climbingGym", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "climbingGym")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Manager manager;
 
     @OneToMany(mappedBy = "climbingGym")

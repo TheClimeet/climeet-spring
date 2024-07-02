@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class ClimbingRecord extends BaseTimeEntity {
     private ClimbingGym gym;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     private LocalDate climbingDate;
