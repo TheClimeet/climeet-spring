@@ -69,4 +69,9 @@ public class DifficultyMapping extends BaseTimeEntity {
         this.difficulty = climeetDifficulty.getIntValue();
     }
 
+    public void changeGymDifficultyToNull(){
+        this.gymDifficultyColor = null;
+        this.gymDifficultyName = null;
+    }
+
 }

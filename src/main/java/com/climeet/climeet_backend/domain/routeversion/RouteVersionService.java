@@ -69,8 +69,15 @@ public class RouteVersionService {
             manager.getClimbingGym()); // 난이도 목록을 불러옴
         List<DifficultyMapping> filteredDifficultyMappingList = new ArrayList<>(
             difficultyMappingList.stream()
-                .filter(difficulty -> requestDto.getExistingData().getDifficulty()
-                    .contains(difficulty.getGymDifficultyName()))
+                .filter(difficulty -> {
+                    boolean isIncluded = requestDto.getExistingData().getDifficulty()
+                        .contains(difficulty.getGymDifficultyName());
+                    if (!isIncluded) { // 바꾸려는 난이도 목록에 없다면 암장 난이도 이름과 색을 null로 만듬
+                        difficulty.changeGymDifficultyToNull();
+                        difficultyMappingRepository.save(difficulty);
+                    }
+                    return isIncluded;
+                })
                 .toList());
         List<DifficultyMapping> newDifficultyImageList = requestDto.getNewData().getDifficulty()
             .stream()
