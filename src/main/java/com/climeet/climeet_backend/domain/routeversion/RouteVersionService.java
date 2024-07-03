@@ -66,13 +66,14 @@ public class RouteVersionService {
 
         // 암장 난이도 추가 변경
         List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
-            manager.getClimbingGym());
-        List<Long> filteredDifficultyMappingIdList = new ArrayList<>(difficultyMappingList.stream()
-            .filter(difficulty -> requestDto.getExistingData().getDifficulty()
-                .contains(difficulty.getGymDifficultyName()))
-            .map(DifficultyMapping::getId)
-            .toList());
-        List<Long> newDifficultyImageIdList = requestDto.getNewData().getDifficulty().stream()
+            manager.getClimbingGym()); // 난이도 목록을 불러옴
+        List<DifficultyMapping> filteredDifficultyMappingList = new ArrayList<>(
+            difficultyMappingList.stream()
+                .filter(difficulty -> requestDto.getExistingData().getDifficulty()
+                    .contains(difficulty.getGymDifficultyName()))
+                .toList());
+        List<DifficultyMapping> newDifficultyImageList = requestDto.getNewData().getDifficulty()
+            .stream()
             .map(difficultyDto -> {
                 DifficultyMapping targetDifficulty = difficultyMappingList.stream()
                     .filter(difficulty -> difficulty.getGymDifficultyName()
@@ -88,10 +89,12 @@ public class RouteVersionService {
                         ClimeetDifficulty.findByString(difficultyDto.getClimeetDifficultyName()),
                         manager.getClimbingGym());
                 }
-                return difficultyMappingRepository.save(targetDifficulty).getId();
+                return difficultyMappingRepository.save(targetDifficulty);
             })
             .toList();
-        filteredDifficultyMappingIdList.addAll(newDifficultyImageIdList);
+        filteredDifficultyMappingList.addAll(newDifficultyImageList);
+        List<Long> filteredDifficultyMappingIdList = filteredDifficultyMappingList.stream()
+            .map(DifficultyMapping::getId).toList();
 
         // 암장 층별 이미지 추가
         List<ClimbingGymLayoutImage> layoutImageList = climbingGymLayoutImageRepository.findClimbingGymLayoutImageByClimbingGym(
@@ -122,12 +125,11 @@ public class RouteVersionService {
             sectorRepository.findByIdIn(requestDto.getExistingData().getSector()));
         // 새 Sector 추가하기
         List<Sector> newSectorList = requestDto.getNewData().getSector().stream()
-            .map(sectorDto -> {
-                return sectorRepository.save(
-                    Sector.toEntity(manager.getClimbingGym(), sectorDto.getName(),
-                        sectorDto.getFloor(),
-                        sectorDto.getImgUrl()));
-            })
+            .map(sectorDto -> sectorRepository.save(
+                Sector.toEntity(manager.getClimbingGym(), sectorDto.getName(),
+                    sectorDto.getFloor(),
+                    sectorDto.getImgUrl()))
+            )
             .toList();
         // Sector 데이터 병합(Route 추가시에 사용)
         sectorList.addAll(newSectorList);
@@ -142,7 +144,7 @@ public class RouteVersionService {
                     .filter(sector -> sector.getSectorName().equals(routeDto.getSectorName()))
                     .findFirst()
                     .orElseThrow(() -> new GeneralException(ErrorStatus._MISMATCH_SECTOR_DATA));
-                DifficultyMapping targetDifficulty = difficultyMappingList.stream()
+                DifficultyMapping targetDifficulty = filteredDifficultyMappingList.stream()
                     .filter(difficultyMapping -> difficultyMapping.getGymDifficultyName()
                         .equals(routeDto.getGymDifficultyName()))
                     .findFirst()
