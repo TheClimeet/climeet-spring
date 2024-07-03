@@ -64,12 +64,12 @@ public class DifficultyMapping extends BaseTimeEntity {
             .build();
     }
 
-    public void changeDifficultyMapping(ClimeetDifficulty climeetDifficulty){
+    public void changeDifficultyMapping(ClimeetDifficulty climeetDifficulty) {
         this.climeetDifficultyName = climeetDifficulty.getStringValue();
         this.difficulty = climeetDifficulty.getIntValue();
     }
 
-    public void changeGymDifficultyToNull(){
+    public void changeGymDifficultyToNull() {
         this.gymDifficultyColor = null;
         this.gymDifficultyName = null;
     }

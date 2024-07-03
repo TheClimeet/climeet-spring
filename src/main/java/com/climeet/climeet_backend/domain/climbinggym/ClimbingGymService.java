@@ -19,6 +19,8 @@ import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto
 import com.climeet.climeet_backend.domain.climbinggym.enums.ServiceBitmask;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImage;
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImage;
+import com.climeet.climeet_backend.domain.climbinggymlayoutimage.ClimbingGymLayoutImageRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
@@ -28,7 +30,13 @@ import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
 import com.climeet.climeet_backend.domain.retool.gymnamechangerequest.GymNameChangeRequest;
 import com.climeet.climeet_backend.domain.retool.gymnamechangerequest.GymNameChangeRequestRepository;
+import com.climeet.climeet_backend.domain.route.Route;
+import com.climeet.climeet_backend.domain.route.RouteRepository;
 import com.climeet.climeet_backend.domain.routerecord.RouteRecordRepository;
+import com.climeet.climeet_backend.domain.routeversion.RouteVersion;
+import com.climeet.climeet_backend.domain.routeversion.RouteVersionRepository;
+import com.climeet.climeet_backend.domain.sector.Sector;
+import com.climeet.climeet_backend.domain.sector.SectorRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.global.common.PageResponseDto;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
@@ -36,8 +44,12 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,6 +74,10 @@ public class ClimbingGymService {
     private final RouteRecordRepository routeRecordRepository;
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final GymNameChangeRequestRepository gymNameChangeRequestRepository;
+    private final SectorRepository sectorRepository;
+    private final RouteRepository routeRepository;
+    private final RouteVersionRepository routeVersionRepository;
+    private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
 
     @Value("${cloud.aws.lambda.crawling-uri}")
     private String crawlingUri;
@@ -71,6 +87,8 @@ public class ClimbingGymService {
     private static final String DEFAULT_BACKGROUND_ENDPOINT = "default/background.jpg";
     private static final int PERCENTAGE_DIVISOR = 100;
     private static final double DEFAULT_PERCENTAGE = 0;
+    private static final String DEFAULT_SECTOR_NAME = "climeet-default";
+    private static final LocalDate DEFAULT_ROUTEVERSION_TIMEPOINT = LocalDate.of(2024, 1, 1);
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
         int page, int size) {
@@ -386,12 +404,34 @@ public class ClimbingGymService {
 
         requestDto.getGymNameList().forEach(
             name -> {
+                // 암장 추가
                 ClimbingGym climbingGym = climbingGymRepository.save(ClimbingGym.toEntity(name));
+                ClimbingGymLayoutImage defaultLayout = climbingGymLayoutImageRepository.save(
+                    ClimbingGymLayoutImage.toEntity(climbingGym, 1));
+                List<Long> layoutList = Collections.singletonList(defaultLayout.getId());
+                Sector defaultSector = sectorRepository.save(
+                    Sector.toEntity(climbingGym, DEFAULT_SECTOR_NAME, 1));
+                List<DifficultyMapping> difficultyMappingList = new ArrayList<>();
+                List<Route> defaultRouteList = new ArrayList<>();
                 Arrays.stream(ClimeetDifficulty.values()).forEach(
-                    difficulty ->
-                        difficultyMappingRepository.save(
-                            DifficultyMapping.toEntity(difficulty, climbingGym))
-                );
+                    // 추가된 암장에 기본 난이도들 추가
+                    difficulty -> {
+                        DifficultyMapping defaultDifficulty = difficultyMappingRepository.save(
+                            DifficultyMapping.toEntity(difficulty, climbingGym));
+                        difficultyMappingList.add(defaultDifficulty);
+                        Route defaultRoute = routeRepository.save(
+                            Route.toEntity(defaultSector, defaultDifficulty));
+                        defaultRouteList.add(defaultRoute);
+                    });
+                List<Long> defaultDifficultyList = difficultyMappingList.stream()
+                    .map(DifficultyMapping::getId).toList();
+                Map<String, List<Long>> climbData = new HashMap<>();
+                climbData.put("route", defaultRouteList.stream().map(Route::getId).toList());
+                climbData.put("sector", Collections.singletonList(defaultSector.getId()));
+
+                routeVersionRepository.save(
+                    RouteVersion.toEntity(climbingGym, DEFAULT_ROUTEVERSION_TIMEPOINT,
+                        defaultDifficultyList, layoutList, climbData));
             });
     }
 
