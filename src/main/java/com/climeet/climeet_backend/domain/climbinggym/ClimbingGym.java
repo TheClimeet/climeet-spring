@@ -17,6 +17,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class ClimbingGym extends BaseTimeEntity {
 
     @Id
@@ -138,6 +140,14 @@ public class ClimbingGym extends BaseTimeEntity {
     public void thisWeekSelectionCountDown() {
         this.thisWeekSelectionCount--;
 
+    }
+
+    public static ClimbingGym toEntity(String name){
+        return ClimbingGym.builder()
+            .name(name)
+            .AverageRating(0.0f)
+            .sumRating(0.0f)
+            .build();
     }
 
 }

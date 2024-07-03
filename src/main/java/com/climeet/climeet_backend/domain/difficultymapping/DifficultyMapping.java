@@ -38,13 +38,20 @@ public class DifficultyMapping extends BaseTimeEntity {
 
     private Integer difficulty;
 
-    @NotNull
     @Column(length = 10)
-    private String gymDifficultyName;
+    private String gymDifficultyName = null;
 
-    @NotNull
     @Column(length = 7)
     private String gymDifficultyColor;
+
+    public static DifficultyMapping toEntity(ClimeetDifficulty climeetDifficulty,
+        ClimbingGym climbingGym) {
+        return DifficultyMapping.builder()
+            .climbingGym(climbingGym)
+            .climeetDifficultyName(climeetDifficulty.getStringValue())
+            .difficulty(climeetDifficulty.getIntValue())
+            .build();
+    }
 
     public static DifficultyMapping toEntity(GymDifficulty gymDifficulty,
         ClimeetDifficulty climeetDifficulty, ClimbingGym climbingGym) {

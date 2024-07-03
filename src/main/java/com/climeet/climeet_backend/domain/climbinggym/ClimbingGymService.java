@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymBackgroundImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymProfileImageRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.CreateClimbingGymRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 
@@ -20,6 +21,7 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackgroundImageRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
+import com.climeet.climeet_backend.domain.difficultymapping.enums.ClimeetDifficulty;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -34,6 +36,7 @@ import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 @RequiredArgsConstructor
@@ -372,6 +376,23 @@ public class ClimbingGymService {
 
         gymNameChangeRequestRepository.save(
             GymNameChangeRequest.toEntity(manager.getClimbingGym(), requestDto.getName()));
+    }
+
+    @Transactional
+    public void createClimbingGym(User user, CreateClimbingGymRequest requestDto) {
+        // TODO: 클밋 공식계정만 추가하게하던지 결정해야함. 일단은 매니저면 가능하게 진행
+        Manager manager = managerRepository.findById(user.getId())
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
+
+        requestDto.getGymNameList().forEach(
+            name -> {
+                ClimbingGym climbingGym = climbingGymRepository.save(ClimbingGym.toEntity(name));
+                Arrays.stream(ClimeetDifficulty.values()).forEach(
+                    difficulty ->
+                        difficultyMappingRepository.save(
+                            DifficultyMapping.toEntity(difficulty, climbingGym))
+                );
+            });
     }
 
 }

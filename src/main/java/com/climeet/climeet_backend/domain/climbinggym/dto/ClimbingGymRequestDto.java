@@ -27,18 +27,28 @@ public class ClimbingGymRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ChangeClimbingGymNameRequest {
+
         private String name;
     }
 
     @Getter
     @NoArgsConstructor
     public static class ChangeClimbingGymBackgroundImageRequest {
+
         private String imgUrl;
     }
 
     @Getter
     @NoArgsConstructor
     public static class ChangeClimbingGymProfileImageRequest {
+
         private String imgUrl;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class CreateClimbingGymRequest {
+
+        private List<String> gymNameList;
     }
 }
