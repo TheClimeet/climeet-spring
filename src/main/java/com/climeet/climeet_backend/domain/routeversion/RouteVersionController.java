@@ -77,7 +77,7 @@ public class RouteVersionController {
 
     @Operation(summary = "암장 특정 루트버전의 모든 데이터 불러오기 (루트버전 수정용) - 1105 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._EMPTY_VERSION})
-    @GetMapping("/{gymId}/version/all")
+    @GetMapping("/version/all")
     public ResponseEntity<RouteVersionAllDataResponse> getRouteVersionAllData(
         @CurrentUser User user, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate timePoint) {
         return ResponseEntity.ok(
