@@ -32,8 +32,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,14 @@ public class RouteVersionService {
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
     private final FcmNotificationService fcmNotificationService;
+
+    @Value("${cloud.aws.s3.public-uri}")
+    private String s3Uri;
+    private static final String DEFAULT_SECTOR_IMAGE_ENDPOINT = "default/sector.jpg";
+    private static final String DEFAULT_ROUTE_IMAGE_ENDPOINT = "default/route.jpg";
+    private static final String DEFAULT_GYM_LAYOUT = "default/layout.jpg";
+    private static final int COMPETITION_DIFFICULTY_RETURN = -1;
+    private static final String DEFAULT_HOLD_COLOR = "하양";
 
     public List<LocalDate> getRouteVersionList(Long gymId) {
         List<LocalDate> timePointList = routeVersionRepository.findTimePointListByGymId(gymId);
@@ -198,15 +208,22 @@ public class RouteVersionService {
 
         List<ClimbingGymLayoutImage> layoutImageList = climbingGymLayoutImageRepository.findByIdIn(
             routeVersion.getLayoutList());
+        layoutImageList.stream()
+            .filter(layoutImage -> layoutImage.getImgUrl() == null)
+            .forEach(layoutImage -> layoutImage.changeImgUrl(s3Uri + DEFAULT_GYM_LAYOUT));
 
         List<Sector> sectorList = sectorRepository.findByIdIn(
             routeVersion.getClimbData().get("sector"));
-        if (sectorList.size() != routeVersion.getClimbData().get("sector").size()) {
-            throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
-        }
+        sectorList.stream()
+            .filter(sector -> sector.getSectorImageUrl() == null)
+            .forEach(sector -> sector.changeSectorImage(s3Uri + DEFAULT_SECTOR_IMAGE_ENDPOINT));
 
         List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByIdIn(
             routeVersion.getDifficultyMappingList());
+        difficultyList.stream()
+            .filter(difficultyMapping -> difficultyMapping.getDifficulty() == null)
+            .forEach(difficultyMapping -> difficultyMapping.changeDifficultyValue(
+                COMPETITION_DIFFICULTY_RETURN));
 
         List<SectorDetailResponse> sectorDetailResponses = sectorList.stream()
             .map(SectorDetailResponse::toDTO).toList();
@@ -235,6 +252,16 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
+        routeList.stream()
+            .filter(route -> route.getRouteImageUrl() == null)
+            .forEach(route -> route.changeRouteImage(s3Uri + DEFAULT_ROUTE_IMAGE_ENDPOINT));
+        routeList.stream()
+            .filter(route -> route.getHoldColor() == null)
+            .forEach(route -> route.changeHoldColor(DEFAULT_HOLD_COLOR));
+        routeList.stream()
+            .filter(route -> route.getDifficultyMapping().getDifficulty() == null)
+            .forEach(route -> route.changeDifficulty(COMPETITION_DIFFICULTY_RETURN));
+
         // floor Filter 적용
         if (getFilteredRouteVersionRequest.getFloor() != null) {
             routeList = routeList.stream()
@@ -254,8 +281,8 @@ public class RouteVersionService {
         // difficulty Filter 적용
         if (getFilteredRouteVersionRequest.getDifficulty() != null) {
             routeList = routeList.stream()
-                .filter(route -> route.getDifficultyMapping().getDifficulty()
-                    == getFilteredRouteVersionRequest.getDifficulty())
+                .filter(route -> Objects.equals(route.getDifficultyMapping().getDifficulty(),
+                    getFilteredRouteVersionRequest.getDifficulty()))
                 .toList();
         }
 
@@ -303,21 +330,40 @@ public class RouteVersionService {
 
         List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByIdIn(
             routeVersion.getDifficultyMappingList());
+        difficultyMappingList.stream()
+            .filter(difficultyMapping -> difficultyMapping.getDifficulty() == null)
+            .forEach(difficultyMapping -> difficultyMapping.changeDifficultyValue(
+                COMPETITION_DIFFICULTY_RETURN));
         List<DifficultyMappingDetailResponse> difficultyListDto = difficultyMappingList.stream()
             .map(DifficultyMappingDetailResponse::toDTO).toList();
 
         List<ClimbingGymLayoutImage> layoutImageList = climbingGymLayoutImageRepository.findByIdIn(
             routeVersion.getLayoutList());
+        layoutImageList.stream()
+            .filter(layoutImage -> layoutImage.getImgUrl() == null)
+            .forEach(layoutImage -> layoutImage.changeImgUrl(s3Uri + DEFAULT_GYM_LAYOUT));
         List<LayoutImgListDetail> layoutImgListDto = layoutImageList.stream()
             .map(LayoutImgListDetail::toDto).toList();
 
         List<Sector> sectorList = sectorRepository.findByIdIn(
             routeVersion.getClimbData().get("sector"));
+        sectorList.stream()
+            .filter(sector -> sector.getSectorImageUrl() == null)
+            .forEach(sector -> sector.changeSectorImage(s3Uri + DEFAULT_SECTOR_IMAGE_ENDPOINT));
         List<SectorDetailResponse> sectorListDto = sectorList.stream()
             .map(SectorDetailResponse::toDTO).toList();
 
         List<Route> routeList = routeRepository.findByIdIn(
             routeVersion.getClimbData().get("route"));
+        routeList.stream()
+            .filter(route -> route.getRouteImageUrl() == null)
+            .forEach(route -> route.changeRouteImage(s3Uri + DEFAULT_ROUTE_IMAGE_ENDPOINT));
+        routeList.stream()
+            .filter(route -> route.getHoldColor() == null)
+            .forEach(route -> route.changeHoldColor(DEFAULT_HOLD_COLOR));
+        routeList.stream()
+            .filter(route -> route.getDifficultyMapping().getDifficulty() == null)
+            .forEach(route -> route.changeDifficulty(COMPETITION_DIFFICULTY_RETURN));
         List<RouteDetailResponse> routeListDto = routeList.stream().map(RouteDetailResponse::toDTO)
             .toList();
 

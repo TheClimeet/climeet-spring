@@ -69,4 +69,16 @@ public class Route extends BaseTimeEntity {
     public void thisWeekSelectionCountDown() {
         this.thisWeekSelectionCount--;
     }
+
+    public void changeRouteImage(String routeImageUrl) {
+        this.routeImageUrl = routeImageUrl;
+    }
+
+    public void changeDifficulty(int difficulty) {
+        this.difficultyMapping.changeDifficultyValue(difficulty);
+    }
+
+    public void changeHoldColor(String holdColor) {
+        this.holdColor = holdColor;
+    }
 }

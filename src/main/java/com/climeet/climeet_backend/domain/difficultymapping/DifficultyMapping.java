@@ -44,12 +44,15 @@ public class DifficultyMapping extends BaseTimeEntity {
     @Column(length = 7)
     private String gymDifficultyColor;
 
+    // 암장 난이도를 클밋 기준으로 추가함
     public static DifficultyMapping toEntity(ClimeetDifficulty climeetDifficulty,
         ClimbingGym climbingGym) {
         return DifficultyMapping.builder()
             .climbingGym(climbingGym)
             .climeetDifficultyName(climeetDifficulty.getStringValue())
             .difficulty(climeetDifficulty.getIntValue())
+            .gymDifficultyName(climeetDifficulty.getStringValue())
+            .gymDifficultyColor(climeetDifficulty.getColorCode())
             .build();
     }
 
@@ -72,6 +75,10 @@ public class DifficultyMapping extends BaseTimeEntity {
     public void changeGymDifficultyToNull() {
         this.gymDifficultyColor = null;
         this.gymDifficultyName = null;
+    }
+
+    public void changeDifficultyValue(int difficulty) {
+        this.difficulty = difficulty;
     }
 
 }
