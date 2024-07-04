@@ -3,6 +3,9 @@ package com.climeet.climeet_backend.global.s3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
+import com.amazonaws.services.s3.model.MultiObjectDeleteException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
@@ -12,6 +15,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -83,4 +87,19 @@ public class S3Service {
     public void deleteFile(String fileName) {
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
+
+    public void deleteFilesByUrls(List<String> fileUrls) {
+        List<DeleteObjectsRequest.KeyVersion> keys = fileUrls.stream()
+            .map(url -> new DeleteObjectsRequest.KeyVersion(url.replace("https://" + bucket + ".s3." + region + ".amazonaws.com/", "")))
+            .toList();
+
+        DeleteObjectsRequest request = new DeleteObjectsRequest(bucket).withKeys(keys);
+
+        try {
+            amazonS3Client.deleteObjects(request);
+        } catch (MultiObjectDeleteException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
