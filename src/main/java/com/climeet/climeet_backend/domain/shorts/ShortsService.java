@@ -28,6 +28,7 @@ import com.climeet.climeet_backend.global.s3.S3Service;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -375,9 +376,15 @@ public class ShortsService {
     public void deleteShorts(User user) {
         List<Shorts> userShorts = shortsRepository.findByUserId(user.getId());
 
+        List<String> urlsToDelete = new ArrayList<>();
         for(Shorts shorts : userShorts) {
-            s3Service.deleteFile(shorts.getThumbnailImageUrl());
-            s3Service.deleteFile(shorts.getVideoUrl());
+            urlsToDelete.add(shorts.getThumbnailImageUrl());
+            urlsToDelete.add(shorts.getVideoUrl());
+        }
+
+        s3Service.deleteFilesByUrls(urlsToDelete);
+
+        for(Shorts shorts : userShorts) {
             shortsCommentService.deleteCommentsByShortsId(shorts.getId());
             shortsBookmarkRepository.deleteByShortsId(shorts.getId());
             shortsLikeRepository.deleteByShortsId(shorts.getId());
