@@ -377,19 +377,17 @@ public class ShortsService {
         List<Shorts> userShorts = shortsRepository.findByUserId(user.getId());
 
         List<String> urlsToDelete = new ArrayList<>();
+
         for(Shorts shorts : userShorts) {
             urlsToDelete.add(shorts.getThumbnailImageUrl());
             urlsToDelete.add(shorts.getVideoUrl());
-        }
 
-        s3Service.deleteFilesByUrls(urlsToDelete);
-
-        for(Shorts shorts : userShorts) {
             shortsCommentService.deleteCommentsByShortsId(shorts.getId());
             shortsBookmarkRepository.deleteByShortsId(shorts.getId());
             shortsLikeRepository.deleteByShortsId(shorts.getId());
             shortsRepository.delete(shorts);
         }
+        s3Service.deleteFilesByUrls(urlsToDelete);
     }
 
     //dto변환 헬퍼메소드
