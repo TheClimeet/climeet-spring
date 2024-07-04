@@ -2,7 +2,6 @@ package com.climeet.climeet_backend.domain.climbinggym.dto;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
-import com.climeet.climeet_backend.domain.manager.Manager;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -79,11 +78,12 @@ public class ClimbingGymResponseDto {
         private Boolean isFollower;
         private Boolean hasManager;
 
-        public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym,  Long followerCount, Long followingCount,
+        public static ClimbingGymDetailResponse toDTO(ClimbingGym climbingGym, Long followerCount,
+            Long followingCount, String gymProfileImageUrl,
             String gymBackGroundImageUrl, Boolean isFollower, Boolean hasManager) {
             return ClimbingGymDetailResponse.builder()
                 .gymId(climbingGym.getId())
-                .gymProfileImageUrl(climbingGym.getProfileImageUrl())
+                .gymProfileImageUrl(gymProfileImageUrl)
                 .gymBackGroundImageUrl(gymBackGroundImageUrl)
                 .gymName(climbingGym.getName())
                 .followerCount(followerCount)
