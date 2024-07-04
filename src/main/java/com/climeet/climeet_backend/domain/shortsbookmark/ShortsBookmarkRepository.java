@@ -10,4 +10,6 @@ public interface ShortsBookmarkRepository extends JpaRepository<ShortsBookmark, 
     boolean existsShortsBookmarkByUserAndShorts(User user, Shorts shorts);
 
     Optional<ShortsBookmark> findByUserAndShorts(User user, Shorts shorts);
+
+    void deleteByShortsId(Long id);
 }

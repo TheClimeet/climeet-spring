@@ -372,11 +372,13 @@ public class ShortsService {
     }
 
     //해당 유저가 올린 숏츠 삭제
+    @Transactional
     public void deleteShorts(User user) {
         List<Shorts> userShorts = shortsRepository.findByUserId(user.getId());
 
         for(Shorts shorts : userShorts) {
             shortsCommentService.deleteCommentsByShortsId(shorts.getId());
+            shortsBookmarkRepository.deleteByShortsId(shorts.getId());
             shortsLikeRepository.deleteByShortsId(shorts.getId());
             shortsRepository.delete(shorts);
         }
