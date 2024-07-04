@@ -5,7 +5,6 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
-import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -377,6 +376,8 @@ public class ShortsService {
         List<Shorts> userShorts = shortsRepository.findByUserId(user.getId());
 
         for(Shorts shorts : userShorts) {
+            s3Service.deleteFile(shorts.getThumbnailImageUrl());
+            s3Service.deleteFile(shorts.getVideoUrl());
             shortsCommentService.deleteCommentsByShortsId(shorts.getId());
             shortsBookmarkRepository.deleteByShortsId(shorts.getId());
             shortsLikeRepository.deleteByShortsId(shorts.getId());
