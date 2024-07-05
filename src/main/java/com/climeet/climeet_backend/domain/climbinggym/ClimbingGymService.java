@@ -89,6 +89,10 @@ public class ClimbingGymService {
     private static final double DEFAULT_PERCENTAGE = 0;
     private static final String DEFAULT_SECTOR_NAME = "climeet-default";
     private static final LocalDate DEFAULT_ROUTEVERSION_TIMEPOINT = LocalDate.of(2024, 1, 1);
+    private static final String DEFAULT_SECTOR_IMAGE_ENDPOINT = "default/sector.jpg";
+    private static final String DEFAULT_ROUTE_IMAGE_ENDPOINT = "default/route.jpg";
+    private static final String DEFAULT_GYM_LAYOUT = "default/layout.jpg";
+    private static final String DEFAULT_HOLD_COLOR = "하양";
 
     public PageResponseDto<List<ClimbingGymSimpleResponse>> searchClimbingGym(String gymName,
         int page, int size) {
@@ -407,10 +411,11 @@ public class ClimbingGymService {
                 // 암장 추가
                 ClimbingGym climbingGym = climbingGymRepository.save(ClimbingGym.toEntity(name));
                 ClimbingGymLayoutImage defaultLayout = climbingGymLayoutImageRepository.save(
-                    ClimbingGymLayoutImage.toEntity(climbingGym, 1));
+                    ClimbingGymLayoutImage.toEntity(climbingGym, 1, s3Uri + DEFAULT_GYM_LAYOUT));
                 List<Long> layoutList = Collections.singletonList(defaultLayout.getId());
                 Sector defaultSector = sectorRepository.save(
-                    Sector.toEntity(climbingGym, DEFAULT_SECTOR_NAME, 1));
+                    Sector.toEntity(climbingGym, DEFAULT_SECTOR_NAME, 1,
+                        s3Uri + DEFAULT_SECTOR_IMAGE_ENDPOINT));
                 List<DifficultyMapping> difficultyMappingList = new ArrayList<>();
                 List<Route> defaultRouteList = new ArrayList<>();
                 Arrays.stream(ClimeetDifficulty.values()).forEach(
@@ -420,7 +425,8 @@ public class ClimbingGymService {
                             DifficultyMapping.toEntity(difficulty, climbingGym));
                         difficultyMappingList.add(defaultDifficulty);
                         Route defaultRoute = routeRepository.save(
-                            Route.toEntity(defaultSector, defaultDifficulty));
+                            Route.toEntity(defaultSector, defaultDifficulty,
+                                s3Uri + DEFAULT_ROUTE_IMAGE_ENDPOINT, DEFAULT_HOLD_COLOR));
                         defaultRouteList.add(defaultRoute);
                     });
                 List<Long> defaultDifficultyList = difficultyMappingList.stream()

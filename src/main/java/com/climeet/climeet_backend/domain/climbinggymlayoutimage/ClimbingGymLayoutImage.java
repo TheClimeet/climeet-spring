@@ -34,10 +34,6 @@ public class ClimbingGymLayoutImage extends BaseTimeEntity {
 
     private String imgUrl;
 
-    public static ClimbingGymLayoutImage toEntity(ClimbingGym climbingGym, int floor) {
-        return toEntity(climbingGym, floor, null);
-    }
-
     public static ClimbingGymLayoutImage toEntity(ClimbingGym climbingGym, int floor, String imgUrl) {
         return ClimbingGymLayoutImage.builder()
             .climbingGym(climbingGym)

@@ -47,10 +47,6 @@ public class Route extends BaseTimeEntity {
     @ColumnDefault("0")
     private int selectionCount;
 
-    public static Route toEntity(Sector sector, DifficultyMapping difficultyMapping) {
-        return toEntity(sector, difficultyMapping, null, null);
-    }
-
     public static Route toEntity(Sector sector, DifficultyMapping difficultyMapping,
         String routeImageUrl, String holdColor) {
         return Route.builder()

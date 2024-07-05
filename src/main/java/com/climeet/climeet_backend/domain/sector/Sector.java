@@ -36,10 +36,6 @@ public class Sector extends BaseTimeEntity {
 
     private int floor = 1;
 
-    public static Sector toEntity(ClimbingGym climbingGym, String name, int floor) {
-        return toEntity(climbingGym, name, floor, null);
-    }
-
     public static Sector toEntity(ClimbingGym climbingGym, String name, int floor,  String imgUrl) {
         return Sector.builder()
             .climbingGym(climbingGym)
