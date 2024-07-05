@@ -17,7 +17,7 @@ public interface DifficultyMappingRepository extends JpaRepository<DifficultyMap
 
     @Query("SELECT dm "
         + "FROM DifficultyMapping dm "
-        + "WHERE dm.climbingGym.id = :gymId "
+        + "WHERE dm.climbingGym = :climbingGym "
         + "AND dm.difficulty >= 0 "
         + "ORDER BY dm.difficulty ASC ")
     List<DifficultyMapping> findDifficultyWithNoCompetition(ClimbingGym climbingGym);
