@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
@@ -66,13 +67,21 @@ public class RouteVersionService {
 
         // 암장 난이도 추가 변경
         List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymOrderByDifficultyAsc(
-            manager.getClimbingGym());
-        List<Long> filteredDifficultyMappingIdList = new ArrayList<>(difficultyMappingList.stream()
-            .filter(difficulty -> requestDto.getExistingData().getDifficulty()
-                .contains(difficulty.getGymDifficultyName()))
-            .map(DifficultyMapping::getId)
-            .toList());
-        List<Long> newDifficultyImageIdList = requestDto.getNewData().getDifficulty().stream()
+            manager.getClimbingGym()); // 난이도 목록을 불러옴
+        List<DifficultyMapping> filteredDifficultyMappingList = new ArrayList<>(
+            difficultyMappingList.stream()
+                .filter(difficulty -> {
+                    boolean isIncluded = requestDto.getExistingData().getDifficulty()
+                        .contains(difficulty.getGymDifficultyName());
+                    if (!isIncluded) { // 바꾸려는 난이도 목록에 없다면 암장 난이도 이름과 색을 클밋 기준으로 만듬
+                        difficulty.changeGymDifficultyToClimeetDifficulty();
+                        difficultyMappingRepository.save(difficulty);
+                    }
+                    return isIncluded;
+                })
+                .toList());
+        List<DifficultyMapping> newDifficultyImageList = requestDto.getNewData().getDifficulty()
+            .stream()
             .map(difficultyDto -> {
                 DifficultyMapping targetDifficulty = difficultyMappingList.stream()
                     .filter(difficulty -> difficulty.getGymDifficultyName()
@@ -88,10 +97,12 @@ public class RouteVersionService {
                         ClimeetDifficulty.findByString(difficultyDto.getClimeetDifficultyName()),
                         manager.getClimbingGym());
                 }
-                return difficultyMappingRepository.save(targetDifficulty).getId();
+                return difficultyMappingRepository.save(targetDifficulty);
             })
             .toList();
-        filteredDifficultyMappingIdList.addAll(newDifficultyImageIdList);
+        filteredDifficultyMappingList.addAll(newDifficultyImageList);
+        List<Long> filteredDifficultyMappingIdList = filteredDifficultyMappingList.stream()
+            .map(DifficultyMapping::getId).toList();
 
         // 암장 층별 이미지 추가
         List<ClimbingGymLayoutImage> layoutImageList = climbingGymLayoutImageRepository.findClimbingGymLayoutImageByClimbingGym(
@@ -122,12 +133,11 @@ public class RouteVersionService {
             sectorRepository.findByIdIn(requestDto.getExistingData().getSector()));
         // 새 Sector 추가하기
         List<Sector> newSectorList = requestDto.getNewData().getSector().stream()
-            .map(sectorDto -> {
-                return sectorRepository.save(
-                    Sector.toEntity(manager.getClimbingGym(), sectorDto.getName(),
-                        sectorDto.getFloor(),
-                        sectorDto.getImgUrl()));
-            })
+            .map(sectorDto -> sectorRepository.save(
+                Sector.toEntity(manager.getClimbingGym(), sectorDto.getName(),
+                    sectorDto.getFloor(),
+                    sectorDto.getImgUrl()))
+            )
             .toList();
         // Sector 데이터 병합(Route 추가시에 사용)
         sectorList.addAll(newSectorList);
@@ -142,7 +152,7 @@ public class RouteVersionService {
                     .filter(sector -> sector.getSectorName().equals(routeDto.getSectorName()))
                     .findFirst()
                     .orElseThrow(() -> new GeneralException(ErrorStatus._MISMATCH_SECTOR_DATA));
-                DifficultyMapping targetDifficulty = difficultyMappingList.stream()
+                DifficultyMapping targetDifficulty = filteredDifficultyMappingList.stream()
                     .filter(difficultyMapping -> difficultyMapping.getGymDifficultyName()
                         .equals(routeDto.getGymDifficultyName()))
                     .findFirst()
@@ -192,9 +202,6 @@ public class RouteVersionService {
 
         List<Sector> sectorList = sectorRepository.findByIdIn(
             routeVersion.getClimbData().get("sector"));
-        if (sectorList.size() != routeVersion.getClimbData().get("sector").size()) {
-            throw new GeneralException(ErrorStatus._MISMATCH_SECTOR_IDS);
-        }
 
         List<DifficultyMapping> difficultyList = difficultyMappingRepository.findByIdIn(
             routeVersion.getDifficultyMappingList());
@@ -245,8 +252,8 @@ public class RouteVersionService {
         // difficulty Filter 적용
         if (getFilteredRouteVersionRequest.getDifficulty() != null) {
             routeList = routeList.stream()
-                .filter(route -> route.getDifficultyMapping().getDifficulty()
-                    == getFilteredRouteVersionRequest.getDifficulty())
+                .filter(route -> Objects.equals(route.getDifficultyMapping().getDifficulty(),
+                    getFilteredRouteVersionRequest.getDifficulty()))
                 .toList();
         }
 

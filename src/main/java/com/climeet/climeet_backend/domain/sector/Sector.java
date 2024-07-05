@@ -44,4 +44,8 @@ public class Sector extends BaseTimeEntity {
             .sectorImageUrl(imgUrl)
             .build();
     }
+
+    public void changeSectorImage(String sectorImageUrl){
+        this.sectorImageUrl = sectorImageUrl;
+    }
 }

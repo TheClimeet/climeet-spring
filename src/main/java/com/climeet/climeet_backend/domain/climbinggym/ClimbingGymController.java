@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.climbinggym;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymBackgroundImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymProfileImageRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.CreateClimbingGymRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
@@ -152,6 +153,15 @@ public class ClimbingGymController {
         ChangeClimbingGymNameRequest changeClimbingGymNameRequest){
         climbingGymService.changeGymNameRequest(user, changeClimbingGymNameRequest);
         return ResponseEntity.ok("이름 변경 신청이 완료되었습니다.");
+    }
+
+    @Operation(summary = "암장 추가 - 1014 [무빗]", description = "매니저의 유무에 관계없이 암장을 추가합니다.")
+    @SwaggerApiError({})
+    @PostMapping("/")
+    public ResponseEntity<String> createGym(@CurrentUser User user, @RequestBody
+    CreateClimbingGymRequest createClimbingGymRequest){
+        climbingGymService.createClimbingGym(user, createClimbingGymRequest);
+        return ResponseEntity.ok("추가되었습니다.");
     }
 
 }

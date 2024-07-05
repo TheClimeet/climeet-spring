@@ -538,7 +538,7 @@ public class ClimbingRecordService {
             difficulties.put(level, count);
         });
 
-        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findByClimbingGymAndDifficultyIsNotNullOrderByDifficultyAsc(
+        List<GymDifficultyMappingInfo> difficultyList = difficultyMappingRepository.findDifficultyWithNoCompetition(
                 gym).stream()
             .map(difficultyMapping -> {
                 Long levelCount = difficulties.getOrDefault(difficultyMapping.getDifficulty(),

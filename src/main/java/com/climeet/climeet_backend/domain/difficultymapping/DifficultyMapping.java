@@ -38,13 +38,23 @@ public class DifficultyMapping extends BaseTimeEntity {
 
     private Integer difficulty;
 
-    @NotNull
     @Column(length = 10)
-    private String gymDifficultyName;
+    private String gymDifficultyName = null;
 
-    @NotNull
     @Column(length = 7)
     private String gymDifficultyColor;
+
+    // 암장 난이도를 클밋 기준으로 추가함
+    public static DifficultyMapping toEntity(ClimeetDifficulty climeetDifficulty,
+        ClimbingGym climbingGym) {
+        return DifficultyMapping.builder()
+            .climbingGym(climbingGym)
+            .climeetDifficultyName(climeetDifficulty.getStringValue())
+            .difficulty(climeetDifficulty.getIntValue())
+            .gymDifficultyName(climeetDifficulty.getStringValue())
+            .gymDifficultyColor(climeetDifficulty.getColorCode())
+            .build();
+    }
 
     public static DifficultyMapping toEntity(GymDifficulty gymDifficulty,
         ClimeetDifficulty climeetDifficulty, ClimbingGym climbingGym) {
@@ -57,9 +67,19 @@ public class DifficultyMapping extends BaseTimeEntity {
             .build();
     }
 
-    public void changeDifficultyMapping(ClimeetDifficulty climeetDifficulty){
+    public void changeDifficultyMapping(ClimeetDifficulty climeetDifficulty) {
         this.climeetDifficultyName = climeetDifficulty.getStringValue();
         this.difficulty = climeetDifficulty.getIntValue();
+    }
+
+    public void changeGymDifficultyToClimeetDifficulty() {
+        ClimeetDifficulty climeetDifficulty = ClimeetDifficulty.findByString(this.climeetDifficultyName);
+        this.gymDifficultyColor = climeetDifficulty.getColorCode();
+        this.gymDifficultyName = climeetDifficulty.getStringValue();
+    }
+
+    public void changeDifficultyValue(int difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

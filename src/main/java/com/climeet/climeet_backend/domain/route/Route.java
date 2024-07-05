@@ -47,8 +47,8 @@ public class Route extends BaseTimeEntity {
     @ColumnDefault("0")
     private int selectionCount;
 
-    public static Route toEntity(Sector sector,
-        DifficultyMapping difficultyMapping, String routeImageUrl, String holdColor) {
+    public static Route toEntity(Sector sector, DifficultyMapping difficultyMapping,
+        String routeImageUrl, String holdColor) {
         return Route.builder()
             .sector(sector)
             .difficultyMapping(difficultyMapping)
@@ -57,11 +57,24 @@ public class Route extends BaseTimeEntity {
             .build();
     }
 
+
     public void thisWeekSelectionCountUp() {
         this.thisWeekSelectionCount++;
     }
 
     public void thisWeekSelectionCountDown() {
         this.thisWeekSelectionCount--;
+    }
+
+    public void changeRouteImage(String routeImageUrl) {
+        this.routeImageUrl = routeImageUrl;
+    }
+
+    public void changeDifficulty(int difficulty) {
+        this.difficultyMapping.changeDifficultyValue(difficulty);
+    }
+
+    public void changeHoldColor(String holdColor) {
+        this.holdColor = holdColor;
     }
 }
