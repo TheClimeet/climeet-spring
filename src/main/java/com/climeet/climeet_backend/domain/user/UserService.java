@@ -317,9 +317,6 @@ public class UserService {
         return UserAllowNotificationInfo.toDTO(user);
     }
 
-//    public String createMasterToken(){
-//        return jwtTokenProvider.createToken("1+master", 0);
-//    }
 
 
 }
