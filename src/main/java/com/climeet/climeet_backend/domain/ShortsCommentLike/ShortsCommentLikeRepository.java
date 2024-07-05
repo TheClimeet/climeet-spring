@@ -14,4 +14,6 @@ public interface ShortsCommentLikeRepository extends JpaRepository<ShortsComment
     List<Object[]> findCommentLikeStatusByUserAndCommentsIn(@Param("user") User user, @Param("comments") List<ShortsComment> comments);
 
     Optional<ShortsCommentLike> findShortsCommentLikeByUserAndShortsComment(User user, ShortsComment shortsComment);
+
+    void deleteByShortsCommentId(Long id);
 }

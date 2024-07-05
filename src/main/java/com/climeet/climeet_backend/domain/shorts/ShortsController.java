@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,7 +82,7 @@ public class ShortsController {
     }
 
     @PatchMapping("/shorts/isRead")
-    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리 - 304 [진로]")
+    @Operation(summary = "숏츠 프로필바 초록불 OFF 처리 - 304 [미리]")
     @SwaggerApiError({ErrorStatus._EMPTY_FOLLOW_RELATIONSHIP})
     public ResponseEntity<String> updateShortsIsRead(@CurrentUser User user,
         @RequestParam Long followingUserId) {

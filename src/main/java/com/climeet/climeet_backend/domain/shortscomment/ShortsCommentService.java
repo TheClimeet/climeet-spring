@@ -240,5 +240,13 @@ public class ShortsCommentService {
         }
     }
 
+    @Transactional
+    public void deleteCommentsByShortsId(Long shortsId) {
+        List<ShortsComment> comments = shortsCommentRepository.findByShortsId(shortsId);
 
+        for (ShortsComment comment : comments) {
+            shortsCommentLikeRepository.deleteByShortsCommentId(comment.getId());
+            shortsCommentRepository.delete(comment);
+        }
+    }
 }
