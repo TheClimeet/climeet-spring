@@ -16,7 +16,7 @@ public enum ClimeetDifficulty {
     V7("V7", 8, "#393FD6"),
     V8("V8", 9, "#A259FF"),
     V9("V9+", 10, "#8B8B8B"),
-    C("C", null, "#000000");
+    C("C", -1, "#000000");
 
     private String stringValue;
     private Integer intValue;

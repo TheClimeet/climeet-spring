@@ -3,6 +3,7 @@ package com.climeet.climeet_backend.domain.difficultymapping;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface DifficultyMappingRepository extends JpaRepository<DifficultyMapping, Long> {
 
@@ -14,6 +15,11 @@ public interface DifficultyMappingRepository extends JpaRepository<DifficultyMap
 
     List<DifficultyMapping> findByClimbingGymOrderByDifficultyAsc(ClimbingGym climbingGym);
 
-    List<DifficultyMapping> findByClimbingGymAndDifficultyIsNotNullOrderByDifficultyAsc(ClimbingGym climbingGym);
+    @Query("SELECT dm "
+        + "FROM DifficultyMapping dm "
+        + "WHERE dm.climbingGym.id = :gymId "
+        + "AND dm.difficulty >= 0 "
+        + "ORDER BY dm.difficulty ASC ")
+    List<DifficultyMapping> findDifficultyWithNoCompetition(ClimbingGym climbingGym);
 
 }

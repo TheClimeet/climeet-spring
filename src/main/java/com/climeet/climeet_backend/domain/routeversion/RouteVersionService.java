@@ -51,8 +51,6 @@ public class RouteVersionService {
     private final ClimbingGymLayoutImageRepository climbingGymLayoutImageRepository;
     private final FcmNotificationService fcmNotificationService;
 
-    private static final int COMPETITION_DIFFICULTY_RETURN = -1;
-
     public List<LocalDate> getRouteVersionList(Long gymId) {
         List<LocalDate> timePointList = routeVersionRepository.findTimePointListByGymId(gymId);
         if (timePointList.isEmpty()) {
@@ -235,10 +233,6 @@ public class RouteVersionService {
             throw new GeneralException(ErrorStatus._MISMATCH_ROUTE_IDS);
         }
 
-        routeList.stream()
-            .filter(route -> route.getDifficultyMapping().getDifficulty() == null)
-            .forEach(route -> route.changeDifficulty(COMPETITION_DIFFICULTY_RETURN));
-
         // floor Filter 적용
         if (getFilteredRouteVersionRequest.getFloor() != null) {
             routeList = routeList.stream()
@@ -307,10 +301,6 @@ public class RouteVersionService {
 
         List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByIdIn(
             routeVersion.getDifficultyMappingList());
-        difficultyMappingList.stream()
-            .filter(difficultyMapping -> difficultyMapping.getDifficulty() == null)
-            .forEach(difficultyMapping -> difficultyMapping.changeDifficultyValue(
-                COMPETITION_DIFFICULTY_RETURN));
         List<DifficultyMappingDetailResponse> difficultyListDto = difficultyMappingList.stream()
             .map(DifficultyMappingDetailResponse::toDTO).toList();
 
@@ -326,9 +316,6 @@ public class RouteVersionService {
 
         List<Route> routeList = routeRepository.findByIdIn(
             routeVersion.getClimbData().get("route"));
-        routeList.stream()
-            .filter(route -> route.getDifficultyMapping().getDifficulty() == null)
-            .forEach(route -> route.changeDifficulty(COMPETITION_DIFFICULTY_RETURN));
         List<RouteDetailResponse> routeListDto = routeList.stream().map(RouteDetailResponse::toDTO)
             .toList();
 

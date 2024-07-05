@@ -238,7 +238,7 @@ public class ClimbingGymService {
             throw new GeneralException(ErrorStatus._EMPTY_AVERAGE_LEVEL_DATA);
         }
 
-        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymAndDifficultyIsNotNullOrderByDifficultyAsc(
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findDifficultyWithNoCompetition(
             climbingGym);
         if (difficultyMappingList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
@@ -363,7 +363,7 @@ public class ClimbingGymService {
 
         ClimbingGym climbingGym = climbingGymRepository.findById(gymId)
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_CLIMBING_GYM));
-        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findByClimbingGymAndDifficultyIsNotNullOrderByDifficultyAsc(
+        List<DifficultyMapping> difficultyMappingList = difficultyMappingRepository.findDifficultyWithNoCompetition(
             climbingGym);
         if (difficultyMappingList.isEmpty()) {
             throw new GeneralException(ErrorStatus._EMPTY_DIFFICULTY_LIST);
