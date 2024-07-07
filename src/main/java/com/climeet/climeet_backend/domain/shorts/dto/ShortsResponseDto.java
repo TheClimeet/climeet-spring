@@ -24,13 +24,12 @@ public class ShortsResponseDto {
         private String gymName;
         private String gymDifficultyName;
         private String gymDifficultyColor;
-        private String climeetDifficultyName;
         private Boolean isManager;
         private ShortsDetailInfo shortsDetailInfo;
 
         public static ShortsSimpleInfo toDTO(Long shortsId, String thumbnailImageUrl,
             ClimbingGym climbingGym, ShortsDetailInfo shortsDetailInfo, String gymDifficultyName,
-            String gymDifficultyColor, String gymClimeetDifficultyName, boolean isManager) {
+            String gymDifficultyColor, boolean isManager) {
             String gymName = null;
             if(climbingGym != null) gymName = climbingGym.getName();
 
@@ -39,7 +38,6 @@ public class ShortsResponseDto {
                 .gymName(gymName)
                 .gymDifficultyName(gymDifficultyName)
                 .gymDifficultyColor(gymDifficultyColor)
-                .climeetDifficultyName(gymClimeetDifficultyName)
                 .isManager(isManager).shortsDetailInfo(shortsDetailInfo)
                 .build();
         }

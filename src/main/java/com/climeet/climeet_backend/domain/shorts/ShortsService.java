@@ -5,7 +5,6 @@ import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMappingRepository;
 import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
-import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
@@ -18,6 +17,7 @@ import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsDet
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsProfileSimpleInfo;
 import com.climeet.climeet_backend.domain.shorts.dto.ShortsResponseDto.ShortsSimpleInfo;
 import com.climeet.climeet_backend.domain.shortsbookmark.ShortsBookmarkRepository;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsCommentService;
 import com.climeet.climeet_backend.domain.shortslike.ShortsLikeRepository;
 import com.climeet.climeet_backend.domain.user.User;
 import com.climeet.climeet_backend.domain.user.UserRepository;
@@ -28,6 +28,7 @@ import com.climeet.climeet_backend.global.s3.S3Service;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,7 @@ public class ShortsService {
     private final RouteRepository routeRepository;
     private final ShortsLikeRepository shortsLikeRepository;
     private final ShortsBookmarkRepository shortsBookmarkRepository;
+    private final ShortsCommentService shortsCommentService;
     private final DifficultyMappingRepository difficultyMappingRepository;
     private final S3Service s3Service;
     private final FollowRelationshipRepository followRelationshipRepository;
@@ -60,6 +62,9 @@ public class ShortsService {
     @Transactional
     public void uploadShorts(User user, MultipartFile video,
         CreateShortsRequest createShortsRequest) throws FirebaseMessagingException {
+
+        String gymDifficultyName = null;
+        String gymDifficultyColor = null;
 
         ClimbingGym climbingGym = null;
         if (createShortsRequest.getClimbingGymId() != null) {
@@ -77,11 +82,14 @@ public class ShortsService {
         if (createShortsRequest.getRouteId() != null) {
             route = routeRepository.findById(createShortsRequest.getRouteId())
                 .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_ROUTE));
+            gymDifficultyName = route.getDifficultyMapping().getGymDifficultyName();
+            gymDifficultyColor = route.getDifficultyMapping().getGymDifficultyColor();
         }
 
         String videoUrl = s3Service.uploadFile(video).getImgUrl();
 
         Shorts shorts = Shorts.toEntity(user, climbingGym, sector, route, videoUrl,
+            gymDifficultyName, gymDifficultyColor,
             createShortsRequest);
 
         shortsRepository.save(shorts);
@@ -244,10 +252,7 @@ public class ShortsService {
             for (FollowRelationship relationship : followRelationship) {
                 relationship.updateUploadStatus(false);
             }
-
         }
-
-
     }
 
     @Transactional
@@ -335,10 +340,12 @@ public class ShortsService {
     }
 
     //내가 좋아요 누른 숏츠 조회
-    public PageResponseDto<List<ShortsSimpleInfo>> findUserLikedShorts(User user, int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findUserLikedShorts(User user, int page,
+        int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Slice<Shorts> shortsSlice = shortsRepository.findLikedShortsByUserId(user.getId(), pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findLikedShortsByUserId(user.getId(),
+            pageable);
 
         List<ShortsSimpleInfo> shortsSimpleInfoList = shortsSlice.stream()
             .map(shorts -> toShortsSimpleInfo(shorts, user)
@@ -349,10 +356,12 @@ public class ShortsService {
     }
 
     //내가 저장한 숏츠 조회
-    public PageResponseDto<List<ShortsSimpleInfo>> findUserBookmarkedShorts(User user, int page, int size) {
+    public PageResponseDto<List<ShortsSimpleInfo>> findUserBookmarkedShorts(User user, int page,
+        int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Slice<Shorts> shortsSlice = shortsRepository.findBookmarkedShortsByUserId(user.getId(), pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findBookmarkedShortsByUserId(user.getId(),
+            pageable);
 
         List<ShortsSimpleInfo> shortsSimpleInfoList = shortsSlice.stream()
             .map(shorts -> toShortsSimpleInfo(shorts, user)
@@ -362,30 +371,45 @@ public class ShortsService {
             shortsSimpleInfoList);
     }
 
+    //해당 유저가 올린 숏츠 삭제
+    @Transactional
+    public void deleteShorts(User user) {
+        List<Shorts> userShorts = shortsRepository.findByUserId(user.getId());
 
+        List<String> urlsToDelete = new ArrayList<>();
+
+        for(Shorts shorts : userShorts) {
+            urlsToDelete.add(shorts.getThumbnailImageUrl());
+            urlsToDelete.add(shorts.getVideoUrl());
+
+            shortsCommentService.deleteCommentsByShortsId(shorts.getId());
+            shortsBookmarkRepository.deleteByShortsId(shorts.getId());
+            shortsLikeRepository.deleteByShortsId(shorts.getId());
+            shortsRepository.delete(shorts);
+        }
+        s3Service.deleteFilesByUrls(urlsToDelete);
+    }
 
     //dto변환 헬퍼메소드
     private ShortsSimpleInfo toShortsSimpleInfo(Shorts shorts, User user) {
         DifficultyMapping difficultyMapping = null;
         String gymDifficultyName = null;
         String gymDifficultyColor = null;
-        String climeetDifficultyName = null;
 
         if (shorts.getRoute() != null) {
             difficultyMapping = difficultyMappingRepository.findByClimbingGymAndDifficulty(
                 shorts.getClimbingGym(),
                 shorts.getRoute().getDifficultyMapping().getDifficulty());
 
-            gymDifficultyName = difficultyMapping.getGymDifficultyName();
-            gymDifficultyColor = difficultyMapping.getGymDifficultyColor();
-            climeetDifficultyName = difficultyMapping.getClimeetDifficultyName();
+            gymDifficultyName = shorts.getGymDifficultyName();
+            gymDifficultyColor = shorts.getGymDifficultyColor();
         }
 
         return ShortsSimpleInfo.toDTO(shorts.getId(), shorts.getThumbnailImageUrl(),
             shorts.getClimbingGym(),
             findShorts(user, shorts.getId(), difficultyMapping),
             gymDifficultyName,
-            gymDifficultyColor, climeetDifficultyName, shorts.getUser() instanceof Manager);
+            gymDifficultyColor, shorts.getUser() instanceof Manager);
     }
 
 }

@@ -19,12 +19,14 @@ public class SectorResponseDto {
         private Long sectorId;
         private String name;
         private int floor;
+        private String imgUrl;
 
         public static SectorDetailResponse toDTO(Sector sector) {
             return SectorDetailResponse.builder()
                 .sectorId(sector.getId())
                 .name(sector.getSectorName())
                 .floor(sector.getFloor())
+                .imgUrl(sector.getSectorImageUrl())
                 .build();
 
         }

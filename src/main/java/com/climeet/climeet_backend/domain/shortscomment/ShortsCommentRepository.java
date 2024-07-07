@@ -20,10 +20,10 @@ public interface ShortsCommentRepository extends JpaRepository<ShortsComment, Lo
     Optional<ShortsComment> findFirstChildCommentByIdAndNotParentOrderByCreatedAtAsc(
         @Param("parentId") Long parentId);
 
-    Optional<Slice<ShortsComment>> findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtDesc(
+    Optional<Slice<ShortsComment>> findChildCommentsByShortsIdAndParentCommentIdAndIsFirstChildFalseOrderByCreatedAtAsc(
         Long shortsId, Long parentCommentId, Pageable pageable);
 
     Slice<ShortsComment> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
-    List<ShortsComment> findByUser(User user);
+    List<ShortsComment> findByShortsId(Long shortsId);
 }

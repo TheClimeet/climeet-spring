@@ -7,9 +7,5 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
 
     List<Route> findBySectorClimbingGymId(Long gymId);
 
-    List<Route> findBySectorId(Long sectorId);
-
-    Route findByRouteImageUrl(String routeImageUrl);
-
     List<Route> findByIdIn(List<Long> routeIdList);
 }

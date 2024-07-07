@@ -1,6 +1,9 @@
 package com.climeet.climeet_backend.domain.climbinggym;
 
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymBackgroundImageRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymNameRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.ChangeClimbingGymProfileImageRequest;
+import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.CreateClimbingGymRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymPriceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymRequestDto.UpdateClimbingGymServiceRequest;
 import com.climeet.climeet_backend.domain.climbinggym.dto.ClimbingGymResponseDto.AcceptedClimbingGymSimpleResponse;
@@ -85,15 +88,15 @@ public class ClimbingGymController {
     public ResponseEntity<List<ClimbingGymAverageLevelDetailResponse>> getFollowingUserAverageLevelInClimbingGym(
         @PathVariable Long gymId, @CurrentUser User user) {
         return ResponseEntity.ok(
-            climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId, user));
+            climbingGymService.getFollowingUserAverageLevelInClimbingGym(gymId));
     }
 
     @Operation(summary = "암장 배경사진 변경 (1개만 등록 가능) - 1006 [무빗]")
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER, ErrorStatus._EMPTY_BACKGROUND_IMAGE})
     @PatchMapping("/background-image")
     public ResponseEntity<String> changeClimbingGymBackgroundImage(@CurrentUser User user,
-        @RequestBody String imageUrl) {
-        climbingGymService.changeClimbingGymBackgroundImage(user, imageUrl);
+        @RequestBody ChangeClimbingGymBackgroundImageRequest changeClimbingGymBackgroundImageRequest) {
+        climbingGymService.changeClimbingGymBackgroundImage(user, changeClimbingGymBackgroundImageRequest);
         return ResponseEntity.ok("암장 배경사진 변경을 완료했습니다.");
     }
 
@@ -101,8 +104,8 @@ public class ClimbingGymController {
     @SwaggerApiError({ErrorStatus._EMPTY_MANAGER})
     @PatchMapping("/profile-image")
     public ResponseEntity<String> changeClimbingGymProfileImage(@CurrentUser User user,
-        @RequestBody String imageUrl) {
-        climbingGymService.changeClimbingGymProfileImage(user, imageUrl);
+        @RequestBody ChangeClimbingGymProfileImageRequest changeClimbingGymProfileImageRequest) {
+        climbingGymService.changeClimbingGymProfileImage(user, changeClimbingGymProfileImageRequest);
         return ResponseEntity.ok("관리자 프로필 이미지 변경을 완료했습니다.");
     }
 
@@ -150,6 +153,15 @@ public class ClimbingGymController {
         ChangeClimbingGymNameRequest changeClimbingGymNameRequest){
         climbingGymService.changeGymNameRequest(user, changeClimbingGymNameRequest);
         return ResponseEntity.ok("이름 변경 신청이 완료되었습니다.");
+    }
+
+    @Operation(summary = "암장 추가 - 1014 [무빗]", description = "매니저의 유무에 관계없이 암장을 추가합니다.")
+    @SwaggerApiError({})
+    @PostMapping("/")
+    public ResponseEntity<String> createGym(@CurrentUser User user, @RequestBody
+    CreateClimbingGymRequest createClimbingGymRequest){
+        climbingGymService.createClimbingGym(user, createClimbingGymRequest);
+        return ResponseEntity.ok("추가되었습니다.");
     }
 
 }

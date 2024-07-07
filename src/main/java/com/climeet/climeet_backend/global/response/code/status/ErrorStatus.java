@@ -41,10 +41,12 @@ public enum ErrorStatus implements BaseErrorCode {
     _MISMATCH_SECTOR_IDS(HttpStatus.CONFLICT, "ROUTE_VERSION_004", "등록된 섹터 데이터 중 불러오지 못한 값이 있습니다."),
     _DUPLICATE_ROUTE_VERSION(HttpStatus.CONFLICT, "ROUTE_VERSION_005", "해당일에 이미 등록된 버전이 있습니다."),
     _EMPTY_LAYOUT_IMAGE(HttpStatus.CONFLICT, "ROUTE_VERSION_006", "암장 도면 관련 데이터가 없습니다."),
+    _MISMATCH_SECTOR_DATA(HttpStatus.CONFLICT, "ROUTE_VERSION_007", "연관된 섹터 데이터가 올바르지 않습니다."),
 
     //난이도 매핑 관련
     _INVALID_DIFFICULTY(HttpStatus.CONFLICT, "DIFFICULTY_MAPPING_001", "해당하는 난이도가 없습니다."),
     _EMPTY_DIFFICULTY_LIST(HttpStatus.CONFLICT, "DIFFICULTY_MAPPING_002", "암장에 등록된 매핑이 없습니다."),
+    _MISMATCH_DIFFICULTY_DATA(HttpStatus.CONFLICT, "DIFFICULTY_MAPPING_003", "연관된 암장 난이도 정보가 올바르지 않습니다."),
 
     //벽면 관련
     _EMPTY_SECTOR(HttpStatus.CONFLICT, "SECTOR_001", "존재하지 않는 벽면입니다."),

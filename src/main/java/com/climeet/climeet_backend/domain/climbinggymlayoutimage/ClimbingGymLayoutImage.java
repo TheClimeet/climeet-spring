@@ -27,13 +27,23 @@ public class ClimbingGymLayoutImage extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ClimbingGym climbingGym;
+
+    private int floor;
+
     private String imgUrl;
 
-    public static ClimbingGymLayoutImage toEntity(String imgUrl) {
+    public static ClimbingGymLayoutImage toEntity(ClimbingGym climbingGym, int floor, String imgUrl) {
         return ClimbingGymLayoutImage.builder()
+            .climbingGym(climbingGym)
+            .floor(floor)
             .imgUrl(imgUrl)
             .build();
+    }
+
+    public void changeImgUrl(String imgUrl){
+        this.imgUrl = imgUrl;
     }
 
 }

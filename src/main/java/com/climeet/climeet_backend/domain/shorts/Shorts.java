@@ -66,11 +66,15 @@ public class Shorts extends BaseTimeEntity {
 
     private Boolean isSoundEnabled;
 
+    private String gymDifficultyName;
+
+    private String gymDifficultyColor;
+
     @Enumerated(EnumType.STRING)
     private ShortsVisibility shortsVisibility = ShortsVisibility.PUBLIC;
 
     public static Shorts toEntity(User user, ClimbingGym climbingGym, Sector sector, Route route,
-        String videoUrl, CreateShortsRequest createShortsRequest) {
+        String videoUrl, String gymDifficultyName, String gymDifficultyColor, CreateShortsRequest createShortsRequest) {
         return Shorts.builder()
             .user(user)
             .climbingGym(climbingGym)
@@ -81,6 +85,8 @@ public class Shorts extends BaseTimeEntity {
             .isSoundEnabled(createShortsRequest.isSoundEnabled())
             .shortsVisibility(createShortsRequest.getShortsVisibility())
             .description(createShortsRequest.getDescription())
+            .gymDifficultyName(gymDifficultyName)
+            .gymDifficultyColor(gymDifficultyColor)
             .build();
     }
 
