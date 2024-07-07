@@ -4,6 +4,9 @@ import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climber.enums.ResponseType;
 import com.climeet.climeet_backend.domain.climber.enums.SocialType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -85,6 +88,14 @@ public class ClimberResponseDto {
                 .isAverageCompletionLevelPublic(climber.isAverageCompletionLevelPublic())
                 .build();
         }
+
+    }
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public record KakaoTokenResponse(String accessToken, String tokenType, String refreshToken, Integer refreshTokenExpiresIn, Integer expiresIn){
+    }
+
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public record NaverTokenResponse(String accessToken, String tokenType, Integer expiresIn, String error, String errorDescription){
 
     }
 

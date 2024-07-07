@@ -39,5 +39,13 @@ public class ClimberRequestDto {
 
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClimberTokenRevokeRequest{
+        private String refreshToken;
+
+    }
+
 
 }

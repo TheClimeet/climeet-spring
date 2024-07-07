@@ -93,7 +93,7 @@ public class UserService {
                         currentUserRelation = true;
                     }
                     User follower = followRelationship.getFollower();
-                    return UserFollowDetailInfo.toDTO(follower.getId(), follower.getProfileName(), follower.getProfileName(), follower.getFollowerCount(), follower.getFollowingCount(), currentUserRelation);
+                    return UserFollowDetailInfo.toDTO(follower.getId(), follower.getProfileName(), follower.getProfileImageUrl(), follower.getFollowerCount(), follower.getFollowingCount(), currentUserRelation);
                 }).toList();
 
         }
@@ -140,7 +140,7 @@ public class UserService {
                         currentUserRelation = true;
                     }
                     User following = followRelationship.getFollowing();
-                    return UserFollowDetailInfo.toDTO(following.getId(), following.getProfileName(), following.getProfileName(), following.getFollowerCount(), following.getFollowingCount(), currentUserRelation);
+                    return UserFollowDetailInfo.toDTO(following.getId(), following.getProfileName(), following.getProfileImageUrl(), following.getFollowerCount(), following.getFollowingCount(), currentUserRelation);
                 }).toList();
 
         }
@@ -317,9 +317,6 @@ public class UserService {
         return UserAllowNotificationInfo.toDTO(user);
     }
 
-//    public String createMasterToken(){
-//        return jwtTokenProvider.createToken("1+master", 0);
-//    }
 
 
 }

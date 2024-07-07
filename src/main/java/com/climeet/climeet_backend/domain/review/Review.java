@@ -35,6 +35,7 @@ public class Review extends BaseTimeEntity {
     private ClimbingGym climbingGym;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
     private Climber climber;
 
     @NotNull

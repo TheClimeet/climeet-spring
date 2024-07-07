@@ -2,6 +2,7 @@ package com.climeet.climeet_backend.domain.review;
 
 import com.climeet.climeet_backend.domain.climber.Climber;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +14,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findByClimbingGymAndClimberIdIsNotOrderByUpdatedAtDesc(ClimbingGym climbingGym,
         Long userId, Pageable pageable);
+
+    List<Review> findByClimber(Climber climber);
 }

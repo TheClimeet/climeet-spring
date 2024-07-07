@@ -26,4 +26,6 @@ public interface ShortsCommentRepository extends JpaRepository<ShortsComment, Lo
     Slice<ShortsComment> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
     List<ShortsComment> findByShortsId(Long shortsId);
+
+    List<ShortsComment> findByUser(User user);
 }

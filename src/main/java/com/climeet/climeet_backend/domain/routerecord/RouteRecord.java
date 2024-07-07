@@ -33,6 +33,7 @@ public class RouteRecord extends BaseTimeEntity {
     private ClimbingRecord climbingRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

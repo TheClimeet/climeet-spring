@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Getter
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class ShortsComment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

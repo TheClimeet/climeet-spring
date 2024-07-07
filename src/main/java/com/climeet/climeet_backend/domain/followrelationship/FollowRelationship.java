@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @AllArgsConstructor
@@ -29,10 +31,12 @@ public class FollowRelationship extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "follower_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User follower;
 
     @ManyToOne
     @JoinColumn(name = "following_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User following;
 
     private Boolean isUploadShortsRecent = false;

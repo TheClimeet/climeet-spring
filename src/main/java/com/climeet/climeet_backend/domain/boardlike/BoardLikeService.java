@@ -24,6 +24,7 @@ public class BoardLikeService {
         }
         BoardLike boardLike = BoardLike.toEntity(user, board);
         boardLikeRepository.save(boardLike);
+        board.increaseLikeCount();
     }
 
     @Transactional
@@ -33,6 +34,7 @@ public class BoardLikeService {
         BoardLike boardLike = boardLikeRepository.findByUserAndBoard(user, board)
                 .orElseThrow(()-> new GeneralException(ErrorStatus._UNEXIST_BOARD_LIKE));
         boardLikeRepository.delete(boardLike);
+        board.decreaseLikeCount();
     }
 
 }

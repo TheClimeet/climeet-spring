@@ -143,8 +143,4 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserNotification(currentUser));
     }
 
-//    @PostMapping("/master-token")
-//    public String createMasterToken(){
-//        return userService.createMasterToken();
-//    }
 }

@@ -23,7 +23,7 @@ public class RedisController {
 
     // Redis에서 데이터 검색
     @GetMapping("/redis/get/{key}")
-    public String getRedisData(@PathVariable String key) {
+    public Object getRedisData(@PathVariable String key) {
         return redisService.getValue(key);
     }
 }
