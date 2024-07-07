@@ -116,11 +116,4 @@ public class ClimberController {
         climberService.deleteClimber(user);
     }
 
-//    @DeleteMapping("/hard")
-//    @Operation(summary = "hard delete 테스트용 api - 1311 [미리]")
-//    public void hardDelete(@CurrentUser User user) throws UnsupportedEncodingException {
-//        climberService.hardDeleteClimberAccount(user);
-//    }
-
-
 }
