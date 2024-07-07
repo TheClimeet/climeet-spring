@@ -34,6 +34,7 @@ public class ShortsLike extends BaseTimeEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Shorts shorts;
 
     @Default

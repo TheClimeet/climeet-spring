@@ -91,7 +91,6 @@ public class Climber extends User {
             .socialId(socialId)
             .socialType(socialType)
             .profileImageUrl(profileImg)
-            .status(true)
             .isShortsPublic(true)
             .isHomeGymPublic(true)
             .isAverageCompletionLevelPublic(true)

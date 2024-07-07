@@ -77,6 +77,7 @@ public class User {
     private String fcmToken;
 
     @Getter
+    @Setter
     private Boolean status = true;
 
     public void updateStatus(){

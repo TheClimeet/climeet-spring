@@ -14,6 +14,7 @@ import com.climeet.climeet_backend.global.utils.SwaggerApiError;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -106,11 +107,20 @@ public class ClimberController {
     @Operation(summary = "클라이머 탈퇴 - 1310 [미리]")
     public ResponseEntity<String> deleteClimberAccount(@CurrentUser User user, @RequestBody ClimberTokenRevokeRequest climberTokenRequest){
         climberService.deleteClimberAccount(user, climberTokenRequest);
-        return ResponseEntity.ok("7일 안에 재로그인 시 정보가 복구됩니다");
+        return ResponseEntity.ok("탈퇴 신청이 완료되었습니다. 7일 안에 재로그인 시 정보가 복구됩니다");
     }
 
+    @DeleteMapping("/")
+    @Operation(summary = "클라이머 삭제(개발 편의를 위한 용도/실제 api 연결 X) - 1311 [미리]")
+    public void climberHardDelete(@CurrentUser User user) {
+        climberService.deleteClimber(user);
+    }
 
-
+//    @DeleteMapping("/hard")
+//    @Operation(summary = "hard delete 테스트용 api - 1311 [미리]")
+//    public void hardDelete(@CurrentUser User user) throws UnsupportedEncodingException {
+//        climberService.hardDeleteClimberAccount(user);
+//    }
 
 
 }

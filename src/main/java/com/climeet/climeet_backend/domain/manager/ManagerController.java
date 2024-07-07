@@ -68,6 +68,12 @@ public class ManagerController {
         return ResponseEntity.ok(managerService.getClimbingGymIdOfManager(user));
     }
 
+//    @PostMapping("/deactivate")
+//    @Operation(summary = "관리자 탈퇴 api - 206 [미리]", description = "관리자 탈퇴 요청 api. 클밋 승인 후 탈퇴처리 됩니다.")
+//    public ResponseEntity<String> deleteManagerAccount(@CurrentUser User user){
+//
+//    }
+
 
 
 }

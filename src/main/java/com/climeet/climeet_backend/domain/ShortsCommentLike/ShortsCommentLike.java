@@ -36,6 +36,7 @@ public class ShortsCommentLike extends BaseTimeEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ShortsComment shortsComment;
 
     @Enumerated(EnumType.STRING)

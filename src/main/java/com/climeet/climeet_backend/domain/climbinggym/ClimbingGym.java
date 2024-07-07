@@ -33,7 +33,6 @@ public class ClimbingGym extends BaseTimeEntity {
     private Long id;
 
     @OneToOne(mappedBy = "climbingGym")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Manager manager;
 
     @OneToMany(mappedBy = "climbingGym")
