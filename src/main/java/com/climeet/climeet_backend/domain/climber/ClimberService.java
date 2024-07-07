@@ -86,6 +86,11 @@ public class ClimberService {
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
     private String kakaoClientSecret;
 
+    @Value("${cloud.aws.s3.public-uri}")
+    private String s3Uri;
+
+    private static final String DEFAULT_PROFILE_ENDPOINT = "default/profile.jpg";
+
     @Transactional
     public LoginSimpleInfo login(String socialType,
         @RequestBody ClimberTokenRequest climberTokenRequest) {
@@ -124,6 +129,10 @@ public class ClimberService {
         Map<String, String> userInfo = getUserInfoInPayload(payload);
         String socialId = userInfo.get("socialId");
         String profileImg = userInfo.get("profileImg");
+
+        if(profileImg==null){
+            profileImg = s3Uri + DEFAULT_PROFILE_ENDPOINT;
+        }
         SocialType socialType = createClimberRequest.getSocialType();
         if (climberRepository.findBySocialIdAndSocialType(socialId, socialType).isPresent())
             throw new GeneralException(ErrorStatus._EXIST_USER);
