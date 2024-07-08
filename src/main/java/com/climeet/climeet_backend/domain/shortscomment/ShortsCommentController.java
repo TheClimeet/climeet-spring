@@ -91,4 +91,13 @@ public class ShortsCommentController {
     ) {
         return ResponseEntity.ok(shortsCommentService.findMyShortsComments(user, page, size));
     }
+
+    @Operation(summary = "숏츠 댓글 신고 - 1706 [진로]")
+    @PostMapping("/shortsComments/{commentId}/report")
+    public ResponseEntity<String> reportComment(@CurrentUser User user,
+        @PathVariable Long commentId,
+        @RequestParam String reason) {
+        shortsCommentService.reportComment(user, commentId, reason);
+        return ResponseEntity.ok("댓글 신고가 접수되었습니다.");
+    }
 }

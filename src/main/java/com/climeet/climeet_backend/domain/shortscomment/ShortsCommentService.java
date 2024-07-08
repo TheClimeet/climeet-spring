@@ -7,6 +7,8 @@ import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeRep
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeService;
 import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
 import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
+import com.climeet.climeet_backend.domain.reportedComment.ReportedComment;
+import com.climeet.climeet_backend.domain.reportedComment.ReportedCommentRepository;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
@@ -39,12 +41,13 @@ public class ShortsCommentService {
     private final ShortsCommentRepository shortsCommentRepository;
     private final ShortsCommentLikeService shortsCommentLikeService;
     private final ShortsCommentLikeRepository shortsCommentLikeRepository;
+    private final ReportedCommentRepository reportedCommentRepository;
     private final FcmNotificationService fcmNotificationService;
     private static final int ADJUSTED_CHILD_COUNT = 1;
     private static final int NO_CHILD_COMMENTS = 0;
     private static final int SINGLE_COMMENT = 1;
 
-
+    //숏츠 댓글 작성
     @Transactional
     public ShortsCommentParentResponse createShortsComment(User user, Long shortsId,
         CreateShortsCommentRequest createShortsCommentRequest, Long parentCommentId,
@@ -91,10 +94,8 @@ public class ShortsCommentService {
             CommentLikeStatus.NONE,
             fetchParentCommentId(shortsComment),
             shortsComment.getChildCommentCount() - ADJUSTED_CHILD_COUNT,
-            convertToDisplayTime(shortsComment.getCreatedAt())
-        );
-
-
+            convertToDisplayTime(shortsComment.getCreatedAt()),
+            false);
     }
 
     //쇼츠 댓글 조회
@@ -115,13 +116,18 @@ public class ShortsCommentService {
             .map(comment -> {
                 //댓글이 1개일때 예외처리
                 int childCommentCount = comment.getChildCommentCount();
-                int adjustedChildCount = (childCommentCount == SINGLE_COMMENT) ? childCommentCount : childCommentCount - ADJUSTED_CHILD_COUNT;
+                int adjustedChildCount = (childCommentCount == SINGLE_COMMENT) ? childCommentCount
+                    : childCommentCount - ADJUSTED_CHILD_COUNT;
+                //차단 확인
+                Boolean isBlocked = reportedCommentRepository.existsByUserAndShortsComment(user,
+                    comment);
                 return ShortsCommentParentResponse.toDTO(
                     comment.getUser(), comment,
                     likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
                     fetchParentCommentId(comment),
                     adjustedChildCount,
-                    convertToDisplayTime(comment.getCreatedAt())
+                    convertToDisplayTime(comment.getCreatedAt()),
+                    isBlocked
                 );
             })
             .collect(Collectors.toList());
@@ -142,17 +148,22 @@ public class ShortsCommentService {
             user, childCommentList.getContent());
 
         List<ShortsCommentChildResponse> responses = childCommentList.stream()
-            .map(comment -> ShortsCommentChildResponse.toDTO(
-                comment.getId(),
-                comment.getUser().getProfileName(),
-                comment.getUser().getProfileImageUrl(),
-                comment.getContent(),
-                likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
-                comment.getLikeCount(),
-                comment.getDislikeCount(),
-                fetchParentCommentId(comment),
-                convertToDisplayTime(comment.getCreatedAt())
-            ))
+            .map(comment -> {
+                Boolean isBlocked = reportedCommentRepository.existsByUserAndShortsComment(user,
+                    comment);
+                return ShortsCommentChildResponse.toDTO(
+                    comment.getId(),
+                    comment.getUser().getProfileName(),
+                    comment.getUser().getProfileImageUrl(),
+                    comment.getContent(),
+                    likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
+                    comment.getLikeCount(),
+                    comment.getDislikeCount(),
+                    fetchParentCommentId(comment),
+                    convertToDisplayTime(comment.getCreatedAt()),
+                    isBlocked
+                );
+            })
             .collect(Collectors.toList());
 
         return new PageResponseDto<>(pageable.getPageNumber(), childCommentList.hasNext(),
@@ -248,5 +259,24 @@ public class ShortsCommentService {
             shortsCommentLikeRepository.deleteByShortsCommentId(comment.getId());
             shortsCommentRepository.delete(comment);
         }
+    }
+
+    @Transactional
+    public void reportComment(User user, Long commentId, String reason) {
+        ShortsComment shortsComment = shortsCommentRepository.findById(commentId)
+            .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_SHORTS_COMMENT));
+
+        //중복 신고 제한
+        if (reportedCommentRepository.existsByUserAndShortsComment(user, shortsComment)) {
+            throw new GeneralException(ErrorStatus._ALREADY_REPORTED);
+        }
+
+        ReportedComment reportedComment = ReportedComment.builder()
+            .user(user)
+            .shortsComment(shortsComment)
+            .reason(reason)
+            .build();
+
+        reportedCommentRepository.save(reportedComment);
     }
 }
