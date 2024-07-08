@@ -134,4 +134,14 @@ public class ShortsController {
         PageResponseDto<List<ShortsSimpleInfo>> response = shortsService.findUserBookmarkedShorts(user, page, size);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "숏츠 신고하기 - 312 [진로]")
+    @PatchMapping("/shorts/{shortsId}/report")
+    public ResponseEntity<String> reportShorts(
+        @CurrentUser User user,
+        @PathVariable Long shortsId,
+        @RequestParam String reason) {
+        shortsService.reportShorts(user, shortsId, reason);
+        return ResponseEntity.ok("신고가 접수되었습니다.");
+    }
 }

@@ -108,7 +108,12 @@ public enum ErrorStatus implements BaseErrorCode {
     //공지사항 관련
     _BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD_001", "존재하지 않는 공지사항입니다."),
     _EXIST_BOARD_LIKE(HttpStatus.CONFLICT, "BOARD_002", "이미 좋아요를 누른 공지사항입니다."),
-    _UNEXIST_BOARD_LIKE(HttpStatus.CONFLICT, "BOARD_003", "좋아요를 취소할 수 없습니다.");
+    _UNEXIST_BOARD_LIKE(HttpStatus.CONFLICT, "BOARD_003", "좋아요를 취소할 수 없습니다."),
+
+    //신고 관련
+    _ALREADY_REPORTED(HttpStatus.CONFLICT, "REPORT_001", "이미 신고된 숏츠/댓글 입니다.")
+    ;
+
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
