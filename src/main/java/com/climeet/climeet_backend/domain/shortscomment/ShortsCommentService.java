@@ -5,10 +5,12 @@ import static com.climeet.climeet_backend.global.utils.DateTimeConverter.convert
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLike;
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeRepository;
 import com.climeet.climeet_backend.domain.ShortsCommentLike.ShortsCommentLikeService;
+import com.climeet.climeet_backend.domain.blockeduser.BlockedUser;
+import com.climeet.climeet_backend.domain.blockeduser.BlockedUserRepository;
 import com.climeet.climeet_backend.domain.fcmNotification.FcmNotificationService;
 import com.climeet.climeet_backend.domain.fcmNotification.NotificationType;
-import com.climeet.climeet_backend.domain.reportedComment.ReportedComment;
-import com.climeet.climeet_backend.domain.reportedComment.ReportedCommentRepository;
+import com.climeet.climeet_backend.domain.reportedcomment.ReportedComment;
+import com.climeet.climeet_backend.domain.reportedcomment.ReportedCommentRepository;
 import com.climeet.climeet_backend.domain.shorts.Shorts;
 import com.climeet.climeet_backend.domain.shorts.ShortsRepository;
 import com.climeet.climeet_backend.domain.shortscomment.dto.ShortsCommentRequestDto.CreateShortsCommentRequest;
@@ -43,6 +45,7 @@ public class ShortsCommentService {
     private final ShortsCommentLikeRepository shortsCommentLikeRepository;
     private final ReportedCommentRepository reportedCommentRepository;
     private final FcmNotificationService fcmNotificationService;
+    private final BlockedUserRepository blockedUserRepository;
     private static final int ADJUSTED_CHILD_COUNT = 1;
     private static final int NO_CHILD_COMMENTS = 0;
     private static final int SINGLE_COMMENT = 1;
@@ -112,7 +115,12 @@ public class ShortsCommentService {
         Map<Long, CommentLikeStatus> likeStatusMap = shortsCommentLikeService.fetchUserLikeStatuses(
             user, shortsCommentIncludeChildList);
 
+        List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user);
+        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked).map(User::getId).toList();
+
         List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
+            .filter(comment -> !reportedCommentRepository.existsByUserAndShortsComment(user, comment))
+            .filter(comment -> !blockedUserIds.contains(comment.getUser().getId()))
             .map(comment -> {
                 //댓글이 1개일때 예외처리
                 int childCommentCount = comment.getChildCommentCount();
@@ -147,7 +155,12 @@ public class ShortsCommentService {
         Map<Long, CommentLikeStatus> likeStatusMap = shortsCommentLikeService.fetchUserLikeStatuses(
             user, childCommentList.getContent());
 
+        List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user);
+        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked).map(User::getId).toList();
+
         List<ShortsCommentChildResponse> responses = childCommentList.stream()
+            .filter(comment -> !reportedCommentRepository.existsByUserAndShortsComment(user, comment))
+            .filter(comment -> !blockedUserIds.contains(comment.getUser().getId()))
             .map(comment -> {
                 Boolean isBlocked = reportedCommentRepository.existsByUserAndShortsComment(user,
                     comment);

@@ -93,6 +93,7 @@ public class ShortsCommentController {
     }
 
     @Operation(summary = "숏츠 댓글 신고 - 1706 [진로]")
+    @SwaggerApiError(ErrorStatus._ALREADY_REPORTED)
     @PostMapping("/shortsComments/{commentId}/report")
     public ResponseEntity<String> reportComment(@CurrentUser User user,
         @PathVariable Long commentId,

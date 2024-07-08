@@ -136,6 +136,7 @@ public class ShortsController {
     }
 
     @Operation(summary = "숏츠 신고하기 - 312 [진로]")
+    @SwaggerApiError({ErrorStatus._ALREADY_REPORTED})
     @PatchMapping("/shorts/{shortsId}/report")
     public ResponseEntity<String> reportShorts(
         @CurrentUser User user,

@@ -1,5 +1,7 @@
 package com.climeet.climeet_backend.domain.shorts;
 
+import com.climeet.climeet_backend.domain.blockeduser.BlockedUser;
+import com.climeet.climeet_backend.domain.blockeduser.BlockedUserRepository;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGymRepository;
 import com.climeet.climeet_backend.domain.difficultymapping.DifficultyMapping;
@@ -58,6 +60,7 @@ public class ShortsService {
     private final FollowRelationshipRepository followRelationshipRepository;
     private final UserRepository userRepository;
     private final ReportedShortsRepository reportedShortsRepository;
+    private final BlockedUserRepository blockedUserRepository;
     private final FcmNotificationService fcmNotificationService;
 
     static final int rankingThreshold = 0;
@@ -144,9 +147,10 @@ public class ShortsService {
                 ShortsVisibility.getPublicAndFollowersOnlyList(), pageable);
         }
 
-        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
-            //현재 유저가 신고한 숏츠 필터링
-            .filter(shorts -> !reportedShortsRepository.existsByUserAndShorts(user, shorts))
+
+        List<Shorts> filteredShorts = filterShorts(user, shortsSlice.getContent());
+
+        List<ShortsSimpleInfo> shortsInfoList = filteredShorts.stream()
             //필터를 통해 팔로워만 허용한 쇼츠에서 현재 유저가 볼 수 있는지 확인
             .filter(shorts -> {
                 if (shorts.getShortsVisibility() == ShortsVisibility.FOLLOWERS_ONLY) {
@@ -161,6 +165,7 @@ public class ShortsService {
             shortsInfoList);
     }
 
+    //숏츠 인기순 조회
     public PageResponseDto<List<ShortsSimpleInfo>> findShortsPopular(User user, Long gymId,
         Long sectorId, Long routeId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -189,7 +194,10 @@ public class ShortsService {
                 pageable);
         }
 
-        List<ShortsSimpleInfo> shortsInfoList = shortsSlice.stream()
+        //차단 & 신고 필터링
+        List<Shorts> filteredShorts = filterShorts(user, shortsSlice.getContent());
+
+        List<ShortsSimpleInfo> shortsInfoList = filteredShorts.stream()
             .map(shorts -> toShortsSimpleInfo(shorts, user))
             .toList();
 
@@ -434,7 +442,19 @@ public class ShortsService {
             .builder()
             .shorts(shorts)
             .reason(reason)
+            .user(user)
             .build();
         reportedShortsRepository.save(reportedShorts);
+    }
+
+    // 신고된 숏츠와 차단된 유저의 숏츠 필터링
+    private List<Shorts> filterShorts(User user, List<Shorts> shortsList) {
+        List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user);
+        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked).map(User::getId).toList();
+
+        return shortsList.stream()
+            .filter(shorts -> !reportedShortsRepository.existsByUserAndShorts(user, shorts))
+            .filter(shorts -> !blockedUserIds.contains(shorts.getUser().getId()))
+            .toList();
     }
 }

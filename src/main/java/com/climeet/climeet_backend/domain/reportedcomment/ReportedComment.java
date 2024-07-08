@@ -1,4 +1,4 @@
-package com.climeet.climeet_backend.domain.reportedComment;
+package com.climeet.climeet_backend.domain.reportedcomment;
 
 import com.climeet.climeet_backend.domain.shortscomment.ShortsComment;
 import com.climeet.climeet_backend.domain.user.User;
