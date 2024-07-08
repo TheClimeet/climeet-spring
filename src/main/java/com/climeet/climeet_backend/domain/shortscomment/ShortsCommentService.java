@@ -116,19 +116,22 @@ public class ShortsCommentService {
             user, shortsCommentIncludeChildList);
 
         List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user);
-        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked).map(User::getId).toList();
+        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked)
+            .map(User::getId).toList();
 
         List<ShortsCommentParentResponse> responses = shortsCommentIncludeChildList.stream()
-            .filter(comment -> !reportedCommentRepository.existsByUserAndShortsComment(user, comment))
-            .filter(comment -> !blockedUserIds.contains(comment.getUser().getId()))
             .map(comment -> {
                 //댓글이 1개일때 예외처리
                 int childCommentCount = comment.getChildCommentCount();
-                int adjustedChildCount = (childCommentCount == SINGLE_COMMENT) ? childCommentCount
-                    : childCommentCount - ADJUSTED_CHILD_COUNT;
-                //차단 확인
-                Boolean isBlocked = reportedCommentRepository.existsByUserAndShortsComment(user,
-                    comment);
+                int adjustedChildCount =
+                    (childCommentCount == SINGLE_COMMENT || childCommentCount == NO_CHILD_COMMENTS)
+                        ? childCommentCount
+                        : childCommentCount - ADJUSTED_CHILD_COUNT;
+
+                //유저 차단 && 댓글 신고 확인
+                Boolean isBlocked = blockedUserIds.contains(comment.getUser().getId())
+                    || reportedCommentRepository.existsByUserAndShortsComment(user, comment);
+
                 return ShortsCommentParentResponse.toDTO(
                     comment.getUser(), comment,
                     likeStatusMap.getOrDefault(comment.getId(), CommentLikeStatus.NONE),
@@ -156,14 +159,16 @@ public class ShortsCommentService {
             user, childCommentList.getContent());
 
         List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user);
-        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked).map(User::getId).toList();
+        List<Long> blockedUserIds = blockedUsers.stream().map(BlockedUser::getBlocked)
+            .map(User::getId).toList();
 
         List<ShortsCommentChildResponse> responses = childCommentList.stream()
-            .filter(comment -> !reportedCommentRepository.existsByUserAndShortsComment(user, comment))
-            .filter(comment -> !blockedUserIds.contains(comment.getUser().getId()))
             .map(comment -> {
-                Boolean isBlocked = reportedCommentRepository.existsByUserAndShortsComment(user,
-                    comment);
+
+                //유저 차단 && 댓글 신고 확인
+                Boolean isBlocked = blockedUserIds.contains(comment.getUser().getId())
+                    || reportedCommentRepository.existsByUserAndShortsComment(user, comment);
+
                 return ShortsCommentChildResponse.toDTO(
                     comment.getId(),
                     comment.getUser().getProfileName(),
