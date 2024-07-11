@@ -110,6 +110,12 @@ public enum ErrorStatus implements BaseErrorCode {
     _EXIST_BOARD_LIKE(HttpStatus.CONFLICT, "BOARD_002", "이미 좋아요를 누른 공지사항입니다."),
     _UNEXIST_BOARD_LIKE(HttpStatus.CONFLICT, "BOARD_003", "좋아요를 취소할 수 없습니다."),
 
+    //신고 관련
+    _ALREADY_REPORTED(HttpStatus.CONFLICT, "REPORT_001", "이미 신고된 숏츠/댓글 입니다."),
+
+    //차단 관련
+    _ALREADY_BLOCKED(HttpStatus.CONFLICT, "BLOCK_001", "이미 차단된 유저입니다."),
+
     //관리자 관련
     _EMPTY_MANAGER_DELETE_REQUEST(HttpStatus.NOT_FOUND, "MANAGER_DELETE_001", "존재하지 않는 매니저 탈퇴 요청입니다.")
     ;

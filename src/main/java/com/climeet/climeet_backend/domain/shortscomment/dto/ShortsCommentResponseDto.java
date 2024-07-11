@@ -25,12 +25,13 @@ public class ShortsCommentResponseDto {
         Long parentCommentId;
         int childCommentCount;
         String createdDate;
+        Boolean isBlocked;
 
         public static ShortsCommentParentResponse toDTO(
             User user, ShortsComment shortsComment,
             CommentLikeStatus commentLikeStatus, Long parentCommentId,
             int childCommentCount,
-            String createdDate) {
+            String createdDate, Boolean isBlocked) {
             return ShortsCommentParentResponse.builder()
                 .commentId(shortsComment.getId())
                 .nickname(user.getProfileName())
@@ -43,6 +44,7 @@ public class ShortsCommentResponseDto {
                 .parentCommentId(parentCommentId)
                 .childCommentCount(childCommentCount)
                 .createdDate(createdDate)
+                .isBlocked(isBlocked)
                 .build();
         }
     }
@@ -61,12 +63,13 @@ public class ShortsCommentResponseDto {
         int dislikeCount;
         Long parentCommentId;
         String createdDate;
+        Boolean isBlocked;
 
         public static ShortsCommentChildResponse toDTO(Long commentId, String nickname,
             String profileImageUrl,
             String content, CommentLikeStatus commentLikeStatus,
             int likeCount, int dislikeCount,
-            Long parentCommentId, String createdDate) {
+            Long parentCommentId, String createdDate, Boolean isBlocked) {
             return ShortsCommentChildResponse.builder()
                 .commentId(commentId)
                 .nickname(nickname)
@@ -77,6 +80,7 @@ public class ShortsCommentResponseDto {
                 .dislikeCount(dislikeCount)
                 .parentCommentId(parentCommentId)
                 .createdDate(createdDate)
+                .isBlocked(isBlocked)
                 .build();
         }
     }
