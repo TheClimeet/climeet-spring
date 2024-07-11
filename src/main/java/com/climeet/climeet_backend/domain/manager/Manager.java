@@ -80,4 +80,13 @@ public class Manager extends User {
     public String getPayload(){
         return this.getId()+"+manager";
     }
+
+    public void deleteManagerInfo(){
+        this.email = null;
+        this.loginId = null;
+        this.password = null;
+        this.phoneNumber = null;
+        this.isRegistered = false;
+    }
+
 }

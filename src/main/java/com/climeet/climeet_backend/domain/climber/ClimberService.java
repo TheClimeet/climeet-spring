@@ -396,20 +396,6 @@ public class ClimberService {
         Climber climber = (Climber) user;
         climber.updateIsAverageCompletionLevelPublic();
     }
-    @Transactional
-    public void deleteShortsCommentByUser(List<ShortsComment> list){
-        for(ShortsComment comment : list){
-            comment.setUser(null);
-            shortsCommentRepository.save(comment);
-        }
-    }
-
-    public void deleteReviewByUser(List<Review> list){
-        for(Review review : list){
-            review.setClimber(null);
-            reviewRepository.save(review);
-        }
-    }
 
     @Transactional
     public void deleteClimberAccount(User user, ClimberTokenRevokeRequest climberTokenRequest){
@@ -443,15 +429,31 @@ public class ClimberService {
 //
 //        userRepository.delete(user);
 //    }
+
+    public void deleteReviewByUser(List<Review> list){
+        for(Review review : list){
+            review.setClimber(null);
+            reviewRepository.save(review);
+        }
+    }
+
+    @Transactional
+    public void deleteShortsCommentByUser(List<ShortsComment> list){
+        for(ShortsComment comment : list){
+            comment.setUser(null);
+            shortsCommentRepository.save(comment);
+        }
+    }
+
     @Transactional
     public void deleteClimber(User user){
-            Climber climber = (Climber)user;
-            List<ShortsComment> shortsCommentList = shortsCommentRepository.findByUser(user);
-            List<Review> reviewList  = reviewRepository.findByClimber(climber);
-            deleteShortsCommentByUser(shortsCommentList);
-            deleteReviewByUser(reviewList);
+        Climber climber = (Climber)user;
+        List<ShortsComment> shortsCommentList = shortsCommentRepository.findByUser(user);
+        List<Review> reviewList  = reviewRepository.findByClimber(climber);
+        deleteShortsCommentByUser(shortsCommentList);
+        deleteReviewByUser(reviewList);
 
-            userRepository.delete(user);
+        userRepository.delete(user);
     }
 
 
