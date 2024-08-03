@@ -114,9 +114,11 @@ public enum ErrorStatus implements BaseErrorCode {
     _ALREADY_REPORTED(HttpStatus.CONFLICT, "REPORT_001", "이미 신고된 숏츠/댓글 입니다."),
 
     //차단 관련
-    _ALREADY_BLOCKED(HttpStatus.CONFLICT, "BLOCK_001", "이미 차단된 유저입니다.")
-    ;
+    _ALREADY_BLOCKED(HttpStatus.CONFLICT, "BLOCK_001", "이미 차단된 유저입니다."),
 
+    //관리자 관련
+    _EMPTY_MANAGER_DELETE_REQUEST(HttpStatus.NOT_FOUND, "MANAGER_DELETE_001", "존재하지 않는 매니저 탈퇴 요청입니다.")
+    ;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

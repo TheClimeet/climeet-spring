@@ -1,5 +1,6 @@
 package com.climeet.climeet_backend.domain.user;
 
+import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserFcmToken;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
@@ -142,5 +143,6 @@ public class UserController {
     public ResponseEntity<UserAllowNotificationInfo> getUserNotification(@CurrentUser User currentUser){
         return ResponseEntity.ok(userService.getUserNotification(currentUser));
     }
+
 
 }

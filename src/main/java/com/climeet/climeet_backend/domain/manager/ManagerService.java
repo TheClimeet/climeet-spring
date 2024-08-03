@@ -11,7 +11,13 @@ import com.climeet.climeet_backend.domain.climbinggymimage.ClimbingGymBackground
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateAccessTokenRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerRequestDto.CreateManagerRequest;
 import com.climeet.climeet_backend.domain.manager.dto.ManagerResponseDto.ManagerSimpleInfo;
+import com.climeet.climeet_backend.domain.retool.managerDelete.ManagerDelete;
+import com.climeet.climeet_backend.domain.retool.managerDelete.ManagerDeleteRepository;
+import com.climeet.climeet_backend.domain.shorts.ShortsService;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsComment;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsCommentRepository;
 import com.climeet.climeet_backend.domain.user.User;
+import com.climeet.climeet_backend.domain.user.UserRepository;
 import com.climeet.climeet_backend.global.response.code.status.ErrorStatus;
 import com.climeet.climeet_backend.global.response.exception.GeneralException;
 import com.climeet.climeet_backend.global.security.JwtTokenProvider;
@@ -33,6 +39,10 @@ public class ManagerService {
     private final ClimbingGymBackgroundImageRepository climbingGymBackgroundImageRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final ShortsService shortsService;
+    private final ShortsCommentRepository shortsCommentRepository;
+    private final ManagerDeleteRepository managerDeleteRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public ManagerSimpleInfo login(@RequestBody CreateAccessTokenRequest createAccessTokenRequest){
@@ -48,7 +58,9 @@ public class ManagerService {
         if(!IdManager.checkPassword(password, passwordEncoder)){
             throw new GeneralException(ErrorStatus._WRONG_LOGINID_PASSWORD);
         }
-
+        if(!IdManager.getStatus()){
+            IdManager.setStatus(true);
+        }
         String accessToken = jwtTokenProvider.createAccessToken(IdManager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(IdManager.getId());
         IdManager.updateToken(accessToken, refreshToken);
@@ -95,6 +107,7 @@ public class ManagerService {
         String accessToken = jwtTokenProvider.createAccessToken(manager.getPayload());
         String refreshToken = jwtTokenProvider.createRefreshToken(manager.getId());
         manager.updateToken(accessToken, refreshToken);
+        manager.setStatus(true);
 
         //서비스 리스트 등록
         List<ServiceBitmask> gymServiceList = createManagerRequest.getProvideServiceList();
@@ -120,8 +133,29 @@ public class ManagerService {
             .orElseThrow(() -> new GeneralException(ErrorStatus._EMPTY_MANAGER));
         return manager.getClimbingGym().getId();
     }
+    @Transactional
+    public void deleteShortsCommentByUser(List<ShortsComment> list){
+        for(ShortsComment comment : list){
+            comment.setUser(null);
+            shortsCommentRepository.save(comment);
+        }
+    }
 
+    @Transactional
+    public void deleteManagerRequest(User user){
+        if(!(user instanceof Manager manager))
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        ManagerDelete managerDelete = ManagerDelete.toEntity(manager);
+        managerDeleteRepository.save(managerDelete);
+    }
 
+    @Transactional
+    public void deleteManager(User user){
+        List<ShortsComment> shortsCommentList = shortsCommentRepository.findByUser(user);
+        deleteShortsCommentByUser(shortsCommentList);
+        Manager manager = (Manager)user;
+        manager.updateDeleteStatus(true);
+    }
 
 
 

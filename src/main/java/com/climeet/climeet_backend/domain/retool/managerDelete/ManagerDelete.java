@@ -2,7 +2,6 @@ package com.climeet.climeet_backend.domain.retool.managerDelete;
 
 import com.climeet.climeet_backend.domain.climbinggym.ClimbingGym;
 import com.climeet.climeet_backend.domain.manager.Manager;
-import com.climeet.climeet_backend.domain.retool.gymregistration.ApprovalStatus;
 import com.climeet.climeet_backend.global.utils.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,9 +11,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class ManagerDelete extends BaseTimeEntity {
 
     @Id
@@ -37,7 +38,25 @@ public class ManagerDelete extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
 
-    private LocalDate approvedAt;
+    private LocalDateTime applyAt;
+
+    public static ManagerDelete toEntity(Manager manager){
+        return ManagerDelete.builder()
+            .manager(manager)
+            .approvalStatus(ApprovalStatus.PENDING)
+            .climbingGym(manager.getClimbingGym())
+            .applyAt(LocalDateTime.now())
+            .build();
+    }
+
+    public void updateApprovalStatus(Boolean isApproved){
+        if(isApproved) {
+            this.approvalStatus = ApprovalStatus.APPROVED;
+        }
+        else {
+            this.approvalStatus = ApprovalStatus.REJECTED;
+        }
+    }
 
 
 }

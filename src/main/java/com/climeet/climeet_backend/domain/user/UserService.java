@@ -9,6 +9,10 @@ import com.climeet.climeet_backend.domain.followrelationship.FollowRelationship;
 import com.climeet.climeet_backend.domain.followrelationship.FollowRelationshipRepository;
 import com.climeet.climeet_backend.domain.manager.Manager;
 import com.climeet.climeet_backend.domain.manager.ManagerRepository;
+import com.climeet.climeet_backend.domain.review.Review;
+import com.climeet.climeet_backend.domain.review.ReviewRepository;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsComment;
+import com.climeet.climeet_backend.domain.shortscomment.ShortsCommentRepository;
 import com.climeet.climeet_backend.domain.user.dto.UserRequestDto.UpdateUserAllowNotificationRequest;
 import com.climeet.climeet_backend.domain.user.dto.UserResponseDto.UserAccountDetailInfo;
 import com.climeet.climeet_backend.domain.route.Route;
@@ -42,6 +46,8 @@ public class UserService {
     private final ManagerRepository managerRepository;
     private final RouteVersionService routeVersionService;
     private final S3Service s3Service;
+    private final ShortsCommentRepository shortsCommentRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public User updateNotification(User user, boolean isAllowFollowNotification,
@@ -316,6 +322,11 @@ public class UserService {
     public UserAllowNotificationInfo getUserNotification(User user){
         return UserAllowNotificationInfo.toDTO(user);
     }
+
+
+
+
+
 
 
 
