@@ -58,9 +58,5 @@ public class ManagerDelete extends BaseTimeEntity {
         }
     }
 
-    public void deleteManager(){
-        this.manager = null;
-    }
-
 
 }

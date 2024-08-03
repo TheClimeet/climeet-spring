@@ -42,8 +42,14 @@ public class Manager extends User {
 
     private Boolean isRegistered = false;
 
+    private Boolean isDeleted = false;
+
     public void setClimbingGym(ClimbingGym climbingGym){
         this.climbingGym = climbingGym;
+    }
+
+    public void updateDeleteStatus(boolean status){
+        this.isDeleted = status;
     }
 
     public static Manager toEntity(CreateManagerRequest createManagerRequest, ClimbingGym gym){
@@ -55,6 +61,7 @@ public class Manager extends User {
             .phoneNumber(createManagerRequest.getPhoneNumber())
             .email(createManagerRequest.getEmail())
             .isRegistered(false)
+            .isDeleted(false)
             .climbingGym(gym)
             .followerCount(0L)
             .followingCount(0L)

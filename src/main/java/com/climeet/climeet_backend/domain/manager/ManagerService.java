@@ -153,10 +153,8 @@ public class ManagerService {
     public void deleteManager(User user){
         List<ShortsComment> shortsCommentList = shortsCommentRepository.findByUser(user);
         deleteShortsCommentByUser(shortsCommentList);
-        ManagerDelete managerDelete = managerDeleteRepository.findByManager((Manager)user)
-                .orElseThrow(()-> new GeneralException(ErrorStatus._EMPTY_MANAGER_DELETE_REQUEST));
-        managerDelete.deleteManager();
-        userRepository.delete(user);
+        Manager manager = (Manager)user;
+        manager.updateDeleteStatus(true);
     }
 
 

@@ -75,4 +75,11 @@ public class ManagerController {
         return ResponseEntity.ok("관리자 탈퇴 신청 완료. 클밋 승인 후 탈퇴 처리 됩니다. 7일 이내 재로그인 시 정보가 복구됩니다.");
     }
 
+    @PostMapping("/delete")
+    @Operation(summary = "관리자 탈퇴 hardDelete")
+    public ResponseEntity<String> deleteManager(@CurrentUser User user){
+        managerService.deleteManager(user);
+        return ResponseEntity.ok("삭제완료");
+    }
+
 }
